@@ -1,23 +1,28 @@
 import React from "react";
 import * as Tone from "tone";
 
+let toneNow = Tone.now();
 function play(
   synth: Tone.Synth<Tone.SynthOptions>,
   tune: "listen" | "correct" | "incorrect",
 ) {
-  console.log("play", tune);
   const now = Tone.now();
+  if (toneNow < now) toneNow = now;
+
+  // console.log("play", tune);
   switch (tune) {
     case "listen":
-      synth.triggerAttackRelease("C4", "8n", now);
+      synth.triggerAttackRelease("D5", "16n", toneNow);
       break;
     case "correct":
-      synth.triggerAttackRelease("C4", "8n", now);
-      synth.triggerAttackRelease("E4", "8n", now + 0.5);
+      synth.triggerAttackRelease("C5", "16n", toneNow);
+      synth.triggerAttackRelease("G5", "16n", (toneNow += 0.25));
+      toneNow += 0.25;
       break;
     case "incorrect":
-      synth.triggerAttackRelease("C4", "8n", now);
-      synth.triggerAttackRelease("G4", "8n", now + 0.5);
+      synth.triggerAttackRelease("G5", "16n", toneNow);
+      synth.triggerAttackRelease("C5", "16n", (toneNow += 0.25));
+      toneNow += 0.25;
       break;
     default:
       throw new Error("unknown tune: " + tune);
@@ -112,41 +117,48 @@ function Text({
 }) {
   const [done, setDone] = React.useState(false);
   const { speechRecognition, result, isFinal } = useSpeechRecognition();
-  console.log({ result });
+  const isCorrect = text === result;
+  // console.log({ result });
 
   React.useEffect(() => {
-    console.log("a");
     if (isCurrent) {
       if (speechRecognition) {
         speechRecognition.start();
-        // play(synthRef.current!, "listen");
+        play(synthRef.current!, "listen");
       }
     }
-  }, [isCurrent, speechRecognition]);
+  }, [isCurrent, speechRecognition, synthRef]);
 
   const finish = React.useCallback(
     function () {
-      console.log("finish - is done?");
       if (done) return;
-      console.log("run once");
+      if (isCorrect) play(synthRef.current!, "correct");
+      else play(synthRef.current!, "incorrect");
       setDone(true);
       setIdx(idx + 1);
     },
-    [done, idx, setIdx],
+    [done, idx, setIdx, isCorrect, synthRef],
   );
 
   React.useEffect(() => {
-    console.log("b");
     if (isFinal) finish();
   }, [isFinal, finish]);
 
+  React.useEffect(() => {}, []);
+
   return (
-    <div>
-      <div>current: {isCurrent.toString()}</div>
-      <div>text: {text}</div>
-      <div>result: {result}</div>
-      <div>final: {isFinal.toString()}</div>
-      <div>correct: {(text === result).toString()}</div>
+    <div
+      style={{
+        borderLeft: isCurrent ? "2px solid blue" : "none",
+        paddingLeft: isCurrent ? "5px" : "7px",
+      }}
+    >
+      <div>
+        text: {text} {isCurrent && !isFinal ? "🎤" : ""}
+      </div>
+      <div>
+        result: {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
+      </div>
       <br />
     </div>
   );
@@ -161,12 +173,11 @@ export default function X() {
     <div>
       <button
         onClick={async () => {
-          console.log(1);
           await Tone.start();
-          console.log(2);
           const synth = new Tone.Synth().toDestination();
           synthRef.current = synth;
           setIdx(0);
+          // play(synth, "incorrect");
         }}
       >
         start
