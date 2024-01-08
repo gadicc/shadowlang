@@ -26,6 +26,7 @@ function play(
       break;
     default:
       throw new Error("unknown tune: " + tune);
+      throw new Error("unknown tune: " + tune);
   }
 }
 
@@ -48,16 +49,12 @@ function useSpeechRecognition() {
 
   const onResult = React.useCallback(
     function onResult(event: SpeechRecognitionEvent) {
-      console.log("onResult", event.results);
       const results = event.results;
       setResults(results);
-      console.log(results);
       setResult(results[0][0].transcript);
       if (isFinal !== results[0].isFinal) {
         setIsFinal(results[0].isFinal);
-        console.log("setIsFinal", results[0].isFinal);
       }
-      console.log(results[0], results[0].isFinal);
     },
     [isFinal],
   );
@@ -66,9 +63,10 @@ function useSpeechRecognition() {
     const SpeechRecognition = getSpeechRecognition();
     const speechRecognition = new SpeechRecognition();
     speechRecognition.interimResults = true;
+    speechRecognition.maxAlternatives = 5;
     setSpeechRecognition(speechRecognition);
 
-    if (true)
+    if (false)
       for (const eventName of [
         "audiostart",
         "audioend",
@@ -104,27 +102,70 @@ function useSpeechRecognition() {
 
 function Text({
   text,
+  avatar,
   isCurrent,
   synthRef,
   idx,
   setIdx,
+  audio,
 }: {
   text: string;
+  avatar: string;
   isCurrent: boolean;
   synthRef: React.MutableRefObject<Tone.Synth<Tone.SynthOptions> | null>;
   idx: number;
   setIdx: React.Dispatch<React.SetStateAction<number>>;
+  audio: { src: string; start: number; end: number };
 }) {
+  const audioRef = React.useRef<HTMLAudioElement>(null);
   const [done, setDone] = React.useState(false);
-  const { speechRecognition, result, isFinal } = useSpeechRecognition();
-  const isCorrect = text === result;
-  // console.log({ result });
+  const { speechRecognition, result, results, isFinal } =
+    useSpeechRecognition();
+  const isCorrect =
+    text.replace(/。| /g, "") ===
+    result
+      ?.replace(/。| /g, "")
+      .replace(/とみ/, "トミ")
+      .replace(/トミー/, "トミ");
+  const [isListening, setIsListening] = React.useState(false);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const hasPlayed = React.useRef(false);
+  console.log({ results });
 
   React.useEffect(() => {
-    if (isCurrent) {
+    if (isCurrent && !hasPlayed.current) {
       if (speechRecognition) {
-        speechRecognition.start();
-        play(synthRef.current!, "listen");
+        speechRecognition.lang = "ja-JP";
+        const audioEl = audioRef.current!;
+        hasPlayed.current = true;
+        audioEl.currentTime = audio.start;
+        audioEl.play();
+        setIsPlaying(true);
+        setTimeout(
+          () => {
+            audioEl.pause();
+            setIsPlaying(false);
+            const shouldCheck = true;
+            if (shouldCheck) {
+              setIsListening(true);
+
+              /* this has no effect unfortunately - known issue 
+              const grammar =
+                "#JSGF V1.0; grammar names; public <name> = アンミン | トミ ;";
+              const speechRecognitionList = new webkitSpeechGrammarList();
+              speechRecognitionList.addFromString(grammar, 1);
+              speechRecognition.grammars = speechRecognitionList;
+              */
+
+              speechRecognition.start();
+
+              play(synthRef.current!, "listen");
+            } else {
+              setIdx(idx + 1);
+            }
+          },
+          (audio.end - audio.start) * 1000,
+        );
       }
     }
   }, [isCurrent, speechRecognition, synthRef]);
@@ -134,8 +175,9 @@ function Text({
       if (done) return;
       if (isCorrect) play(synthRef.current!, "correct");
       else play(synthRef.current!, "incorrect");
+      setIsListening(false);
       setDone(true);
-      setIdx(idx + 1);
+      setTimeout(() => setIdx(idx + 1), 1000);
     },
     [done, idx, setIdx, isCorrect, synthRef],
   );
@@ -147,30 +189,67 @@ function Text({
   React.useEffect(() => {}, []);
 
   return (
-    <div
-      style={{
-        borderLeft: isCurrent ? "2px solid blue" : "none",
-        paddingLeft: isCurrent ? "5px" : "7px",
-      }}
-    >
-      <div>
-        text: {text} {isCurrent && !isFinal ? "🎤" : ""}
+    <div style={{ position: "relative", height: 100 }}>
+      <div style={{ position: "absolute", top: 0, left: 0 }}>
+        <div
+          style={{
+            height: 80,
+            width: 80,
+            borderRadius: "50%",
+            border: isCurrent ? "2px solid blue" : "1px solid black",
+            margin: isCurrent ? 0 : 1,
+          }}
+        >
+          <img
+            alt={avatar + " avatar"}
+            src={`/img/avatars/${avatar}.png`}
+            width={80}
+            height={80}
+          />
+        </div>
       </div>
-      <div>
-        result: {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
+
+      <div style={{ position: "absolute", top: 20, left: 105 }}>
+        <div style={{ color: isPlaying ? "blue" : "" }}>
+          {text} {isListening ? "🎤" : ""}
+        </div>
+        <div>
+          {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
+        </div>
+        <br />
       </div>
-      <br />
+
+      <audio ref={audioRef} src={"/audio/" + audio.src} />
     </div>
   );
 }
 
 export default function X() {
   const [idx, setIdx] = React.useState(-1);
-  const texts = ["hello how are you", "fine thanks and you"];
+  const texts = [
+    {
+      avatar: "anming",
+      text: "初めまして。 私はアンミンです。",
+      audio: {
+        src: "1absolutebeginner_lesson1.m4a",
+        start: 0.5,
+        end: 3.5,
+      },
+    },
+    {
+      avatar: "tommy",
+      text: "私はトミです。よろしくお願いします。",
+      audio: {
+        src: "1absolutebeginner_lesson1.m4a",
+        start: 4,
+        end: 7,
+      },
+    },
+  ];
   const synthRef = React.useRef<Tone.Synth<Tone.SynthOptions> | null>(null);
 
   return (
-    <div>
+    <div style={{ background: "#dfdfdf", padding: "15px" }}>
       <button
         onClick={async () => {
           await Tone.start();
@@ -184,14 +263,16 @@ export default function X() {
       </button>
       <br />
       <br />
-      {texts.map((text, i) => (
+      {texts.map((entry, i) => (
         <Text
           key={i}
-          text={text}
+          avatar={entry.avatar}
+          text={entry.text}
           isCurrent={i === idx}
           idx={idx}
           setIdx={setIdx}
           synthRef={synthRef}
+          audio={entry.audio}
         />
       ))}
     </div>
