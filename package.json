@@ -16,6 +16,7 @@
     "tone": "^14.7.77"
   },
   "devDependencies": {
+    "@scriptin/jmdict-simplified-types": "3.5.0",
     "@testing-library/jest-dom": "6.2.0",
     "@testing-library/react": "14.1.2",
     "@types/dom-speech-recognition": "^0.0.4",
