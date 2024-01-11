@@ -50,6 +50,7 @@ function useSpeechRecognition() {
   const onResult = React.useCallback(
     function onResult(event: SpeechRecognitionEvent) {
       const results = event.results;
+      console.log("onResult", results);
       setResults(results);
       setResult(results[0][0].transcript);
       if (isFinal !== results[0].isFinal) {
@@ -130,7 +131,7 @@ function Text({
   const [isListening, setIsListening] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const hasPlayed = React.useRef(false);
-  console.log({ results });
+  // console.log({ results });
 
   React.useEffect(() => {
     if (isCurrent && !hasPlayed.current) {
@@ -235,6 +236,41 @@ export default function X() {
         start: 0.5,
         end: 3.5,
       },
+      words: [
+        {
+          word: "初めまして",
+          start: 0.5,
+          end: 1.5,
+          punctuation: "。",
+        },
+        {
+          word: "私",
+          start: 1.5,
+          end: 2,
+          grammar: "pronoun",
+          role: "topic",
+        },
+        {
+          word: "は",
+          start: 1.5,
+          end: 2,
+          grammar: "particle",
+          role: "topic-marker",
+        },
+        {
+          word: "アンミン",
+          start: 2,
+          end: 3.5,
+          punctuation: "です",
+          alsoAccept: ["あみん"],
+        },
+        {
+          word: "です",
+          start: 3.5,
+          end: 3.5,
+          grammar: "copula",
+        },
+      ],
     },
     {
       avatar: "tommy",
