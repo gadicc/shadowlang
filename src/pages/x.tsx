@@ -103,8 +103,32 @@ function useSpeechRecognition() {
   return { speechRecognition, results, result, isFinal };
 }
 
+interface Word {
+  word: string;
+  start: number;
+  end: number;
+  punctuation?: string;
+  grammar?: string;
+  role?: string;
+  alsoAccept?: string[];
+}
+
+function LayoutWords({ words }: { words: Word[] }) {
+  return (
+    <div>
+      {words.map((word, i) => (
+        <span key={i}>
+          {word.word}
+          {word.punctuation}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function Text({
   text,
+  words,
   avatar,
   isCurrent,
   synthRef,
@@ -113,6 +137,7 @@ function Text({
   audio,
 }: {
   text: string;
+  words: Word[];
   avatar: string;
   isCurrent: boolean;
   synthRef: React.MutableRefObject<Tone.Synth<Tone.SynthOptions> | null>;
@@ -216,6 +241,7 @@ function Text({
         <div style={{ color: isPlaying ? "blue" : "" }}>
           {text} {isListening ? "🎤" : ""}
         </div>
+        <LayoutWords words={words} />
         <div>
           {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
         </div>
@@ -241,6 +267,7 @@ export default function X() {
       words: [
         {
           word: "初めまして",
+          jmdict: "1625780",
           start: 0.5,
           end: 1.5,
           punctuation: "。",
@@ -263,7 +290,6 @@ export default function X() {
           word: "アンミン",
           start: 2,
           end: 3.5,
-          punctuation: "です",
           alsoAccept: ["あみん"],
         },
         {
@@ -271,6 +297,7 @@ export default function X() {
           start: 3.5,
           end: 3.5,
           grammar: "copula",
+          punctuation: "。",
         },
       ],
     },
@@ -282,6 +309,7 @@ export default function X() {
         start: 4,
         end: 7,
       },
+      words: [],
     },
   ];
   const synthRef = React.useRef<Tone.Synth<Tone.SynthOptions> | null>(null);
@@ -306,6 +334,7 @@ export default function X() {
           key={i}
           avatar={entry.avatar}
           text={entry.text}
+          words={entry.words}
           isCurrent={i === idx}
           idx={idx}
           setIdx={setIdx}
