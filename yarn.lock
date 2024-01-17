@@ -722,7 +722,15 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.6.1.tgz#9ab8f811930d7af3e3d549183a50884f9eb83f36"
   integrity sha512-UY+FGM/2jjMkzQLn8pxcHGMaVLh9aEitG3zY2CiY7XHdLiz3bZOwa6oDxNqEMv7zZkV+cj5DOdz0cQ1BP5Hjgw==
 
-"@scriptin/jmdict-simplified-types@3.5.0":
+"@scriptin/jmdict-simplified-loader@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@scriptin/jmdict-simplified-loader/-/jmdict-simplified-loader-3.5.0.tgz#55ab014353915e8d3f4670a640b9b7a872b0f043"
+  integrity sha512-0VTsX+6kvGERuqAOmN++ZenpVOHZePBk0znbqnoxZ08/jjRL2rBsZLfnZuMGnNev9c+wpg4jnJurWCBqIneOvA==
+  dependencies:
+    "@scriptin/jmdict-simplified-types" "^3.5.0"
+    stream-json "^1.7.5"
+
+"@scriptin/jmdict-simplified-types@3.5.0", "@scriptin/jmdict-simplified-types@^3.5.0":
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/@scriptin/jmdict-simplified-types/-/jmdict-simplified-types-3.5.0.tgz#c08345979f040e7bec67ed3c65bec9785158123b"
   integrity sha512-cs2vQv2U8cCKGHHRbbxBvozfboBOA4HOpofr/81H+F7i3RK/LmWCrDkW3LCS7mFYpfrxstlSD2YyCzHMz0avxQ==
@@ -4427,6 +4435,18 @@ stop-iteration-iterator@^1.0.0:
   integrity sha512-iCGQj+0l0HOdZ2AEeBADlsRC+vsnDsZsbdSiH1yNSjcfKM7fdpCMfqAL/dwF5BLiw/XhRft/Wax6zQbhq2BcjQ==
   dependencies:
     internal-slot "^1.0.4"
+
+stream-chain@^2.2.5:
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/stream-chain/-/stream-chain-2.2.5.tgz#b30967e8f14ee033c5b9a19bbe8a2cba90ba0d09"
+  integrity sha512-1TJmBx6aSWqZ4tx7aTpBDXK0/e2hhcNSTV8+CbFJtDjbb+I1mZ8lHit0Grw9GRT+6JbIrrDd8esncgBi8aBXGA==
+
+stream-json@^1.7.5:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/stream-json/-/stream-json-1.8.0.tgz#53f486b2e3b4496c506131f8d7260ba42def151c"
+  integrity sha512-HZfXngYHUAr1exT4fxlbc1IOce1RYxp2ldeaf97LYCOPSoOqY/1Psp7iGvpb+6JIOgkra9zDYnPX01hGAHzEPw==
+  dependencies:
+    stream-chain "^2.2.5"
 
 streamsearch@^1.1.0:
   version "1.1.0"
