@@ -1,6 +1,6 @@
 import React from "react";
 import * as Tone from "tone";
-import { jmdict, kanjidic } from "../dicts";
+import { jmdict /* kanjidic */ } from "../dicts";
 jmdict;
 
 let toneNow = Tone.now();
