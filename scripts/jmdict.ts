@@ -1,5 +1,5 @@
 import { loadDictionary } from "@scriptin/jmdict-simplified-loader";
-import { db } from "../src/api-lib/db-full.js";
+import { db } from "../src/api-lib/db-full";
 
 const dicts = [
   {
@@ -16,7 +16,7 @@ const dicts = [
   {
     type: "kanjidic" as const,
     src: "../src/assets/kanjidic2-en-3.5.0.json",
-    coll: db.collection("kanjidict"),
+    coll: db.collection("kanjidic"),
   },
 ];
 
