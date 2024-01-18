@@ -1,0 +1,59 @@
+{
+  "texts": [
+    {
+      "avatar": "anming",
+      "text": "初めまして。 私はアンミンです。",
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 0.5,
+        "end": 3.5
+      },
+      "words": [
+        {
+          "word": "初めまして",
+          "jmdict": "1625780",
+          "start": 0.5,
+          "end": 1.5,
+          "punctuation": "。"
+        },
+        {
+          "word": "私",
+          "start": 1.5,
+          "end": 2,
+          "grammar": "pronoun",
+          "role": "topic"
+        },
+        {
+          "word": "は",
+          "start": 1.5,
+          "end": 2,
+          "grammar": "particle",
+          "role": "topic-marker"
+        },
+        {
+          "word": "アンミン",
+          "start": 2,
+          "end": 3.5,
+          "alsoAccept": ["あみん"]
+        },
+        {
+          "word": "です",
+          "start": 3.5,
+          "end": 3.5,
+          "grammar": "copula",
+          "punctuation": "。"
+        }
+      ]
+    },
+    {
+      "avatar": "tommy",
+      "text": "私はトミです。よろしくお願いします。",
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 4,
+        "end": 7
+      },
+      "words": []
+    }
+  ]
+}
