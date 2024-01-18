@@ -1,3 +1,4 @@
+"use client";
 import db from "gongo-client";
 import HTTPTransport from "gongo-client/lib/transports/http";
 
@@ -47,3 +48,5 @@ declare module "gongo-client" {
 if (typeof window !== "undefined")
   // @ts-expect-error: it's fine
   window.db = db;
+
+console.log("db");
