@@ -25,7 +25,7 @@ if (typeof window !== "undefined")
   setTimeout(() => {
     // TODO disable in gongo-client?
     // Disabled here since we can subscribe just when Login() component active
-    const accounts = db.subscriptions.get('["accounts"]');
+    const accounts = db.subscriptions.get('["accounts",null,{}]');
     if (accounts) accounts.active = false;
 
     const docs = db
