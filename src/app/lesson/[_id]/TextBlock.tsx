@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import hepburn from "hepburn";
-
 // @ts-expect-error: no types
 import { ReactFuri } from "react-furi";
+
+import { Stack } from "@mui/material";
 
 // https://www.edrdg.org/jmwsgi/edhelp.py?svc=jmdict&sid=#kw_pos
 const colors = {
@@ -55,7 +56,7 @@ function LayoutWords({ words }: { words: Word[] }) {
   return (
     <div>
       {words.map((word, i) => (
-        <span key={i}>
+        <span key={i} style={{ whiteSpace: "nowrap" }}>
           <span
             style={{
               // @ts-expect-error: TODO, align types
@@ -69,7 +70,9 @@ function LayoutWords({ words }: { words: Word[] }) {
               word.word
             )}
           </span>
-          <span style={{ verticalAlign: "bottom", lineHeight: "100%" }}>
+          <span
+            style={{ verticalAlign: "bottom", lineHeight: 1, fontSize: 24 }}
+          >
             {word.punctuation}
           </span>
         </span>
@@ -80,9 +83,9 @@ function LayoutWords({ words }: { words: Word[] }) {
 
 function LayoutHepburn({ words }: { words: Word[] }) {
   return (
-    <div>
+    <div style={{ whiteSpace: "discard" }}>
       {words.map((word, i) => (
-        <span key={i}>
+        <span key={i} style={{ wordBreak: "break-word" }}>
           <span
             style={{
               // @ts-expect-error: TODO, align types
@@ -133,8 +136,6 @@ export default function TextBlock({
   words,
   avatar,
   isCurrent,
-  idx,
-  setIdx,
   audio,
   translations,
 }: {
@@ -142,8 +143,6 @@ export default function TextBlock({
   words: Word[];
   avatar: string;
   isCurrent: boolean;
-  idx: number;
-  setIdx: React.Dispatch<React.SetStateAction<number>>;
   audio: { src: string; start: number; end: number };
   translations: {
     en: { text: string; punctuation?: string; wordIdx: number }[];
@@ -160,47 +159,51 @@ export default function TextBlock({
   // console.log({ results });
 
   return (
-    <div style={{ position: "relative", height: 130 }}>
-      <div style={{ position: "absolute", top: 0, left: 0 }}>
-        <div
-          style={{
-            boxSizing: "content-box",
-            height: 80,
-            width: 80,
-            borderRadius: "50%",
-            border: isCurrent ? "2px solid blue" : "1px solid black",
-            margin: isCurrent ? 0 : 1,
-          }}
-        >
-          <img
-            alt={avatar + " avatar"}
-            src={`/img/avatars/${avatar}.png`}
-            width={80}
-            height={80}
-          />
-        </div>
-      </div>
+    <>
+      <audio ref={audioRef} src={"/audio/" + audio.src} />
 
-      <div style={{ position: "absolute", top: 0, left: 105 }}>
-        {words.length ? (
-          <>
-            <LayoutWords words={words} />
-            <LayoutHepburn words={words} />
-            <LayoutTranslation translation={translation} words={words} />
-          </>
-        ) : (
-          <div style={{ color: isPlaying ? "blue" : "" }}>{text}</div>
-        )}
-        {isListening ? "🎤" : ""}
+      <Stack direction="row" spacing={2}>
         <div>
-          {/*
+          <div
+            style={{
+              boxSizing: "content-box",
+              height: 70,
+              width: 70,
+              borderRadius: "50%",
+              border: isCurrent ? "2px solid blue" : "1px solid black",
+              margin: isCurrent ? 0 : 1,
+            }}
+          >
+            <img
+              alt={avatar + " avatar"}
+              src={`/img/avatars/${avatar}.png`}
+              width={70}
+              height={70}
+            />
+          </div>
+        </div>
+
+        <div>
+          {words.length ? (
+            <>
+              <LayoutWords words={words} />
+              <div style={{ opacity: 0.65 }}>
+                <LayoutHepburn words={words} />
+                <LayoutTranslation translation={translation} words={words} />
+              </div>
+            </>
+          ) : (
+            <div style={{ color: isPlaying ? "blue" : "" }}>{text}</div>
+          )}
+          {isListening ? "🎤" : ""}
+          <div>
+            {/*
           {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
           */}
+          </div>
+          <br />
         </div>
-        <br />
-      </div>
-
-      <audio ref={audioRef} src={"/audio/" + audio.src} />
-    </div>
+      </Stack>
+    </>
   );
 }

@@ -32,7 +32,7 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ClientProviders>
             <MyAppBar />
-            <Container>{children}</Container>
+            {children}
           </ClientProviders>
         </AppRouterCacheProvider>
       </body>
