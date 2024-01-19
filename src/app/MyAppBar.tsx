@@ -124,7 +124,7 @@ export default function MyAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photos
+            Lesson
           </Typography>
           {userId ? (
             <div>
