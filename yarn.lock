@@ -1148,6 +1148,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/hepburn@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@types/hepburn/-/hepburn-1.2.2.tgz#c8c03cde0d5c99558066b48f6b866fb286b5688a"
+  integrity sha512-DWLYgf44kFJNKYyaZdGlWkAaIaK9mPpxoiZ7BCpr020qiWpgyagWEDvSFPc8OQpN2kPh2JJTGTQE0uMR3bob3Q==
+
 "@types/http-errors@*":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@types/http-errors/-/http-errors-2.0.4.tgz#7eb47726c391b7345a6ec35ad7f4de469cf5ba4f"
@@ -1751,6 +1756,11 @@ buffer-from@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
+
+bulk-replace@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/bulk-replace/-/bulk-replace-0.0.1.tgz#f095682a896abd4b3d9e08de409cc222e213f9dd"
+  integrity sha512-IxLEnfsCYLjlpf6mG7SWpWgA4A8IAT5dAX3FxXHFn+6FTLf3ums771elQ74sj1BCOVanBf6esu0rEC6zgwfmIg==
 
 busboy@1.6.0:
   version "1.6.0"
@@ -2950,6 +2960,13 @@ hasown@^2.0.0:
   dependencies:
     function-bind "^1.1.2"
 
+hepburn@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/hepburn/-/hepburn-1.2.1.tgz#d429f7c90e59357af9e66e8ae71d665eb8714fdc"
+  integrity sha512-v/VUHmiHhNbjDBGxYkwDXzYvfOTIKFquAn0KrPtH1D3Zv539VBPEOGYoWpLnb/FBT9vAx9anQef3noJZ2fPIBw==
+  dependencies:
+    bulk-replace "0.0.1"
+
 hoist-non-react-statics@^3.3.1:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
@@ -3815,6 +3832,11 @@ jsonpatch-to-mongodb@^1.0.0:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
+just-zip-it@^3.0.2:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/just-zip-it/-/just-zip-it-3.2.0.tgz#76185e513aeab5519fb06d68460a54cefcb37b6a"
+  integrity sha512-ZJxc8mLz8XkaoOegJ237Xuo3ZQB5zUN/8BTXqalBJbh/uj+ahfJbOJKadJPmXDBbxHzh+MQYH43VxV5TlQvlfw==
+
 keyv@^4.5.3:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.4.tgz#a879a99e29452f942439f2a405e3af8b31d4de93"
@@ -4444,6 +4466,14 @@ react-dom@^18:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
+
+react-furi@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/react-furi/-/react-furi-2.0.2.tgz#6c2a87a310673c31c1669866c902a366718e9532"
+  integrity sha512-VCaYDuiMdAA+IL10+zE0VhmumgwjeqwuulinB23gJCwLcDD0W7BdRrTsjnBhc9QoUGM6U3QpHZvZIgw4jkixNg==
+  dependencies:
+    just-zip-it "^3.0.2"
+    wanakana "^5.2.0"
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
@@ -5159,6 +5189,11 @@ walker@^1.0.8:
   integrity sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==
   dependencies:
     makeerror "1.0.12"
+
+wanakana@^5.2.0:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/wanakana/-/wanakana-5.3.1.tgz#e20798fb9687d926d4aad25874bc8e66096818ed"
+  integrity sha512-OSDqupzTlzl2LGyqTdhcXcl6ezMiFhcUwLBP8YKaBIbMYW1wAwDvupw2T9G9oVaKT9RmaSpyTXjxddFPUcFFIw==
 
 watchpack@2.4.0:
   version "2.4.0"

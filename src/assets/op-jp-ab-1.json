@@ -12,6 +12,7 @@
       "words": [
         {
           "word": "初めまして",
+          "reading": "はじめまして",
           "jmdict": "1625780",
           "start": 0.5,
           "end": 1.5,
@@ -22,6 +23,7 @@
         },
         {
           "word": "私",
+          "reading": "わたし",
           "start": 1.5,
           "end": 2,
           "partOfSpeech": "pn",
@@ -31,6 +33,7 @@
         },
         {
           "word": "は",
+          "reading": "わ",
           "start": 1.5,
           "end": 2,
           "jmdict_id": "2028920",
@@ -40,6 +43,7 @@
         },
         {
           "word": "アンミン",
+          "reading": "あんみん",
           "start": 2,
           "end": 3.5,
           "alsoAccept": ["あみん"],
@@ -47,6 +51,7 @@
         },
         {
           "word": "です",
+          "reading": "です",
           "start": 3.5,
           "end": 3.5,
           "partOfSpeech": "cop",
@@ -86,7 +91,94 @@
         "start": 4,
         "end": 7
       },
-      "words": []
+      "words": [
+        {
+          "word": "私",
+          "reading": "わたし",
+          "start": 4,
+          "end": 4.5,
+          "partOfSpeech": "pn",
+          "role": "topic",
+          "jmdict_id": "1311110",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "は",
+          "reading": "わ",
+          "start": 4,
+          "end": 4.5,
+          "jmdict_id": "2028920",
+          "jmdict_sense_idx": 0,
+          "partOfSpeech": "prt",
+          "role": "topic-marker"
+        },
+        {
+          "word": "トミ",
+          "reading": "とみ",
+          "start": 4.5,
+          "end": 5.5,
+          "partOfSpeech": "n-pr"
+        },
+        {
+          "word": "です",
+          "reading": "です",
+          "start": 5.5,
+          "end": 5.5,
+          "partOfSpeech": "cop",
+          "punctuation": "。"
+        },
+        {
+          "word": "よろしく",
+          "reading": "よろしく",
+          "start": 5.5,
+          "end": 6.5,
+          "partOfSpeech": "exp"
+        },
+        {
+          "word": "お願い",
+          "reading": "おねがい",
+          "start": 6.5,
+          "end": 7,
+          "partOfSpeech": "n",
+          "punctuation": "",
+          "jmdict_id": "2028920",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "します",
+          "reading": "します",
+          "start": 7,
+          "end": 7,
+          "partOfSpeech": "v1",
+          "punctuation": "。",
+          "jmdict_id": "2028920",
+          "jmdict_sense_idx": 0
+        }
+      ],
+      "translations": {
+        "en": [
+          {
+            "text": "I",
+            "punctuation": " ",
+            "wordIdx": 0
+          },
+          {
+            "text": "am",
+            "punctuation": " ",
+            "wordIdx": 3
+          },
+          {
+            "text": "Tommy",
+            "punctuation": ". ",
+            "wordIdx": 2
+          },
+          {
+            "text": "Nice to meet you",
+            "punctuation": ". ",
+            "wordIdx": 4
+          }
+        ]
+      }
     }
   ]
 }

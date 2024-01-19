@@ -1,5 +1,9 @@
 "use client";
 import React from "react";
+import hepburn from "hepburn";
+
+// @ts-expect-error: no types
+import { ReactFuri } from "react-furi";
 
 // https://www.edrdg.org/jmwsgi/edhelp.py?svc=jmdict&sid=#kw_pos
 const colors = {
@@ -27,6 +31,7 @@ const colors = {
 
 interface Word {
   word: string;
+  reading?: string;
   start: number;
   end: number;
   punctuation?: string;
@@ -58,7 +63,34 @@ function LayoutWords({ words }: { words: Word[] }) {
               // textShadow: "0 0 1px #555",
             }}
           >
-            {word.word}
+            {word.reading ? (
+              <ReactFuri word={word.word} reading={word.reading} />
+            ) : (
+              word.word
+            )}
+          </span>
+          <span style={{ verticalAlign: "bottom", lineHeight: "100%" }}>
+            {word.punctuation}
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function LayoutHepburn({ words }: { words: Word[] }) {
+  return (
+    <div>
+      {words.map((word, i) => (
+        <span key={i}>
+          <span
+            style={{
+              // @ts-expect-error: TODO, align types
+              color: word.partOfSpeech ? colors[word.partOfSpeech] : "",
+              // textShadow: "0 0 1px #555",
+            }}
+          >
+            {hepburn.fromKana(word.reading || word.word).toLocaleLowerCase()}
           </span>
           {word.punctuation}
         </span>
@@ -128,7 +160,7 @@ export default function TextBlock({
   // console.log({ results });
 
   return (
-    <div style={{ position: "relative", height: 100 }}>
+    <div style={{ position: "relative", height: 130 }}>
       <div style={{ position: "absolute", top: 0, left: 0 }}>
         <div
           style={{
@@ -149,10 +181,11 @@ export default function TextBlock({
         </div>
       </div>
 
-      <div style={{ position: "absolute", top: 20, left: 105 }}>
+      <div style={{ position: "absolute", top: 0, left: 105 }}>
         {words.length ? (
           <>
             <LayoutWords words={words} />
+            <LayoutHepburn words={words} />
             <LayoutTranslation translation={translation} words={words} />
           </>
         ) : (
