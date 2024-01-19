@@ -1,11 +1,39 @@
+"use client";
 import React from "react";
 import lesson from "@/assets/op-jp-ab-1.json";
-import { _id } from "../../../api-lib/gongoAuthAdapter";
+import { Container, Typography } from "@mui/material";
+
+import { jmdict, kanjidic } from "../../../dicts";
+jmdict;
+import TextBlock from "./TextBlock";
 
 export default function LessonId({
   params: { _id },
 }: {
   params: { _id: string };
 }) {
-  return <div>{_id}</div>;
+  const idx = 0;
+  const setIdx = () => {};
+
+  return (
+    <Container sx={{ my: 2 }}>
+      <Typography variant="h5" sx={{ textDecoration: "underline", mb: 2 }}>
+        {lesson.title}
+      </Typography>
+      {lesson.texts.map((entry, i) => (
+        <TextBlock
+          key={i}
+          avatar={entry.avatar}
+          text={entry.text}
+          // @ts-expect-error: TODO align types
+          words={entry.words}
+          translations={entry.translations}
+          isCurrent={i === idx}
+          idx={idx}
+          setIdx={setIdx}
+          audio={entry.audio}
+        />
+      ))}
+    </Container>
+  );
 }

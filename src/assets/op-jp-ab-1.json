@@ -1,4 +1,5 @@
 {
+  "title": "Absolute Beginner: Lesson 1",
   "texts": [
     {
       "avatar": "anming",
@@ -14,36 +15,68 @@
           "jmdict": "1625780",
           "start": 0.5,
           "end": 1.5,
-          "punctuation": "。"
+          "punctuation": "。",
+          "partOfSpeech": "exp",
+          "jmdict_id": "1625780",
+          "jmdict_sense_idx": 0
         },
         {
           "word": "私",
           "start": 1.5,
           "end": 2,
-          "grammar": "pronoun",
-          "role": "topic"
+          "partOfSpeech": "pn",
+          "role": "topic",
+          "jmdict_id": "1311110",
+          "jmdict_sense_idx": 0
         },
         {
           "word": "は",
           "start": 1.5,
           "end": 2,
-          "grammar": "particle",
+          "jmdict_id": "2028920",
+          "jmdict_sense_idx": 0,
+          "partOfSpeech": "prt",
           "role": "topic-marker"
         },
         {
           "word": "アンミン",
           "start": 2,
           "end": 3.5,
-          "alsoAccept": ["あみん"]
+          "alsoAccept": ["あみん"],
+          "partOfSpeech": "n-pr"
         },
         {
           "word": "です",
           "start": 3.5,
           "end": 3.5,
-          "grammar": "copula",
+          "partOfSpeech": "cop",
           "punctuation": "。"
         }
-      ]
+      ],
+      "translations": {
+        "en": [
+          {
+            "text": "Nice to meet you",
+            "punctuation": ". ",
+            "wordIdx": 0
+          },
+          {
+            "text": "I",
+            "punctuation": " ",
+            "wordIdx": 1
+          },
+          {
+            "text": "am",
+            "punctuation": " ",
+            "wordIdx": 4
+          },
+          {
+            "text": "Anming",
+            "punctuation": ". ",
+            "wordIdx": 3
+          }
+        ]
+      }
     },
     {
       "avatar": "tommy",
