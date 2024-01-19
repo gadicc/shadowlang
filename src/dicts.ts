@@ -37,4 +37,4 @@ if (typeof window !== "undefined") {
   window.kanjidic = kanjidic;
 }
 
-export { jmdict };
+export { jmdict, kanjidic };
