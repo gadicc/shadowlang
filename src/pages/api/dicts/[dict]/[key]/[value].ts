@@ -2,6 +2,12 @@ import type { NextRequest } from "next/server";
 import { db } from "../../../../../api-lib/db";
 import { GongoDocument } from "gongo-server-db-mongo/lib/collection";
 
+/*
+db.jmdict.createIndex({ "kanji.text": 1 }, { name: 'kanji-text' });
+db.jmdict.createIndex({ "kana.text": 1 }, { name: 'kana-text' });
+db.jmdict.createIndex({ "id": 1 }, { name: 'jmdict-id' });
+*/
+
 export const config = {
   runtime: "edge",
   // regions: ['iad1'],
