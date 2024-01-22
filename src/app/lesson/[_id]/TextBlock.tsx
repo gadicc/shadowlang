@@ -189,7 +189,9 @@ export default function TextBlock({
               <LayoutWords words={words} />
               <div style={{ opacity: 0.65 }}>
                 <LayoutHepburn words={words} />
-                <LayoutTranslation translation={translation} words={words} />
+                {translations ? (
+                  <LayoutTranslation translation={translation} words={words} />
+                ) : null}
               </div>
             </>
           ) : (
