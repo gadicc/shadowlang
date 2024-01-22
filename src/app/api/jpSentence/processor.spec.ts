@@ -83,4 +83,40 @@ describe("process", () => {
       );
     });
   });
+
+  describe("everything", () => {
+    const proc = (sentence: string) => processor(sentence);
+
+    it.only("私はアンミンです。", async () => {
+      return expect(await proc("私はアンミンです。")).toMatchObject([
+        {
+          word: "私",
+          // matches: [{ id: "1591110" }], lots
+          morpheme: { basic_form: "私" },
+        },
+        {
+          word: "は",
+          // matches: [{ id: "1591110" }], lots
+          morpheme: { basic_form: "は" },
+        },
+        {
+          word: "アンミン",
+          matches: [],
+          morpheme: { verbose: { word_type: "UNKNOWN" } },
+        },
+        {
+          word: "です",
+          // matches: [{ id: "1591110" }],
+          morpheme: { basic_form: "です" },
+        },
+        {
+          word: "。",
+          matches: [],
+          morpheme: {
+            pos: "記号",
+          },
+        },
+      ]);
+    });
+  });
 });
