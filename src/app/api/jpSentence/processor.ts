@@ -21,7 +21,7 @@ const lookupObj = lookupObj_ as {
 
 const deinflector = new Deinflector(deinflectReasons);
 
-interface Morpheme {
+export interface Morpheme {
   surface_form: string;
   pos: string;
   pos_detail_1: string;
@@ -39,10 +39,16 @@ interface Morpheme {
   };
 }
 
-interface DeinflectedWord {
+export interface DeinflectedWord {
   term: string;
   rules: number;
   reasonss: string[];
+}
+
+export interface ProcessedWord {
+  word: string;
+  morpheme: Morpheme | undefined;
+  matches: JMdictWord[];
 }
 
 const kuromojiAnalyzer = new KuromojiAnalyzer();
@@ -143,11 +149,7 @@ async function morphemesToWords(morphemes: Morpheme[]) {
 
   out.reverse();
 
-  const out2 = new Array<{
-    word: string;
-    morpheme: Morpheme | undefined;
-    matches: JMdictWord[];
-  }>(out.length);
+  const out2 = new Array<ProcessedWord>(out.length);
   for (let i = 0; i < out.length; i++) {
     out2[i] = {
       word: out[i].word,
@@ -239,4 +241,5 @@ export default async function processor(sentence: string, stage?: string) {
   return words;
 }
 
+export type { JMdictWord };
 export { db };
