@@ -275,7 +275,7 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
-"@babel/runtime@^7.18.3", "@babel/runtime@^7.20.13", "@babel/runtime@^7.23.8", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
+"@babel/runtime@^7.14.0", "@babel/runtime@^7.18.3", "@babel/runtime@^7.20.13", "@babel/runtime@^7.23.8", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
   version "7.23.8"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.8.tgz#8ee6fe1ac47add7122902f257b8ddf55c898f650"
   integrity sha512-Y7KbAP984rn1VGMbGqKmBLio9V7y5Je9GvU4rQPCPinCyNfUcToxIXl06d59URp/F3LwinvODxab5N/G6qggkw==
@@ -975,6 +975,29 @@
   resolved "https://registry.yarnpkg.com/@scriptin/jmdict-simplified-types/-/jmdict-simplified-types-3.5.0.tgz#c08345979f040e7bec67ed3c65bec9785158123b"
   integrity sha512-cs2vQv2U8cCKGHHRbbxBvozfboBOA4HOpofr/81H+F7i3RK/LmWCrDkW3LCS7mFYpfrxstlSD2YyCzHMz0avxQ==
 
+"@sglkc/kuromoji@^1.0.1", "@sglkc/kuromoji@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@sglkc/kuromoji/-/kuromoji-1.1.0.tgz#2ab104f1a5872a41aff1ed226f8a597e9372befe"
+  integrity sha512-uKxXYUM5XNjZw0ia0yMYTI3jHSh/c1gEMNvcvS6J49B4mI+PAq8iRYPTxh2ma0RWm45LyWWrILxCJAIXpi/pww==
+  dependencies:
+    async "^2.0.1"
+    doublearray "0.0.2"
+    fflate "^0.8.0"
+
+"@sglkc/kuroshiro-analyzer-kuromoji@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sglkc/kuroshiro-analyzer-kuromoji/-/kuroshiro-analyzer-kuromoji-1.0.1.tgz#f13b40cd693d1886f89e983cab743f3f8ee07fb5"
+  integrity sha512-qWEhhmru2T6YKhOx1g6BNxxm8K0GIKyd5NY6ynrGH/lLwxNvfv2osh2PAeoSJhjloVrLe7wn/NEp/5+IoRN88A==
+  dependencies:
+    "@sglkc/kuromoji" "^1.0.1"
+
+"@sglkc/kuroshiro@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sglkc/kuroshiro/-/kuroshiro-1.0.1.tgz#4650044c2058278c4a44f6f2ef34f2e152a08e23"
+  integrity sha512-pDjzQa+KHcoKas5i0nf2uxNh0cFZlgsKzvj5AHMkAF7cvKTayN+Rllb/X+S3Gz8MpMk6pV95Uyu90+iyq3w+/A==
+  dependencies:
+    "@babel/runtime" "^7.14.0"
+
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
@@ -1592,6 +1615,13 @@ ast-types-flow@^0.0.8:
   resolved "https://registry.yarnpkg.com/ast-types-flow/-/ast-types-flow-0.0.8.tgz#0a85e1c92695769ac13a428bb653e7538bea27d6"
   integrity sha512-OH/2E5Fg20h2aPrbe+QL8JZQFko0YZaF+j4mnQ7BGhfavO7OpSLa8a0y9sBwomHdSbkhTS8TQNayBfnW5DwbvQ==
 
+async@^2.0.1:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/async/-/async-2.6.4.tgz#706b7ff6084664cd7eae713f6f965433b5504221"
+  integrity sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==
+  dependencies:
+    lodash "^4.17.14"
+
 asynciterator.prototype@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/asynciterator.prototype/-/asynciterator.prototype-1.0.0.tgz#8c5df0514936cdd133604dfcc9d3fb93f09b2b62"
@@ -2166,6 +2196,11 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
+doublearray@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/doublearray/-/doublearray-0.0.2.tgz#63186fe8d34413276d3621f6aa0ec5f79e227ef9"
+  integrity sha512-aw55FtZzT6AmiamEj2kvmR6BuFqvYgKZUkfQ7teqVRNqD5UE0rw8IeW/3gieHNKQ5sPuDKlljWEn4bzv5+1bHw==
+
 ejson@^2.2.2:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/ejson/-/ejson-2.2.3.tgz#2b18c2d8f5d61a5cfc6e3eab72c3343909e7afd2"
@@ -2638,6 +2673,11 @@ fb-watchman@^2.0.0:
   integrity sha512-p5161BqbuCaSnB8jIbzQHOlpgsPmK5rJVDfDKO91Axs5NC1uu3HRQm6wt9cd9/+GtQQIO53JdGXXoyDpTAsgYA==
   dependencies:
     bser "2.1.1"
+
+fflate@^0.8.0:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.8.1.tgz#1ed92270674d2ad3c73f077cd0acf26486dae6c9"
+  integrity sha512-/exOvEuc+/iaUm105QIiOt4LpBdMTWsXxqR0HDF35vx3fmaKzw7354gTilCh5rkzEt8WYyG//ku3h3nRmd7CHQ==
 
 file-entry-cache@^6.0.1:
   version "6.0.1"
@@ -3898,7 +3938,7 @@ lodash.merge@^4.6.2:
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash@^4.17.15:
+lodash@^4.17.14, lodash@^4.17.15:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
