@@ -1,7 +1,12 @@
 "use client";
 import React from "react";
 
-import { CircularProgress, Container, LinearProgress } from "@mui/material";
+import {
+  CircularProgress,
+  Container,
+  IconButton,
+  LinearProgress,
+} from "@mui/material";
 
 import { jmdict } from "@/dicts";
 import { partsOfSpeech } from "@/lib/jmdict";
@@ -9,6 +14,7 @@ import type { WordEntry } from "@/app/api/jpSentence/processor";
 import { posMap } from "@/lib/kuroshiro-pos";
 import TextBlock from "../[_id]/TextBlock";
 import { toKana, toHiragana, isKana, isKatakana } from "wanakana";
+import { Add, ArrowDownward, ArrowUpward, Delete } from "@mui/icons-material";
 jmdict;
 
 async function processor(text: string) {
@@ -25,7 +31,13 @@ if (typeof window !== "undefined") {
   window.processor = processor;
 }
 
-function Reading({ word }: { word: WordEntry }) {
+function Reading({
+  word,
+  setWord,
+}: {
+  word: WordEntry;
+  setWord: (word: WordEntry) => void;
+}) {
   if (isKatakana(word.word)) return null;
   if (word.partOfSpeech === "symbol") return null;
 
@@ -42,7 +54,27 @@ function Reading({ word }: { word: WordEntry }) {
     <select
       value={word.reading}
       onChange={(e) => {
-        word.reading = e.target.value;
+        const reading = e.target.value;
+        const newWord = { ...word, reading };
+        const filteredMatches = word.matches.filter((match) =>
+          match.kana.some((kana) => kana.text === reading),
+        );
+        if (filteredMatches.length === 1) {
+          // don't erase old match list, in case user wants to go back
+          // newWord.matches = filteredMatches;
+
+          newWord.jmdict_id = filteredMatches[0].id;
+        }
+
+        console.log(
+          "word",
+          word,
+          "reading",
+          reading,
+          "filteredMatches",
+          filteredMatches,
+        );
+        setWord(newWord);
       }}
     >
       {options.map((option) => (
@@ -54,12 +86,19 @@ function Reading({ word }: { word: WordEntry }) {
   );
 }
 
-function PartOfSpeech({ value, onChange }: { value?: string; onChange: any }) {
+function PartOfSpeech({
+  word,
+  setWord,
+}: {
+  word: WordEntry;
+  setWord: (word: WordEntry) => void;
+}) {
   return (
     <select
-      value={value}
+      value={word.partOfSpeech}
       onChange={(e) => {
-        onChange(e.target.value);
+        const newWord = { ...word, partOfSpeech: e.target.value };
+        setWord(newWord);
       }}
     >
       {partsOfSpeech.map((pos) => (
@@ -71,15 +110,86 @@ function PartOfSpeech({ value, onChange }: { value?: string; onChange: any }) {
   );
 }
 
-function EditRow({ word }: { word: WordEntry }) {
+function EditRow({
+  word,
+  i,
+  words,
+  setWords,
+}: {
+  word: WordEntry;
+  i: number;
+  words: WordEntry[];
+  setWords: React.Dispatch<React.SetStateAction<WordEntry[]>>;
+}) {
+  const iconPadding = 0.2;
+  const setWord = React.useCallback(
+    (newWord: WordEntry) => {
+      const newWords = [...words];
+      newWords[i] = newWord;
+      setWords(newWords);
+    },
+    [words, i],
+  );
+
   return (
     <tr>
+      <td>
+        <IconButton
+          size="small"
+          disabled={i === 0}
+          sx={{ padding: iconPadding }}
+          onClick={() => {
+            const newWords = [...words];
+            newWords[i] = words[i - 1];
+            newWords[i - 1] = words[i];
+            setWords(newWords);
+          }}
+        >
+          <ArrowUpward fontSize="inherit" />
+        </IconButton>
+        <IconButton
+          size="small"
+          disabled={i >= words.length}
+          sx={{ padding: iconPadding }}
+          onClick={() => {
+            const newWords = [...words];
+            newWords[i] = words[i + 1];
+            newWords[i + 1] = words[i];
+            setWords(newWords);
+          }}
+        >
+          <ArrowDownward fontSize="inherit" />
+        </IconButton>
+        <IconButton
+          size="small"
+          sx={{ padding: iconPadding }}
+          onClick={() => {
+            const newWords = [...words];
+            // @ts-expect-error: ok for now
+            newWords.splice(i, 0, { word: "", matches: [] });
+            setWords(newWords);
+          }}
+        >
+          <Add fontSize="inherit" />
+        </IconButton>
+        <IconButton
+          size="small"
+          sx={{ padding: iconPadding }}
+          onClick={() => {
+            const newWords = [...words];
+            newWords.splice(i, 1);
+            setWords(newWords);
+          }}
+        >
+          <Delete fontSize="inherit" />
+        </IconButton>
+      </td>
       <td>{word.word}</td>
       <td>
-        <Reading word={word} />
+        <Reading word={word} setWord={setWord} />
       </td>
       <td>
-        <PartOfSpeech value={word.partOfSpeech} />
+        <PartOfSpeech word={word} setWord={setWord} />
       </td>
       <td>{word.jmdict_id}</td>
     </tr>
@@ -90,6 +200,7 @@ export default function Edit() {
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const [isFetching, setIsFetching] = React.useState(false);
   const [words, setWords] = React.useState<WordEntry[]>([]);
+  console.log("words", words);
 
   return (
     <Container sx={{ my: 2 }}>
@@ -119,6 +230,7 @@ export default function Edit() {
       <table border={1} cellSpacing={0}>
         <thead>
           <tr>
+            <th></th>
             <th>Word</th>
             <th>Reading</th>
             <th>
@@ -128,11 +240,18 @@ export default function Edit() {
           </tr>
         </thead>
         <tbody>
-          {words.map((word) => (
-            <EditRow word={word} />
+          {words.map((word, i) => (
+            <EditRow
+              key={i}
+              word={word}
+              i={i}
+              words={words}
+              setWords={setWords}
+            />
           ))}
         </tbody>
       </table>
+      <br />
       <TextBlock avatar="anming" words={words} audio={{ src: "" }} />
     </Container>
   );
