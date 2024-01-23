@@ -156,14 +156,37 @@ async function morphemesToWords(morphemes: Morpheme[]) {
 
   out.reverse();
 
+  // Let's collect all IDs in advance so we can fetch in a single request
+  const jmdict_ids = [];
+  for (const word of out) {
+    for (const jmdict_id of word.matches) {
+      jmdict_ids.push(jmdict_id);
+    }
+  }
+
+  const fetchStartTime = Date.now();
+  const jmdict_entries = Object.fromEntries(
+    (
+      await db
+        .collection<JMdictWord>("jmdict")
+        .find({ id: { $in: jmdict_ids } })
+        .toArray()
+    ).map((entry) => [entry.id, entry]),
+  );
+  console.log(
+    "Time to fetch " +
+      jmdict_ids.length +
+      " jmdict entries: " +
+      (Date.now() - fetchStartTime),
+  );
+
   const out2 = new Array<WordEntry>(out.length);
   for (let i = 0; i < out.length; i++) {
     out2[i] = {
       word: out[i].word,
       morpheme: out[i].morpheme || undefined,
-      // @ts-expect-error: ok
       matches: (
-        await Promise.all(out[i].matches.map((id) => lookupId(id)))
+        await Promise.all(out[i].matches.map((id) => jmdict_entries[id]))
       ).filter(Boolean),
     };
   }
