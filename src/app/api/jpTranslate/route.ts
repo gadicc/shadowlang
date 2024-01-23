@@ -24,7 +24,8 @@ export async function POST(request: Request) {
   const content = chatCompletion.choices[0].message.content || "";
   console.log(content);
 
-  const match = content.match(/(\{\s*[\s\S]*\})\s*$/);
+  const match = content.match(/(\{\n[\s\S]*\n}\n)/);
+  console.log(match);
   if (match) {
     const json = match[0].replace(/\n/g, "");
     const result = JSON.parse(json);

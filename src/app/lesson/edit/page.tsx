@@ -204,14 +204,14 @@ interface Translations {
 function Translations({
   taRef: ref,
   words,
+  translations,
+  setTranslations,
 }: {
   taRef: React.RefObject<HTMLTextAreaElement>;
   words: WordEntry[];
+  translations: Translations;
+  setTranslations: React.Dispatch<React.SetStateAction<Translations>>;
 }) {
-  const [translations, setTranslations] = React.useState<Translations>({
-    en: [],
-  });
-
   async function getTranslation(text: string, targetLang = "English") {
     const request = await fetch("/api/jpTranslate", {
       method: "POST",
@@ -222,12 +222,16 @@ function Translations({
     console.log("result", result);
 
     const trans = (translations.en = [] as Translations["en"]);
+
+    const keys = Object.keys(result);
+    const resultLength = keys.length;
     for (const [src, dest] of Object.entries(result)) {
       console.log({ src, dest });
-      const idx = words.findIndex((word) => word.word === src);
-      console.log("trans1", JSON.stringify(trans));
-      trans.push({ text: dest, wordIdx: idx });
-      console.log("trans2", JSON.stringify(trans));
+      const idx = words.findIndex((word) => word.word === dest);
+
+      let punctuation = " ";
+
+      trans.push({ text: src, wordIdx: idx, punctuation });
     }
 
     setTranslations({ ...translations });
@@ -262,6 +266,9 @@ export default function Edit() {
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const [isFetching, setIsFetching] = React.useState(false);
   const [words, setWords] = React.useState<WordEntry[]>([]);
+  const [translations, setTranslations] = React.useState<Translations>({
+    en: [],
+  });
   console.log("words", words);
 
   return (
@@ -315,8 +322,18 @@ export default function Edit() {
         </tbody>
       </table>
       <br />
-      <TextBlock avatar="anming" words={words} audio={{ src: "" }} />
-      <Translations taRef={ref} words={words} />
+      <TextBlock
+        avatar="anming"
+        words={words}
+        audio={{ src: "" }}
+        translations={translations}
+      />
+      <Translations
+        taRef={ref}
+        translations={translations}
+        setTranslations={setTranslations}
+        words={words}
+      />
     </Container>
   );
 }
