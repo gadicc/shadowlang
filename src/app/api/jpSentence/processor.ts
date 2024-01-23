@@ -13,6 +13,7 @@ import deinflectReasons from "@/3rdparty/yomitan/deinflect.json";
 import { Deinflector } from "@/3rdparty/yomitan/deinflector";
 import lookupObj_ from "@/assets/jmdict-eng-3.5.0.lookup.json";
 import { posMap, posDetail } from "@/lib/kuroshiro-pos";
+import { partsOfSpeech } from "@/lib/jmdict";
 
 const lookupObj = lookupObj_ as {
   kana: { [key: string]: string[] };
@@ -49,6 +50,12 @@ export interface ProcessedWord {
   word: string;
   morpheme: Morpheme | undefined;
   matches: JMdictWord[];
+}
+
+export interface WordEntry extends ProcessedWord {
+  jmdict_id?: string;
+  reading?: string;
+  partOfSpeech?: string;
 }
 
 const kuromojiAnalyzer = new KuromojiAnalyzer();
@@ -149,7 +156,7 @@ async function morphemesToWords(morphemes: Morpheme[]) {
 
   out.reverse();
 
-  const out2 = new Array<ProcessedWord>(out.length);
+  const out2 = new Array<WordEntry>(out.length);
   for (let i = 0; i < out.length; i++) {
     out2[i] = {
       word: out[i].word,
@@ -185,13 +192,7 @@ function appendPunctuation(
 }
 */
 
-function filterMatches(
-  words: {
-    word: string;
-    matches: JMdictWord[];
-    morpheme: Morpheme | undefined;
-  }[],
-) {
+function filterMatches(words: ProcessedWord[]) {
   for (const word of words) {
     if (!word.morpheme) continue;
     if (word.morpheme.pos === "記号") continue;
@@ -226,6 +227,41 @@ function filterMatches(
   }
 }
 
+function augmentWords(words: WordEntry[]) {
+  for (const word of words) {
+    // Set partOfSpeech from morphene (jmdict below will overwrite it)
+    if (word.morpheme) word.partOfSpeech = posMap[word.morpheme.pos];
+    if (word.partOfSpeech && !partsOfSpeech.includes(word.partOfSpeech)) {
+      if (word.partOfSpeech.startsWith("v")) {
+        word.partOfSpeech = "v";
+      } else {
+        const pos = word.partOfSpeech.split("-")[0];
+        if (partsOfSpeech.includes(pos)) word.partOfSpeech = pos;
+      }
+    }
+
+    if (word.morpheme && !word.reading && word.morpheme.reading)
+      word.reading = toHiragana(word.morpheme.reading);
+
+    if (!word.reading) {
+      if (isKana(word.word)) word.reading = toHiragana(word.word);
+      if (isKatakana(word.word)) word.reading = word.word;
+    }
+
+    // If we have an exact match on jmdict, prefill...
+    if (word.matches.length === 1) {
+      word.jmdict_id = word.matches[0].id;
+      if (word.matches[0].kana.length === 1)
+        word.reading = word.matches[0].kana[0].text;
+      if (word.matches[0].sense.length === 1)
+        word.partOfSpeech = word.matches[0].sense[0].partOfSpeech[0];
+      if (word.partOfSpeech?.startsWith("v")) word.partOfSpeech = "v";
+    }
+
+    if (word.word === "は" && word.partOfSpeech === "prt") word.reading = "わ";
+  }
+}
+
 export default async function processor(sentence: string, stage?: string) {
   await kuroshiroReady;
   const morphemes = await kuromojiAnalyzer.parse(sentence.replace(/\s/g, ""));
@@ -237,6 +273,7 @@ export default async function processor(sentence: string, stage?: string) {
   if (stage === "words") return words;
 
   filterMatches(words);
+  augmentWords(words);
 
   return words;
 }
