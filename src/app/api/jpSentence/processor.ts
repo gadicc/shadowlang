@@ -297,8 +297,12 @@ function augmentWords(words: WordEntry[]) {
       word.jmdict_id = word.matches[0].id;
       if (word.matches[0].kana.length === 1)
         word.reading = word.matches[0].kana[0].text;
-      if (word.matches[0].sense.length === 1)
-        word.partOfSpeech = word.matches[0].sense[0].partOfSpeech[0];
+
+      const poses = word.matches[0].sense
+        .flatMap((sense) => sense.partOfSpeech)
+        // Unique entries only;
+        .filter((value, index, array) => array.indexOf(value) === index);
+      if (poses.length === 1) word.partOfSpeech = poses[0];
     } else if (word.matches.length > 1) {
       // Figure out most common partOfSpeech
       const posCounts = {} as { [key: string]: number };
