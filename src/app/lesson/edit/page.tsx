@@ -192,7 +192,69 @@ function EditRow({
         <PartOfSpeech word={word} setWord={setWord} />
       </td>
       <td>{word.jmdict_id}</td>
+      <td>{word.jmdict_sense_idx}</td>
     </tr>
+  );
+}
+
+interface Translations {
+  [key: string]: { text: string; punctuation?: string; wordIdx: number }[];
+}
+
+function Translations({
+  taRef: ref,
+  words,
+}: {
+  taRef: React.RefObject<HTMLTextAreaElement>;
+  words: WordEntry[];
+}) {
+  const [translations, setTranslations] = React.useState<Translations>({
+    en: [],
+  });
+
+  async function getTranslation(text: string, targetLang = "English") {
+    const request = await fetch("/api/jpTranslate", {
+      method: "POST",
+      body: JSON.stringify({ text, targetLang }),
+    });
+
+    const result = (await request.json()) as { [key: string]: string };
+    console.log("result", result);
+
+    const trans = (translations.en = [] as Translations["en"]);
+    for (const [src, dest] of Object.entries(result)) {
+      console.log({ src, dest });
+      const idx = words.findIndex((word) => word.word === src);
+      console.log("trans1", JSON.stringify(trans));
+      trans.push({ text: dest, wordIdx: idx });
+      console.log("trans2", JSON.stringify(trans));
+    }
+
+    setTranslations({ ...translations });
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          const text = ref.current?.value;
+          if (!text) return;
+          getTranslation(text);
+        }}
+      >
+        English
+      </button>
+      <table>
+        <tbody>
+          {translations.en.map((entry) => (
+            <tr>
+              <td>{entry.text}</td>
+              <td>{entry.wordIdx}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -227,16 +289,17 @@ export default function Edit() {
       </button>
       <br />
       <br />
-      <table border={1} cellSpacing={0}>
+      <table border={1} cellSpacing={0} width="100%">
         <thead>
           <tr>
             <th></th>
             <th>Word</th>
             <th>Reading</th>
             <th>
-              <a title="Part of Speech">pos</a>
+              <a title="Part of Speech">PoS</a>
             </th>
             <th>jmdict_id</th>
+            <th>senseIdx</th>
           </tr>
         </thead>
         <tbody>
@@ -253,6 +316,7 @@ export default function Edit() {
       </table>
       <br />
       <TextBlock avatar="anming" words={words} audio={{ src: "" }} />
+      <Translations taRef={ref} words={words} />
     </Container>
   );
 }
