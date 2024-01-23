@@ -53,9 +53,10 @@ export interface ProcessedWord {
 }
 
 export interface WordEntry extends ProcessedWord {
-  jmdict_id?: string;
   reading?: string;
   partOfSpeech?: string;
+  jmdict_id?: string;
+  jmdict_sense_idx?: number;
 }
 
 const kuromojiAnalyzer = new KuromojiAnalyzer();
@@ -283,6 +284,14 @@ function augmentWords(words: WordEntry[]) {
       if (isKatakana(word.word)) word.reading = word.word;
     }
 
+    if (word.morpheme) {
+      const preFilterMatches = word.matches;
+      word.matches = word.matches.filter((match) =>
+        match.kana.some((kana) => kana.text === word.reading),
+      );
+      if (!word.matches.length) word.matches = preFilterMatches;
+    }
+
     // If we have an exact match on jmdict, prefill...
     if (word.matches.length === 1) {
       word.jmdict_id = word.matches[0].id;
@@ -309,6 +318,16 @@ function augmentWords(words: WordEntry[]) {
         }
       }
       if (mostLikelyPoS) word.partOfSpeech = mostLikelyPoS;
+    }
+
+    if (word.matches.length === 1 && word.partOfSpeech !== undefined) {
+      const partOfSpeech = word.partOfSpeech;
+      const match = word.matches[0];
+      const filteredSense = match.sense.filter((sense) =>
+        sense.partOfSpeech.includes(partOfSpeech),
+      );
+      if (filteredSense.length === 1)
+        word.jmdict_sense_idx = match.sense.indexOf(filteredSense[0]);
     }
 
     if (word.partOfSpeech?.startsWith("v")) word.partOfSpeech = "v";
