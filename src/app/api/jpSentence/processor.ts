@@ -235,36 +235,48 @@ function filterMatches(words: ProcessedWord[]) {
 
     const preFilterMatches = word.matches;
 
-    word.matches = word.matches.filter((match) =>
-      match.sense.some(
-        (sense) =>
-          sense.partOfSpeech.includes(partOfSpeech) ||
-          sense.partOfSpeech.includes(pos_detail_1_en) ||
-          (alt && sense.partOfSpeech.includes(alt)),
-      ),
-    );
-
-    // console.log("after", word.matches.length);
-
-    if (word.matches.length === 0) word.matches = preFilterMatches;
+    if (word.matches.length) {
+      // try match in this order
+      for (const pos of [alt, pos_detail_1_en, partOfSpeech]) {
+        if (!pos) continue;
+        word.matches = word.matches.filter((match) =>
+          match.sense.some((sense) => sense.partOfSpeech.includes(pos)),
+        );
+        /*
+        console.log(
+          "word",
+          word.word,
+          "pos",
+          pos,
+          "matches",
+          word.matches.length,
+        );
+        */
+        if (word.matches.length) break;
+        else word.matches = preFilterMatches;
+      }
+    }
   }
 }
 
 function augmentWords(words: WordEntry[]) {
   for (const word of words) {
     // Set partOfSpeech from morphene (jmdict below will overwrite it)
-    if (word.morpheme) word.partOfSpeech = posMap[word.morpheme.pos];
-    if (word.partOfSpeech && !partsOfSpeech.includes(word.partOfSpeech)) {
-      if (word.partOfSpeech.startsWith("v")) {
-        word.partOfSpeech = "v";
-      } else {
-        const pos = word.partOfSpeech.split("-")[0];
-        if (partsOfSpeech.includes(pos)) word.partOfSpeech = pos;
-      }
-    }
+    if (word.morpheme) {
+      word.partOfSpeech = posMap[word.morpheme.pos];
 
-    if (word.morpheme && !word.reading && word.morpheme.reading)
-      word.reading = toHiragana(word.morpheme.reading);
+      if (word.partOfSpeech && !partsOfSpeech.includes(word.partOfSpeech)) {
+        if (word.partOfSpeech.startsWith("v")) {
+          word.partOfSpeech = "v";
+        } else {
+          const pos = word.partOfSpeech.split("-")[0];
+          if (partsOfSpeech.includes(pos)) word.partOfSpeech = pos;
+        }
+      }
+
+      if (!word.reading && word.morpheme.reading)
+        word.reading = toHiragana(word.morpheme.reading);
+    }
 
     if (!word.reading) {
       if (isKana(word.word)) word.reading = toHiragana(word.word);
@@ -278,9 +290,28 @@ function augmentWords(words: WordEntry[]) {
         word.reading = word.matches[0].kana[0].text;
       if (word.matches[0].sense.length === 1)
         word.partOfSpeech = word.matches[0].sense[0].partOfSpeech[0];
-      if (word.partOfSpeech?.startsWith("v")) word.partOfSpeech = "v";
+    } else if (word.matches.length > 1) {
+      // Figure out most common partOfSpeech
+      const posCounts = {} as { [key: string]: number };
+      for (const match of word.matches) {
+        for (const sense of match.sense) {
+          for (const pos of sense.partOfSpeech) {
+            posCounts[pos] = (posCounts[pos] || 0) + 1;
+          }
+        }
+      }
+      let mostLikelyPoS = null as string | null;
+      let mostLikelyPoSCount = 0;
+      for (const [pos, count] of Object.entries(posCounts)) {
+        if (count > mostLikelyPoSCount) {
+          mostLikelyPoS = pos;
+          mostLikelyPoSCount = count;
+        }
+      }
+      if (mostLikelyPoS) word.partOfSpeech = mostLikelyPoS;
     }
 
+    if (word.partOfSpeech?.startsWith("v")) word.partOfSpeech = "v";
     if (word.word === "は" && word.partOfSpeech === "prt") word.reading = "わ";
   }
 }

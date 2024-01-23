@@ -29,12 +29,10 @@ function Reading({ word }: { word: WordEntry }) {
   if (isKatakana(word.word)) return null;
   if (word.partOfSpeech === "symbol") return null;
 
-  // if (word.word === "は" && word.partOfSpeech === "prt") return "わ";
-
-  const options = [];
+  const options: string[] = [];
   for (const match of word.matches) {
     for (const kana of match.kana) {
-      options.push(kana.text);
+      if (!options.includes(kana.text)) options.push(kana.text);
     }
   }
   if (word.reading && !options.includes(word.reading))
