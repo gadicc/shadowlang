@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI();
+let _openai: OpenAI | null = null;
+function openai() {
+  if (!_openai) _openai = new OpenAI();
+  return _openai;
+}
 
 export async function POST(request: Request) {
   const { text, targetLang = "English", words } = await request.json();
@@ -79,7 +83,7 @@ ${JSON.stringify(words)}
     ],
   };
   const chatCompletion: OpenAI.Chat.ChatCompletion =
-    await openai.chat.completions.create(params);
+    await openai().chat.completions.create(params);
   console.log(chatCompletion);
 
   const content = chatCompletion.choices[0].message.content || "";
