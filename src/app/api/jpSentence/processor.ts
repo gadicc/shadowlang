@@ -54,9 +54,7 @@ export interface WordEntry extends ProcessedWord {
   jmdict_sense_idx?: number;
 }
 
-const kuromojiAnalyzer = new KuromojiAnalyzer({
-  dictPath: ".next/static/kuromoji",
-});
+const kuromojiAnalyzer = new KuromojiAnalyzer();
 
 const kuroshiro = new Kuroshiro();
 const kuroshiroReady = kuroshiro.init(kuromojiAnalyzer); // a promise
