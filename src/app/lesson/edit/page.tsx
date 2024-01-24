@@ -198,7 +198,12 @@ function EditRow({
 }
 
 interface Translations {
-  [key: string]: { text: string; punctuation?: string; wordIdx: number }[];
+  [key: string]: {
+    text: string;
+    punctuation?: string;
+    wordIdx?: number;
+    word?: string;
+  }[];
 }
 
 function Translations({
@@ -212,48 +217,156 @@ function Translations({
   translations: Translations;
   setTranslations: React.Dispatch<React.SetStateAction<Translations>>;
 }) {
-  async function getTranslation(text: string, targetLang = "English") {
+  const [isFetching, setIsFetching] = React.useState(false);
+  const iconPadding = 0.2;
+
+  async function getTranslation(
+    text: string,
+    words: WordEntry[],
+    targetLang = "English",
+  ) {
+    setIsFetching(true);
+
+    const wordsToSend = words.map((word) => ({
+      word: word.word,
+      pos: word.partOfSpeech,
+    }));
+
     const request = await fetch("/api/jpTranslate", {
       method: "POST",
-      body: JSON.stringify({ text, targetLang }),
+      body: JSON.stringify({ text, words: wordsToSend, targetLang }),
     });
 
-    const result = (await request.json()) as { [key: string]: string };
+    const result = (await request.json()) as {
+      translation: string;
+      parts: {
+        text: string;
+        word: string | null;
+        punctuation: string | null;
+      }[];
+    };
     console.log("result", result);
 
-    const trans = (translations.en = [] as Translations["en"]);
-
-    const keys = Object.keys(result);
-    const resultLength = keys.length;
-    for (const [src, dest] of Object.entries(result)) {
-      console.log({ src, dest });
-      const idx = words.findIndex((word) => word.word === dest);
-
-      let punctuation = " ";
-
-      trans.push({ text: src, wordIdx: idx, punctuation });
-    }
-
+    const trans = (translations.en = result.parts as Translations["en"]);
+    setIsFetching(false);
     setTranslations({ ...translations });
   }
 
   return (
     <div>
-      <button
-        onClick={() => {
-          const text = ref.current?.value;
-          if (!text) return;
-          getTranslation(text);
-        }}
-      >
-        English
-      </button>
-      <table>
+      <div>
+        Add translations:{" "}
+        <button
+          disabled={isFetching}
+          style={{ width: 150, height: "2em" }}
+          onClick={() => {
+            const text = ref.current?.value;
+            if (!text) return;
+            getTranslation(text, words);
+          }}
+        >
+          {isFetching ? <LinearProgress /> : "English"}
+        </button>
+      </div>
+      <br />
+      <table border={1} cellSpacing={0}>
         <tbody>
-          {translations.en.map((entry) => (
+          {translations.en.map((entry, i) => (
             <tr>
-              <td>{entry.text}</td>
-              <td>{entry.wordIdx}</td>
+              <td>
+                <IconButton
+                  size="small"
+                  disabled={i === 0}
+                  sx={{ padding: iconPadding }}
+                  onClick={() => {
+                    const newTranslations = { ...translations };
+                    newTranslations.en[i] = translations.en[i - 1];
+                    newTranslations.en[i - 1] = translations.en[i];
+                    setTranslations(newTranslations);
+                  }}
+                >
+                  <ArrowUpward fontSize="inherit" />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  disabled={i >= translations.en.length}
+                  sx={{ padding: iconPadding }}
+                  onClick={() => {
+                    const newTranslations = { ...translations };
+                    newTranslations.en[i] = translations.en[i + 1];
+                    newTranslations.en[i + 1] = translations.en[i];
+                    setTranslations(newTranslations);
+                  }}
+                >
+                  <ArrowDownward fontSize="inherit" />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  sx={{ padding: iconPadding }}
+                  onClick={() => {
+                    const newTranslations = { ...translations };
+                    translations.en.splice(i, 0, { text: "" });
+                    setTranslations(newTranslations);
+                  }}
+                >
+                  <Add fontSize="inherit" />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  sx={{ padding: iconPadding }}
+                  onClick={() => {
+                    const newTranslations = { ...translations };
+                    newTranslations.en.splice(i, 1);
+                    setTranslations(newTranslations);
+                  }}
+                >
+                  <Delete fontSize="inherit" />
+                </IconButton>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  value={entry.text}
+                  onChange={(e) => {
+                    translations.en[i] = {
+                      ...entry,
+                      text: e.target.value,
+                    };
+                    setTranslations({ ...translations });
+                  }}
+                />
+              </td>
+              <td>
+                <select
+                  value={entry.word}
+                  onChange={(e) => {
+                    translations.en[i] = {
+                      ...entry,
+                      word: e.target.value,
+                    };
+                    setTranslations({ ...translations });
+                  }}
+                >
+                  <option></option>
+                  {words.map((word) => (
+                    <option>{word.word}</option>
+                  ))}
+                </select>
+              </td>
+              <td>
+                <input
+                  type="text"
+                  size={4}
+                  value={entry.punctuation}
+                  onChange={(e) => {
+                    translations.en[i] = {
+                      ...entry,
+                      punctuation: e.target.value,
+                    };
+                    setTranslations({ ...translations });
+                  }}
+                />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -324,8 +437,11 @@ export default function Edit() {
       <br />
       <TextBlock
         avatar="anming"
+        // @ts-expect-error: later
         words={words}
+        // @ts-expect-error: later
         audio={{ src: "" }}
+        // @ts-expect-error: later
         translations={translations}
       />
       <Translations
