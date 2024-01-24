@@ -5,6 +5,7 @@ export const posMap = {
   助動詞: "aux-v",
   助詞: "prt",
   動詞: "v",
+  形容詞: "adj",
 } as { [key: string]: string };
 
 export const posDetail = {
