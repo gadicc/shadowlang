@@ -387,7 +387,14 @@ export default function Edit() {
           setIsFetching(true);
           const text = ref.current?.value;
           if (!text) return;
-          const words = await processor(text);
+          let words: WordEntry[];
+          try {
+            words = await processor(text);
+          } catch (error) {
+            console.error(error);
+            setIsFetching(false);
+            return false;
+          }
           console.log(words);
           setWords(words);
           setIsFetching(false);
