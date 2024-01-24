@@ -107,26 +107,38 @@ function LayoutTranslation({
   translation,
 }: {
   words: Word[];
-  translation: { text: string; punctuation?: string; wordIdx: number }[];
+  translation: {
+    text: string;
+    punctuation?: string;
+    wordIdx?: number;
+    word?: string;
+  }[];
 }) {
   return (
     <div>
-      {translation.map((word, i) => (
-        <span key={i}>
-          <span
-            style={{
-              color: words[word.wordIdx].partOfSpeech
-                ? // @ts-expect-error: TODO, align types
-                  colors[words[word.wordIdx].partOfSpeech]
-                : "",
-              // textShadow: "0 0 1px #555",
-            }}
-          >
-            {word.text}
+      {translation.map((transWord, i) => {
+        let word = null;
+        if (transWord.wordIdx) word = words[transWord.wordIdx];
+        else if (transWord.word)
+          word = words.find((w) => w.word === transWord.word);
+
+        return (
+          <span key={i}>
+            <span
+              style={{
+                color: word?.partOfSpeech
+                  ? // @ts-expect-error: TODO, align types
+                    colors[word.partOfSpeech]
+                  : "",
+                // textShadow: "0 0 1px #555",
+              }}
+            >
+              {transWord.text}
+            </span>
+            {transWord.punctuation}
           </span>
-          {word.punctuation}
-        </span>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -145,7 +157,12 @@ export default function TextBlock({
   isCurrent: boolean;
   audio: { src: string; start: number; end: number };
   translations: {
-    en: { text: string; punctuation?: string; wordIdx: number }[];
+    en: {
+      text: string;
+      punctuation?: string;
+      wordIdx?: number;
+      word?: string;
+    }[];
   };
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
