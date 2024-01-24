@@ -1,8 +1,42 @@
 import { describe, test as it, expect, afterAll } from "@jest/globals";
-import processor, { db } from "./processor";
+import processor, { db, getLastWord } from "./processor";
 
 describe("process", () => {
-  afterAll(async () => await db.client.close());
+  afterAll(async () => {
+    await db.dbPromise;
+    await db.client.close();
+  });
+
+  describe("getLastWord", () => {
+    it("そうなんですか", () => {
+      const morphemes = [
+        { surface_form: "そうなん" },
+        { surface_form: "ですか" },
+      ];
+      // @ts-expect-error: stub
+      const result = getLastWord(morphemes);
+      expect(result).toMatchObject({
+        word: "そうなんですか",
+        matches: ["2425480"],
+        numMorphenes: 2,
+      });
+    });
+
+    it("私はアンミン", () => {
+      const morphemes = [
+        { surface_form: "私" },
+        { surface_form: "は" },
+        { surface_form: "アンミン" },
+      ];
+      // @ts-expect-error: stub
+      const result = getLastWord(morphemes);
+      expect(result).toMatchObject({
+        word: "アンミン",
+        matches: [],
+        numMorphenes: 1,
+      });
+    });
+  });
 
   describe("words", () => {
     const proc = (sentence: string) => processor(sentence, "words");
@@ -87,7 +121,7 @@ describe("process", () => {
   describe("everything", () => {
     const proc = (sentence: string) => processor(sentence);
 
-    it.only("私はアンミンです。", async () => {
+    it("私はアンミンです。", async () => {
       return expect(await proc("私はアンミンです。")).toMatchObject([
         {
           word: "私",

@@ -76,6 +76,124 @@ function lookupKana(kana: string) {
   return lookupObj.kana[kana] || [];
 }
 
+export function getLastWord(morphemes: Morpheme[]) {
+  let lastWord = "";
+  let lastMatchedWord = null as string | null;
+  let lastMatches = [] as string[];
+  let numMorphenesMatched = 0;
+  for (let i = morphemes.length - 1; i >= 0; i--) {
+    const morpheme = morphemes[i];
+    if (morpheme.pos === "記号") break; // symbol
+
+    const currentWord = morpheme.surface_form + lastWord;
+    let currentMatches = isKana(currentWord)
+      ? lookupKana(currentWord)
+      : lookupKanji(currentWord);
+
+    if (!currentMatches.length) {
+      const deinflectedWords = deinflector.deinflect(
+        currentWord,
+      ) as DeinflectedWord[];
+      for (const deinflectedWord of deinflectedWords) {
+        currentMatches = currentMatches.concat(
+          isKana(deinflectedWord.term)
+            ? lookupKana(deinflectedWord.term)
+            : lookupKanji(deinflectedWord.term),
+        );
+      }
+    }
+
+    console.log("currentWord", currentWord, "currentMatches", currentMatches);
+
+    lastWord = currentWord;
+
+    if (currentMatches.length) {
+      lastMatchedWord = currentWord;
+      lastMatches = currentMatches;
+      numMorphenesMatched = morphemes.length - i;
+    }
+  }
+
+  if (lastMatches.length) {
+    return {
+      word: lastMatchedWord!,
+      matches: lastMatches,
+      numMorphenes: numMorphenesMatched,
+      morpheme:
+        numMorphenesMatched === 1 ? morphemes[morphemes.length - 1] : undefined,
+    };
+  } else {
+    return {
+      word: morphemes[morphemes.length - 1].surface_form,
+      matches: [],
+      numMorphenes: 1,
+      morpheme: morphemes[morphemes.length - 1],
+    };
+  }
+}
+
+function morphemesToWords(morphemes: Morpheme[]) {
+  // console.log("morphemes", morphemes);
+  const _morphemes = morphemes.slice();
+  const words = [];
+  while (_morphemes.length) {
+    words.push(getLastWord(_morphemes));
+    _morphemes.splice(-words[words.length - 1].numMorphenes);
+  }
+  words.reverse();
+  // console.log("words", words);
+  return words;
+}
+
+async function lookupJmdictIds(
+  words: { word: string; matches: string[]; morpheme?: any }[],
+) {
+  // Let's collect all IDs in advance so we can fetch in a single request
+  const jmdict_ids = [] as string[];
+  for (const word of words) {
+    for (const jmdict_id of word.matches) {
+      jmdict_ids.push(jmdict_id);
+    }
+  }
+
+  const fetchStartTime = Date.now();
+  const jmdict_entries = Object.fromEntries(
+    (
+      await db
+        .collection<JMdictWord>("jmdict")
+        .find({ id: { $in: jmdict_ids } })
+        .toArray()
+    ).map((entry) => [entry.id, entry]),
+  );
+  console.log(
+    "Time to fetch " +
+      jmdict_ids.length +
+      " jmdict entries: " +
+      (Date.now() - fetchStartTime),
+  );
+
+  const out2 = new Array<WordEntry>(words.length);
+  for (let i = 0; i < words.length; i++) {
+    out2[i] = {
+      word: words[i].word,
+      morpheme: words[i].morpheme || undefined,
+      matches: (
+        await Promise.all(words[i].matches.map((id) => jmdict_entries[id]))
+      ).filter(Boolean),
+    };
+  }
+
+  return out2;
+}
+
+/*
+// Moved from end of sentence, concatenating sequential morphemes
+// and checking if they exist in the dictionary.  If so, continue
+// until we find the max consecutive moprhemes that match a word.
+//
+// Unfortunately this didn't always work, so instead we moved
+// (above) to try find max number of consecutive morphemes that
+// form a word even if interim morphemes don't match a word.
 async function morphemesToWords(morphemes: Morpheme[]) {
   const out = [];
 
@@ -128,7 +246,7 @@ async function morphemesToWords(morphemes: Morpheme[]) {
       lastMatches = currentMatches;
       lastMorpheme = morpheme;
       morphemeCount++;
-    } /* i.e. if no matching word */ else {
+    } /* i.e. if no matching word */ /* else {
       // If there's no match for a single morphene, there's nothing else
       // to do.  Just output word with morpheme data and continue.
       if (morphemeCount === 0) {
@@ -156,44 +274,8 @@ async function morphemesToWords(morphemes: Morpheme[]) {
   }
 
   out.reverse();
-
-  // Let's collect all IDs in advance so we can fetch in a single request
-  const jmdict_ids = [];
-  for (const word of out) {
-    for (const jmdict_id of word.matches) {
-      jmdict_ids.push(jmdict_id);
-    }
-  }
-
-  const fetchStartTime = Date.now();
-  const jmdict_entries = Object.fromEntries(
-    (
-      await db
-        .collection<JMdictWord>("jmdict")
-        .find({ id: { $in: jmdict_ids } })
-        .toArray()
-    ).map((entry) => [entry.id, entry]),
-  );
-  console.log(
-    "Time to fetch " +
-      jmdict_ids.length +
-      " jmdict entries: " +
-      (Date.now() - fetchStartTime),
-  );
-
-  const out2 = new Array<WordEntry>(out.length);
-  for (let i = 0; i < out.length; i++) {
-    out2[i] = {
-      word: out[i].word,
-      morpheme: out[i].morpheme || undefined,
-      matches: (
-        await Promise.all(out[i].matches.map((id) => jmdict_entries[id]))
-      ).filter(Boolean),
-    };
-  }
-
-  return out2;
 }
+*/
 
 /*
 function appendPunctuation(
@@ -342,7 +424,8 @@ function augmentWords(words: WordEntry[]) {
 export default async function processor(sentence: string, stage?: string) {
   await kuroshiroReady;
   const morphemes = await kuromojiAnalyzer.parse(sentence.replace(/\s/g, ""));
-  const words = await morphemesToWords(morphemes);
+  const _words = morphemesToWords(morphemes);
+  const words = await lookupJmdictIds(_words);
 
   // console.log("morphemes", morphemes);
   // console.log("words", JSON.stringify(words, null, 2));
