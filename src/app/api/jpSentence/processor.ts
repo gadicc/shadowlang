@@ -1,12 +1,7 @@
 import Kuroshiro from "@sglkc/kuroshiro";
 import KuromojiAnalyzer from "@sglkc/kuroshiro-analyzer-kuromoji";
 import { toHiragana, isKatakana, isKana } from "wanakana";
-import type {
-  JMdict,
-  JMdictWord,
-  Kanjidic2,
-  Kanjidic2Character,
-} from "@scriptin/jmdict-simplified-types";
+import type { JMdictWord } from "@scriptin/jmdict-simplified-types";
 
 import { db } from "@/api-lib/db-full";
 import deinflectReasons from "@/3rdparty/yomitan/deinflect.json";
@@ -64,9 +59,11 @@ const kuromojiAnalyzer = new KuromojiAnalyzer();
 const kuroshiro = new Kuroshiro();
 const kuroshiroReady = kuroshiro.init(kuromojiAnalyzer); // a promise
 
+/*
 function lookupId(id: string) {
   return db.collection<JMdictWord>("jmdict").findOne({ id: id });
 }
+*/
 
 function lookupKanji(kanji: string) {
   return lookupObj.kanji[kanji] || [];
@@ -146,7 +143,7 @@ function morphemesToWords(morphemes: Morpheme[]) {
 }
 
 async function lookupJmdictIds(
-  words: { word: string; matches: string[]; morpheme?: any }[],
+  words: { word: string; matches: string[]; morpheme?: Morpheme }[],
 ) {
   // Let's collect all IDs in advance so we can fetch in a single request
   const jmdict_ids = [] as string[];
@@ -302,7 +299,7 @@ function filterMatches(words: ProcessedWord[]) {
   for (const word of words) {
     if (!word.morpheme) continue;
     if (word.morpheme.pos === "記号") continue;
-    let partOfSpeech = posMap[word.morpheme.pos];
+    const partOfSpeech = posMap[word.morpheme.pos];
     if (!partOfSpeech)
       console.warn(
         "Part of speech missing from posmap, skipping: ",

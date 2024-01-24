@@ -1,10 +1,9 @@
 import React from "react";
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
 
 // or `v1X-appRouter` if you are using Next.js v1X
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
-import CssBaseline from "@mui/material/CssBaseline";
-import { Container } from "@mui/material";
+import { CssBaseline } from "@mui/material";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";

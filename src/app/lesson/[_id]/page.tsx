@@ -3,7 +3,7 @@ import React from "react";
 import lesson from "@/assets/op-jp-ab-1.json";
 import { Container, Typography } from "@mui/material";
 
-import { jmdict, kanjidic } from "../../../dicts";
+import { jmdict } from "../../../dicts";
 jmdict;
 import TextBlock from "./TextBlock";
 

@@ -7,9 +7,11 @@ import NextAuth, { Session } from "next-auth";
 // import GithubProvider from "next-auth/providers/github";
 // import GithubProvider from "../../../src/api-lib/GithubProvider";
 import GoogleProvider from "next-auth/providers/google";
+/*
 import TwitterProvider, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
+*/
 
 import gs from "../../../api-lib/db-full";
 import GongoAuthAdapter, {

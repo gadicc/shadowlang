@@ -1,14 +1,14 @@
-import gs, { User } from "../../api-lib/db";
+import gs from "../../api-lib/db";
 import {
   GongoDocument,
   CollectionEventProps,
   userIsAdmin,
-  userIdMatches,
+  // userIdMatches,
 } from "gongo-server-db-mongo/lib/collection";
 import { ChangeSetUpdate } from "gongo-server/lib/DatabaseAdapter";
 import { NextApiRequest, NextApiResponse } from "next";
 // import { ipFromReq, ipPass } from "../../src/api-lib/ipCheck";
-import { ObjectId } from "bson";
+// import { ObjectId } from "bson";
 
 export const config = {
   runtime: "edge",

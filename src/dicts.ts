@@ -1,8 +1,6 @@
-import db from "gongo-client";
+// import db from "gongo-client";
 import type {
-  JMdict,
   JMdictWord,
-  Kanjidic2,
   Kanjidic2Character,
 } from "@scriptin/jmdict-simplified-types";
 
@@ -31,9 +29,9 @@ const kanjidic = {
 };
 
 if (typeof window !== "undefined") {
-  // @ts-expect-error
+  // @ts-expect-error: add to window
   window.jmdict = jmdict;
-  // @ts-expect-error
+  // @ts-expect-error: add to window
   window.kanjidic = kanjidic;
 }
 

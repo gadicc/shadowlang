@@ -36,6 +36,7 @@ function getSpeechRecognition() {
   if ("SpeechRecognition" in window) return window.SpeechRecognition;
 
   if ("webkitSpeechRecognition" in window)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (window as any).webkitSpeechRecognition as typeof SpeechRecognition;
 
   throw new Error("SpeechRecognition is not supported in this browser");
@@ -147,7 +148,7 @@ function Text({
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const [done, setDone] = React.useState(false);
-  const { speechRecognition, result, results, isFinal } =
+  const { speechRecognition, result, /* results, */ isFinal } =
     useSpeechRecognition();
   const isCorrect =
     text.replace(/。| /g, "") ===

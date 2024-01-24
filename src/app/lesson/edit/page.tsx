@@ -1,19 +1,13 @@
 "use client";
 import React from "react";
 
-import {
-  CircularProgress,
-  Container,
-  IconButton,
-  LinearProgress,
-} from "@mui/material";
+import { Container, IconButton, LinearProgress } from "@mui/material";
 
 import { jmdict } from "@/dicts";
 import { partsOfSpeech } from "@/lib/jmdict";
 import type { WordEntry } from "@/app/api/jpSentence/processor";
-import { posMap } from "@/lib/kuroshiro-pos";
 import TextBlock from "../[_id]/TextBlock";
-import { toKana, toHiragana, isKana, isKatakana } from "wanakana";
+import { isKatakana } from "wanakana";
 import { Add, ArrowDownward, ArrowUpward, Delete } from "@mui/icons-material";
 jmdict;
 
@@ -24,11 +18,6 @@ async function processor(text: string) {
   });
   const response = (await request.json()) as WordEntry[];
   return response;
-}
-
-if (typeof window !== "undefined") {
-  // @ts-expect-error
-  window.processor = processor;
 }
 
 function Reading({
@@ -128,7 +117,7 @@ function EditRow({
       newWords[i] = newWord;
       setWords(newWords);
     },
-    [words, i],
+    [words, setWords, i],
   );
 
   return (
@@ -249,7 +238,7 @@ function Translations({
 
     const trans = (translations.en = result.parts as Translations["en"]);
     setIsFetching(false);
-    setTranslations({ ...translations });
+    setTranslations({ ...translations, en: trans });
   }
 
   return (
@@ -272,7 +261,7 @@ function Translations({
       <table border={1} cellSpacing={0}>
         <tbody>
           {translations.en.map((entry, i) => (
-            <tr>
+            <tr key={entry.text}>
               <td>
                 <IconButton
                   size="small"
@@ -349,7 +338,7 @@ function Translations({
                 >
                   <option></option>
                   {words.map((word) => (
-                    <option>{word.word}</option>
+                    <option key={word.word}>{word.word}</option>
                   ))}
                 </select>
               </td>
