@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
+export const runtime = "edge";
+
 let _openai: OpenAI | null = null;
 function openai() {
   if (!_openai) _openai = new OpenAI();
