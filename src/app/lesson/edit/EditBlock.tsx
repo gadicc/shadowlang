@@ -76,7 +76,9 @@ export default function EditBlock({
       <textarea
         // ref={ref}
         style={{ width: "100%" }}
-        defaultValue="私はアンミンです。"
+        value={block.text}
+        onChange={(e) => mergeBlockIdx(i, { text: e.target.value })}
+        // defaultValue="私はアンミンです。"
       />
       <button
         disabled={block.status?.title === "Analyzing"}
