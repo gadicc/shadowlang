@@ -16,7 +16,7 @@ export default function EditRow({
   word: WordEntry;
   i: number;
   words: WordEntry[];
-  setWords: React.Dispatch<React.SetStateAction<WordEntry[]>>;
+  setWords: (words: WordEntry[]) => void;
 }) {
   const iconPadding = 0.2;
   const setWord = React.useCallback(

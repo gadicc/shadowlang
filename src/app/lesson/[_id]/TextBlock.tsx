@@ -5,6 +5,7 @@ import hepburn from "hepburn";
 import { ReactFuri } from "react-furi";
 
 import { Stack } from "@mui/material";
+import { BlockTranslations } from "../edit/types";
 
 // https://www.edrdg.org/jmwsgi/edhelp.py?svc=jmdict&sid=#kw_pos
 const colors = {
@@ -33,9 +34,11 @@ const colors = {
 interface Word {
   word: string;
   reading?: string;
-  start: number;
-  end: number;
+  start?: number;
+  end?: number;
   punctuation?: string;
+  partOfSpeech?: string;
+  /*
   partOfSpeech?:
     | "n"
     | "n-pn"
@@ -48,6 +51,7 @@ interface Word {
     | "conj"
     | "int"
     | "exp";
+  */
   role?: string;
   alsoAccept?: string[];
 }
@@ -156,14 +160,7 @@ export default function TextBlock({
   avatar: string;
   isCurrent: boolean;
   audio: { src: string; start: number; end: number };
-  translations: {
-    en: {
-      text: string;
-      punctuation?: string;
-      wordIdx?: number;
-      word?: string;
-    }[];
-  };
+  translations: BlockTranslations;
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const [done, setDone] = React.useState(false);

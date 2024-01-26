@@ -4,7 +4,7 @@ import { Container, LinearProgress } from "@mui/material";
 
 import EditRow from "./EditRow";
 import TextBlock from "../[_id]/TextBlock";
-import { WordEntry, BlockTranslations } from "./types";
+import { WordEntry, BlockTranslations, Lesson } from "./types";
 import Translations from "./Translations";
 
 export async function processor(text: string) {
@@ -16,7 +16,50 @@ export async function processor(text: string) {
   return response;
 }
 
-export default function EditBlock() {
+export async function analyzeBlockSentence(
+  block: Lesson["blocks"][0],
+  i: number,
+  mergeBlockIdx: (i: number, blockMerge: Partial<Lesson["blocks"][0]>) => void,
+) {
+  const text = block.text;
+  if (!text) return;
+
+  mergeBlockIdx(i, {
+    status: {
+      title: "Analyzing",
+      showProgress: true,
+    },
+  });
+
+  let words: WordEntry[];
+  try {
+    words = await processor(text);
+  } catch (error) {
+    console.error(error);
+    mergeBlockIdx(i, {
+      status: {
+        title: "Analyzing",
+        showProgress: false,
+        message: "error",
+      },
+    });
+    return false;
+  }
+  // console.log("processorWords", words);
+  mergeBlockIdx(i, { words, status: undefined });
+  return false;
+}
+
+export default function EditBlock({
+  block,
+  i,
+  mergeBlockIdx,
+}: {
+  block: Lesson["blocks"][0];
+  i: number;
+  mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
+}) {
+  /*
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const [isFetching, setIsFetching] = React.useState(false);
   const [words, setWords] = React.useState<WordEntry[]>([]);
@@ -24,36 +67,24 @@ export default function EditBlock() {
     en: [],
   });
   console.log("words", words);
+  */
+  const words = block.words;
+  const setWords = (words: WordEntry[]) => mergeBlockIdx(i, { words });
 
   return (
     <Container sx={{ my: 2 }}>
       <textarea
-        ref={ref}
+        // ref={ref}
         style={{ width: "100%" }}
         defaultValue="私はアンミンです。"
       />
       <button
-        disabled={isFetching}
+        disabled={block.status?.title === "Analyzing"}
         style={{ width: 150, height: "2em" }}
-        onClick={async () => {
-          setIsFetching(true);
-          const text = ref.current?.value;
-          if (!text) return;
-          let words: WordEntry[];
-          try {
-            words = await processor(text);
-          } catch (error) {
-            console.error(error);
-            setIsFetching(false);
-            return false;
-          }
-          console.log(words);
-          setWords(words);
-          setIsFetching(false);
-          return false;
-        }}
+        onClick={() => analyzeBlockSentence(block, i, mergeBlockIdx)}
       >
-        {isFetching ? <LinearProgress /> : "Add Sentence"}
+        {/* block.status?.title === "Analyzing" ? <LinearProgress /> : "Analyze" */}
+        Analyze
       </button>
       <br />
       <br />
@@ -82,22 +113,6 @@ export default function EditBlock() {
           ))}
         </tbody>
       </table>
-      <br />
-      <TextBlock
-        avatar="anming"
-        // @ts-expect-error: later
-        words={words}
-        // @ts-expect-error: later
-        audio={{ src: "" }}
-        // @ts-expect-error: later
-        translations={translations}
-      />
-      <Translations
-        taRef={ref}
-        translations={translations}
-        setTranslations={setTranslations}
-        words={words}
-      />
     </Container>
   );
 }

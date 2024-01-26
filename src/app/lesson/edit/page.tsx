@@ -13,7 +13,8 @@ import {
 import { jmdict } from "@/dicts";
 import type { Lesson, WordEntry, Transcription } from "./types";
 import TextBlock from "../[_id]/TextBlock";
-import { processor } from "./EditBlock";
+import EditBlock, { analyzeBlockSentence } from "./EditBlock";
+import Translations from "./Translations";
 
 jmdict;
 
@@ -154,38 +155,12 @@ export default function Edit() {
     }));
     setLesson(newLesson);
 
-    newLesson.blocks.forEach((block, i) => analyzeBlockSentence(block, i));
+    newLesson.blocks.forEach((block, i) =>
+      analyzeBlockSentence(block, i, mergeBlockIdx),
+    );
   }
 
-  async function analyzeBlockSentence(block: Lesson["blocks"][0], i: number) {
-    const text = block.text;
-    if (!text) return;
-
-    mergeBlockIdx(i, {
-      status: {
-        title: "Analyzing",
-        showProgress: true,
-      },
-    });
-
-    let words: WordEntry[];
-    try {
-      words = await processor(text);
-    } catch (error) {
-      console.error(error);
-      mergeBlockIdx(i, {
-        status: {
-          title: "Analyzing",
-          showProgress: false,
-          message: "error",
-        },
-      });
-      return false;
-    }
-    // console.log("processorWords", words);
-    mergeBlockIdx(i, { words, status: undefined });
-    return false;
-  }
+  console.log(lesson);
 
   return (
     <Container sx={{ my: 2 }}>
@@ -223,6 +198,8 @@ export default function Edit() {
             avatar={String.fromCharCode(65 + block.speakerId)} // TODO
             audio={block.audio}
             words={block.words}
+            translations={block.translations}
+            isCurrent={false} // XXX event logic TODO
           />
           {block.status ? (
             <div style={{ paddingLeft: 85 }}>
@@ -246,9 +223,20 @@ export default function Edit() {
                 onChange={(e, value) => setEditTabIdx(value)}
               >
                 <Tab label="Text" />
+                <Tab label="Translations" />
               </Tabs>
               <CustomTabPanel value={editTabIdx} index={0}>
-                toHiragan
+                <EditBlock block={block} i={i} mergeBlockIdx={mergeBlockIdx} />
+              </CustomTabPanel>
+              <CustomTabPanel value={editTabIdx} index={1}>
+                <Translations
+                  text={block.text}
+                  words={block.words}
+                  translations={block.translations}
+                  // setTranslations={setTranslations}
+                  i={i}
+                  mergeBlockIdx={mergeBlockIdx}
+                />
               </CustomTabPanel>
             </>
           ) : null}
