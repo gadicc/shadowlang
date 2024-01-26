@@ -20,7 +20,10 @@ export interface Lesson {
   title: {
     [key: string]: string;
   };
-  speakers: {};
+  speakers: {
+    id: number;
+    name: string;
+  }[];
   blocks: {
     speakerId: number;
     text: string;

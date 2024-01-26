@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 import { jmdict } from "@/dicts";
-import type { Lesson, WordEntry, Transcription } from "./types";
+import type { Lesson, Transcription } from "./types";
 import TextBlock from "../[_id]/TextBlock";
 import EditBlock, { analyzeBlockSentence } from "./EditBlock";
 import Translations from "./Translations";
@@ -185,6 +185,7 @@ export default function Edit() {
       <Typography variant="h6">Blocks</Typography>
       {lesson.blocks?.map((block, i) => (
         <div
+          key={i}
           style={{
             border:
               editIdx === i ? "1px dotted black" : "1px solid transparent",

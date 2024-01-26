@@ -1,11 +1,9 @@
 import React from "react";
 
-import { Container, LinearProgress } from "@mui/material";
+import { Container } from "@mui/material";
 
 import EditRow from "./EditRow";
-import TextBlock from "../[_id]/TextBlock";
-import { WordEntry, BlockTranslations, Lesson } from "./types";
-import Translations from "./Translations";
+import { WordEntry, Lesson } from "./types";
 
 export async function processor(text: string) {
   const request = await fetch("/api/jpSentence", {
@@ -45,7 +43,7 @@ export async function analyzeBlockSentence(
     });
     return false;
   }
-  // console.log("processorWords", words);
+  console.log("processorWords", words);
   mergeBlockIdx(i, { words, status: undefined });
   return false;
 }
