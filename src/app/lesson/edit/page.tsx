@@ -1,7 +1,12 @@
 "use client";
 import React from "react";
 
-import { Container, IconButton, LinearProgress } from "@mui/material";
+import {
+  Container,
+  IconButton,
+  LinearProgress,
+  Typography,
+} from "@mui/material";
 
 import { jmdict } from "@/dicts";
 import { partsOfSpeech } from "@/lib/jmdict";
@@ -364,7 +369,7 @@ function Translations({
   );
 }
 
-export default function Edit() {
+function EditBlock() {
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const [isFetching, setIsFetching] = React.useState(false);
   const [words, setWords] = React.useState<WordEntry[]>([]);
@@ -446,6 +451,240 @@ export default function Edit() {
         setTranslations={setTranslations}
         words={words}
       />
+    </Container>
+  );
+}
+
+interface Lesson {
+  title: {
+    [key: string]: string;
+  };
+  speakers: {};
+  blocks: {
+    speakerId: number;
+    text: string;
+    words: WordEntry[];
+    translations: Translations;
+    audio: {
+      src: string;
+      start: number;
+      end: number;
+    };
+    status?: {
+      title: string;
+      showProgress: boolean;
+      message?: string;
+    };
+  }[];
+}
+
+function EditableLangTable({
+  value,
+  setValue,
+  langs = ["en"],
+}: {
+  value: { [key: string]: string };
+  setValue: (value: { [key: string]: string }) => void;
+  langs?: string[];
+}) {
+  if (!langs) langs = Object.keys(value);
+  return (
+    <table border={1} cellSpacing={0} width="100%">
+      <thead>
+        <tr>
+          <th>Lang</th>
+          <th>Text</th>
+        </tr>
+      </thead>
+      <tbody>
+        {langs.map((lang) => (
+          <tr key={lang}>
+            <td>{lang}</td>
+            <td>
+              <input
+                type="text"
+                style={{ width: "100%" }}
+                value={value[lang] || ""}
+                onChange={(e) => {
+                  const newValue = { ...value };
+                  newValue[lang] = e.target.value;
+                  setValue(newValue);
+                }}
+              />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+interface Transcription {
+  language: string;
+  num_speakers: string;
+  segments: {
+    end: string;
+    speaker: string;
+    start: string;
+    text: string;
+    words: {
+      end: number;
+      start: number;
+      word: string;
+    }[];
+  }[];
+}
+
+export default function Edit() {
+  const [lesson, _setLesson] = React.useState<Partial<Lesson>>({});
+  const latestLesson = React.useRef<Partial<Lesson>>();
+  const transRef = React.useRef<Transcription>();
+
+  const setLesson = React.useCallback(
+    function setLesson(lesson: Partial<Lesson>) {
+      latestLesson.current = lesson;
+      _setLesson(lesson);
+    },
+    [_setLesson],
+  );
+
+  function mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>) {
+    const lesson = latestLesson.current;
+    if (!lesson)
+      throw new Error("mergeBlockIdx called before latestLesson.current set");
+
+    if (!lesson.blocks) lesson.blocks = [];
+
+    const newBlock = { ...lesson.blocks[i], ...blockMerge };
+    if (false)
+      console.log("mergeBlockIdx", {
+        i,
+        orig: lesson!.blocks![i],
+        newBlock,
+      });
+
+    const newBlocks = [...lesson.blocks];
+    newBlocks[i] = newBlock;
+    setLesson({ ...lesson, blocks: newBlocks });
+  }
+
+  async function processAudio() {
+    const request = await fetch("/api/transcribe", {
+      method: "POST",
+      body: JSON.stringify({ src: "/audio/lesson1.mp3" }),
+    });
+    const result = (await request.json()) as Transcription;
+
+    // Because we can't rely on the segmentation from the transcription,
+    // we'll need this again later after the analysis to assign the
+    // timestamps.
+    transRef.current = result;
+
+    const speakers: { [key: string]: { id: number; name: string } } = {};
+    let speakerCount = 0;
+    for (const seg of result.segments) {
+      if (!speakers[seg.speaker])
+        speakers[seg.speaker] = { id: speakerCount++, name: seg.speaker };
+    }
+
+    console.log(result);
+    console.log({ speakers });
+
+    const newLesson = { ...lesson };
+    newLesson.speakers = Object.values(speakers);
+    newLesson.blocks = result.segments.map((seg) => ({
+      speakerId: speakers[seg.speaker].id,
+      text: seg.text,
+      words: [],
+      translations: { en: [] },
+      audio: {
+        src: "1absolutebeginner_lesson1.m4a",
+        start: parseFloat(seg.start),
+        end: parseFloat(seg.end),
+      },
+    }));
+    setLesson(newLesson);
+
+    newLesson.blocks.forEach((block, i) => analyzeBlockSentence(block, i));
+  }
+
+  async function analyzeBlockSentence(block: Lesson["blocks"][0], i: number) {
+    const text = block.text;
+    if (!text) return;
+
+    mergeBlockIdx(i, {
+      status: {
+        title: "Analyzing",
+        showProgress: true,
+      },
+    });
+
+    let words: WordEntry[];
+    try {
+      words = await processor(text);
+    } catch (error) {
+      console.error(error);
+      mergeBlockIdx(i, {
+        status: {
+          title: "Analyzing",
+          showProgress: false,
+          message: "error",
+        },
+      });
+      return false;
+    }
+    // console.log("processorWords", words);
+    mergeBlockIdx(i, { words, status: undefined });
+    return false;
+  }
+
+  return (
+    <Container sx={{ my: 2 }}>
+      <Typography variant="h6">Title</Typography>
+      <EditableLangTable
+        value={lesson?.title || {}}
+        setValue={(title) => {
+          if (!lesson) return;
+          setLesson({ ...lesson, title });
+        }}
+      />
+      <br />
+
+      <Typography variant="h6">Audio</Typography>
+      <div>TODO</div>
+      <button onClick={processAudio}>Process</button>
+      <br />
+
+      <Typography variant="h6">Speakers</Typography>
+      <br />
+
+      <Typography variant="h6">Blocks</Typography>
+      {lesson.blocks?.map((block, i) => (
+        <div>
+          <TextBlock
+            key={i}
+            text={block.text}
+            avatar={String.fromCharCode(65 + block.speakerId)} // TODO
+            audio={block.audio}
+            words={block.words}
+          />
+          {block.status ? (
+            <div style={{ paddingLeft: 85 }}>
+              {block.status.title}{" "}
+              {block.status.showProgress ? (
+                <LinearProgress
+                  sx={{
+                    display: "inline-block",
+                    width: 200,
+                    verticalAlign: "middle",
+                  }}
+                />
+              ) : null}
+              {block.status.message}
+            </div>
+          ) : null}
+        </div>
+      ))}
     </Container>
   );
 }

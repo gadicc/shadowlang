@@ -191,12 +191,39 @@ export default function TextBlock({
               margin: isCurrent ? 0 : 1,
             }}
           >
-            <img
-              alt={avatar + " avatar"}
-              src={`/img/avatars/${avatar}.png`}
-              width={70}
-              height={70}
-            />
+            {avatar.includes(".") ? (
+              <img
+                alt={avatar + " avatar"}
+                src={`/img/avatars/${avatar}.png`}
+                width={70}
+                height={70}
+              />
+            ) : (
+              <div
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  borderRadius: "50%",
+                  fontSize: "2rem",
+                  lineHeight: 1,
+                  userSelect: "none",
+                  color: "white",
+                  backgroundColor:
+                    avatar === "A"
+                      ? "blue"
+                      : avatar === "B"
+                        ? "purple"
+                        : avatar === "C"
+                          ? "navy"
+                          : "pink",
+                }}
+              >
+                {avatar}
+              </div>
+            )}
           </div>
         </div>
 
