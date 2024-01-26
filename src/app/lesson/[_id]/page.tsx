@@ -13,7 +13,7 @@ export default function LessonId({
   params: { _id: string };
 }) {
   const idx = 0;
-  const setIdx = () => {};
+  // const setIdx = () => {};
 
   return (
     <Container sx={{ my: 2 }}>
