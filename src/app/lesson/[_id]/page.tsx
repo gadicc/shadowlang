@@ -25,12 +25,11 @@ export default function LessonId({
           key={i}
           avatar={entry.avatar}
           text={entry.text}
-          // @ts-expect-error: TODO align types
           words={entry.words}
           translations={entry.translations}
           isCurrent={i === idx}
-          idx={idx}
-          setIdx={setIdx}
+          // idx={idx}
+          // setIdx={setIdx}
           audio={entry.audio}
         />
       ))}
