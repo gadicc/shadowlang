@@ -90,8 +90,33 @@ export default function EditRow({
       </td>
       <td>{word.jmdict_id}</td>
       <td>{word.jmdict_sense_idx}</td>
-      <td>{word.start}</td>
-      <td>{word.end}</td>
+      <td>
+        <input
+          style={{ width: 50 }}
+          type="text"
+          value={word.start}
+          onChange={(e) =>
+            setWord({
+              ...word,
+              start: parseFloat(e.target.value),
+            })
+          }
+        />
+      </td>
+      <td>
+        {" "}
+        <input
+          style={{ width: 50 }}
+          type="text"
+          value={word.end}
+          onChange={(e) =>
+            setWord({
+              ...word,
+              end: parseFloat(e.target.value),
+            })
+          }
+        />
+      </td>
     </tr>
   );
 }
