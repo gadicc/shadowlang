@@ -77,6 +77,70 @@ function CustomTabPanel(props: {
   );
 }
 
+const LessonBlock = React.memo(function LessonBlock({
+  block,
+  i,
+  editIdx,
+  setEditIdx,
+  editTabIdx,
+  setEditTabIdx,
+  mergeBlockIdx,
+}: {
+  block: Lesson["blocks"][0];
+  i: number;
+  editIdx: number;
+  setEditIdx(i: number): void;
+  editTabIdx: number;
+  setEditTabIdx(i: number): void;
+  mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
+}) {
+  return (
+    <div
+      key={i}
+      style={{
+        border: editIdx === i ? "1px dotted black" : "1px solid transparent",
+        padding: 5,
+      }}
+      onClick={() => setEditIdx(i)}
+    >
+      <TextBlock
+        key={i}
+        text={block.text}
+        avatar={String.fromCharCode(65 + block.speakerId)} // TODO
+        audio={block.audio}
+        words={block.words}
+        translations={block.translations}
+        isCurrent={false} // XXX event logic TODO
+        status={block.status}
+      />
+      {editIdx === i ? (
+        <>
+          <Tabs
+            value={editTabIdx}
+            onChange={(e, value) => setEditTabIdx(value)}
+          >
+            <Tab label="Text" />
+            <Tab label="Translations" />
+          </Tabs>
+          <CustomTabPanel value={editTabIdx} index={0}>
+            <EditBlock block={block} i={i} mergeBlockIdx={mergeBlockIdx} />
+          </CustomTabPanel>
+          <CustomTabPanel value={editTabIdx} index={1}>
+            <Translations
+              text={block.text}
+              words={block.words}
+              translations={block.translations}
+              // setTranslations={setTranslations}
+              i={i}
+              mergeBlockIdx={mergeBlockIdx}
+            />
+          </CustomTabPanel>
+        </>
+      ) : null}
+    </div>
+  );
+});
+
 export default function Edit() {
   const [lesson, _setLesson] = React.useState<Partial<Lesson>>({});
   const latestLesson = React.useRef<Partial<Lesson>>();
@@ -191,50 +255,16 @@ export default function Edit() {
       </div>
 
       {lesson.blocks?.map((block, i) => (
-        <div
+        <LessonBlock
           key={i}
-          style={{
-            border:
-              editIdx === i ? "1px dotted black" : "1px solid transparent",
-            padding: 5,
-          }}
-          onClick={() => setEditIdx(i)}
-        >
-          <TextBlock
-            key={i}
-            text={block.text}
-            avatar={String.fromCharCode(65 + block.speakerId)} // TODO
-            audio={block.audio}
-            words={block.words}
-            translations={block.translations}
-            isCurrent={false} // XXX event logic TODO
-            status={block.status}
-          />
-          {editIdx === i ? (
-            <>
-              <Tabs
-                value={editTabIdx}
-                onChange={(e, value) => setEditTabIdx(value)}
-              >
-                <Tab label="Text" />
-                <Tab label="Translations" />
-              </Tabs>
-              <CustomTabPanel value={editTabIdx} index={0}>
-                <EditBlock block={block} i={i} mergeBlockIdx={mergeBlockIdx} />
-              </CustomTabPanel>
-              <CustomTabPanel value={editTabIdx} index={1}>
-                <Translations
-                  text={block.text}
-                  words={block.words}
-                  translations={block.translations}
-                  // setTranslations={setTranslations}
-                  i={i}
-                  mergeBlockIdx={mergeBlockIdx}
-                />
-              </CustomTabPanel>
-            </>
-          ) : null}
-        </div>
+          block={block}
+          i={i}
+          editIdx={editIdx}
+          setEditIdx={setEditIdx}
+          editTabIdx={editTabIdx}
+          setEditTabIdx={setEditTabIdx}
+          mergeBlockIdx={mergeBlockIdx}
+        />
       ))}
     </Container>
   );
