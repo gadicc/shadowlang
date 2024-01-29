@@ -1,14 +1,7 @@
 "use client";
 import React from "react";
 
-import {
-  Container,
-  LinearProgress,
-  Tabs,
-  Tab,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Container, Tabs, Tab, Typography, Box } from "@mui/material";
 
 import { jmdict } from "@/dicts";
 import type { Lesson, Transcription } from "./types";
@@ -190,6 +183,13 @@ export default function Edit() {
       <br />
 
       <Typography variant="h6">Blocks</Typography>
+      <div style={{ fontSize: "80%" }}>
+        <ol>
+          <li>Click on a block to edit it.</li>
+          <li>Click on an avatar icon to test playback.</li>
+        </ol>
+      </div>
+
       {lesson.blocks?.map((block, i) => (
         <div
           key={i}
@@ -208,22 +208,8 @@ export default function Edit() {
             words={block.words}
             translations={block.translations}
             isCurrent={false} // XXX event logic TODO
+            status={block.status}
           />
-          {block.status ? (
-            <div style={{ paddingLeft: 85 }}>
-              {block.status.title}{" "}
-              {block.status.showProgress ? (
-                <LinearProgress
-                  sx={{
-                    display: "inline-block",
-                    width: 200,
-                    verticalAlign: "middle",
-                  }}
-                />
-              ) : null}
-              {block.status.message}
-            </div>
-          ) : null}
           {editIdx === i ? (
             <>
               <Tabs

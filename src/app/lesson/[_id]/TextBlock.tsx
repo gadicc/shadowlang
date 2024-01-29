@@ -4,7 +4,7 @@ import hepburn from "hepburn";
 // @ts-expect-error: no types
 import { ReactFuri } from "react-furi";
 
-import { Stack } from "@mui/material";
+import { LinearProgress, Stack } from "@mui/material";
 import { BlockTranslations } from "../edit/types";
 
 // https://www.edrdg.org/jmwsgi/edhelp.py?svc=jmdict&sid=#kw_pos
@@ -195,7 +195,7 @@ function useAudio(
 
       const currentTime = audio.currentTime;
 
-      if (currentTime >= end) {
+      if (currentTime >= end + 0.2) {
         audio.pause();
         setIsPlaying(false);
         setPlayingWordIdx(-1);
@@ -254,6 +254,7 @@ export default React.memo(function TextBlock({
   isCurrent,
   audio,
   translations,
+  status,
 }: {
   text: string;
   words: Word[];
@@ -261,6 +262,7 @@ export default React.memo(function TextBlock({
   isCurrent: boolean;
   audio: { src: string; start: number; end: number };
   translations: BlockTranslations;
+  status?: { title: string; showProgress: boolean; message?: string };
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const [done, setDone] = React.useState(false);
@@ -354,6 +356,22 @@ export default React.memo(function TextBlock({
           {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
           */}
           </div>
+          {status ? (
+            <div>
+              {status.title}{" "}
+              {status.showProgress ? (
+                <LinearProgress
+                  sx={{
+                    display: "inline-block",
+                    width: 200,
+                    verticalAlign: "middle",
+                  }}
+                />
+              ) : null}
+              {status.message}
+            </div>
+          ) : null}
+
           <br />
         </div>
       </Stack>
