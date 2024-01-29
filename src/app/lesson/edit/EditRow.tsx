@@ -94,7 +94,7 @@ export default function EditRow({
         <input
           style={{ width: 50 }}
           type="text"
-          value={word.start}
+          value={word.start || ""}
           onChange={(e) =>
             setWord({
               ...word,
@@ -108,7 +108,7 @@ export default function EditRow({
         <input
           style={{ width: 50 }}
           type="text"
-          value={word.end}
+          value={word.end || ""}
           onChange={(e) =>
             setWord({
               ...word,

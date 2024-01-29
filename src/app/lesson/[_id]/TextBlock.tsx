@@ -56,7 +56,15 @@ interface Word {
   alsoAccept?: string[];
 }
 
-function LayoutWords({ words }: { words: Word[] }) {
+function LayoutWords({
+  words,
+  playingWordIdx,
+}: {
+  words: Word[];
+  playingWordIdx: number;
+}) {
+  // console.log("LayoutWords", words, "playingWordIndex", playingWordIdx);
+
   return (
     <div>
       {words.map((word, i) => (
@@ -66,6 +74,7 @@ function LayoutWords({ words }: { words: Word[] }) {
               // @ts-expect-error: TODO, align types
               color: word.partOfSpeech ? colors[word.partOfSpeech] : "",
               // textShadow: "0 0 1px #555",
+              textShadow: playingWordIdx === i ? "0 0 2px #555" : "",
             }}
           >
             {word.reading ? (
@@ -85,7 +94,13 @@ function LayoutWords({ words }: { words: Word[] }) {
   );
 }
 
-function LayoutHepburn({ words }: { words: Word[] }) {
+function LayoutHepburn({
+  words,
+  playingWordIdx,
+}: {
+  words: Word[];
+  playingWordIdx: number;
+}) {
   return (
     <div style={{ whiteSpace: "discard" }}>
       {words.map((word, i) => (
@@ -95,6 +110,7 @@ function LayoutHepburn({ words }: { words: Word[] }) {
               // @ts-expect-error: TODO, align types
               color: word.partOfSpeech ? colors[word.partOfSpeech] : "",
               // textShadow: "0 0 1px #555",
+              textShadow: playingWordIdx === i ? "0 0 2px #555" : "",
             }}
           >
             {hepburn.fromKana(word.reading || word.word).toLocaleLowerCase()}
@@ -109,6 +125,7 @@ function LayoutHepburn({ words }: { words: Word[] }) {
 function LayoutTranslation({
   words,
   translation,
+  playingWordIdx,
 }: {
   words: Word[];
   translation: {
@@ -117,6 +134,7 @@ function LayoutTranslation({
     wordIdx?: number;
     word?: string;
   }[];
+  playingWordIdx: number;
 }) {
   return (
     <div>
@@ -125,6 +143,10 @@ function LayoutTranslation({
         if (transWord.wordIdx) word = words[transWord.wordIdx];
         else if (transWord.word)
           word = words.find((w) => w.word === transWord.word);
+
+        // We use -2 otherwise -1 will match on translated
+        // words that don't have a match in source words.
+        const wordIdx = word ? words.indexOf(word) : -2;
 
         return (
           <span key={i}>
@@ -135,6 +157,7 @@ function LayoutTranslation({
                     colors[word.partOfSpeech]
                   : "",
                 // textShadow: "0 0 1px #555",
+                textShadow: playingWordIdx === wordIdx ? "0 0 2px #555" : "",
               }}
             >
               {transWord.text}
@@ -145,6 +168,83 @@ function LayoutTranslation({
       })}
     </div>
   );
+}
+
+function useAudio(
+  audioRef: React.RefObject<HTMLAudioElement>,
+  words: Word[],
+  start: number,
+  end: number,
+) {
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [playingWordIdx, _setPlayingWordIdx] = React.useState(-1);
+  const playingWordIdxRef = React.useRef(playingWordIdx);
+  const setPlayingWordIdx = React.useCallback(
+    (i: number) => {
+      if (i === playingWordIdxRef.current) return;
+      playingWordIdxRef.current = i;
+      _setPlayingWordIdx(i);
+    },
+    [playingWordIdxRef],
+  );
+
+  const timeupdate = React.useCallback(
+    function timeupdate() {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      const currentTime = audio.currentTime;
+
+      if (currentTime >= end) {
+        audio.pause();
+        setIsPlaying(false);
+        setPlayingWordIdx(-1);
+        return;
+      }
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        if (!(word && word.start && word.end)) continue;
+        if (currentTime > word.start && currentTime < word.end) {
+          if (playingWordIdxRef.current !== i) {
+            if (false)
+              console.log(
+                "currentTime",
+                currentTime,
+                "prev playingWordIndex",
+                playingWordIdxRef.current,
+                "next playingWordIndex",
+                i,
+              );
+            setPlayingWordIdx(i);
+          }
+          break;
+        }
+      }
+    },
+    [audioRef, words, end, setPlayingWordIdx],
+  );
+
+  React.useEffect(() => {
+    const ref = audioRef.current;
+    if (!ref) return;
+
+    ref.addEventListener("timeupdate", timeupdate);
+    return () => {
+      ref.removeEventListener("timeupdate", timeupdate);
+    };
+  }, [audioRef, timeupdate]);
+
+  const play = React.useCallback(() => {
+    const ref = audioRef.current;
+    if (!ref) return;
+
+    ref.currentTime = start;
+    setIsPlaying(true);
+    ref.play();
+  }, [audioRef, start]);
+
+  return { isPlaying, play, playingWordIdx };
 }
 
 export default React.memo(function TextBlock({
@@ -167,9 +267,14 @@ export default React.memo(function TextBlock({
 
   const isCorrect = false;
   const [isListening, setIsListening] = React.useState(false);
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const hasPlayed = React.useRef(false);
   const translation = translations?.en;
+
+  const { isPlaying, play, playingWordIdx } = useAudio(
+    audioRef,
+    words,
+    audio.start,
+    audio.end,
+  );
   // console.log({ results });
 
   return (
@@ -179,6 +284,7 @@ export default React.memo(function TextBlock({
       <Stack direction="row" spacing={2}>
         <div>
           <div
+            onClick={play}
             style={{
               boxSizing: "content-box",
               height: 70,
@@ -227,11 +333,15 @@ export default React.memo(function TextBlock({
         <div>
           {words.length ? (
             <>
-              <LayoutWords words={words} />
+              <LayoutWords words={words} playingWordIdx={playingWordIdx} />
               <div style={{ opacity: 0.65 }}>
-                <LayoutHepburn words={words} />
+                <LayoutHepburn words={words} playingWordIdx={playingWordIdx} />
                 {translations ? (
-                  <LayoutTranslation translation={translation} words={words} />
+                  <LayoutTranslation
+                    translation={translation}
+                    words={words}
+                    playingWordIdx={playingWordIdx}
+                  />
                 ) : null}
               </div>
             </>
