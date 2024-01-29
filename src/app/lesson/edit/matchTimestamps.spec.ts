@@ -3,13 +3,14 @@ import matchTimestamps from "@/app/lesson/edit/matchTimestamps";
 
 import fullLesson from "@/assets/op-jp-ab-1.json";
 import fullTranscript from "@/app/api/transcribe/1absolutebeginner_lesson1.json";
+import { Lesson } from "./types";
 
 function partial(start: number, end: number) {
   return {
     lesson: {
       ...fullLesson,
       blocks: fullLesson.blocks.slice(start, end),
-    },
+    } as unknown as Lesson, // until fullLesson json is compliant.
     transcript: {
       ...fullTranscript,
       segments: fullTranscript.segments.slice(start, end),

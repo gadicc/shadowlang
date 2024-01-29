@@ -17,7 +17,7 @@ function wordsMatch(blockWord: BlockWord, candidate: string) {
 
 export default function matchTimestamps(
   transcription: Transcription,
-  origLesson: Partial<Lesson>,
+  origLesson: Lesson,
   log = false,
 ): Lesson {
   const lesson = { ...origLesson };
