@@ -1,7 +1,14 @@
 "use client";
 import React from "react";
 
-import { Container, Tabs, Tab, Typography, Box } from "@mui/material";
+import {
+  Container,
+  Tabs,
+  Tab,
+  Typography,
+  Box,
+  LinearProgress,
+} from "@mui/material";
 
 import { jmdict } from "@/dicts";
 import type { Lesson, Transcription } from "./types";
@@ -68,13 +75,19 @@ function CustomTabPanel(props: {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
+}
+
+function Speakers({
+  speakers,
+  setLesson,
+}: {
+  speakers?: Lesson["speakers"];
+  setLesson(lesson: Partial<Lesson>): void;
+}) {
+  return <div></div>;
 }
 
 const LessonBlock = React.memo(function LessonBlock({
@@ -147,6 +160,7 @@ export default function Edit() {
   const transRef = React.useRef<Transcription>();
   const [editIdx, setEditIdx] = React.useState(-1);
   const [editTabIdx, setEditTabIdx] = React.useState(0);
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
   const setLesson = React.useCallback(
     function setLesson(lesson: Partial<Lesson>) {
@@ -177,6 +191,7 @@ export default function Edit() {
   }
 
   async function processAudio() {
+    setIsProcessing(true);
     const request = await fetch("/api/transcribe", {
       method: "POST",
       body: JSON.stringify({ src: "/audio/lesson1.mp3" }),
@@ -212,6 +227,7 @@ export default function Edit() {
       },
     }));
     setLesson(newLesson);
+    setIsProcessing(false);
 
     newLesson.blocks.forEach((block, i) =>
       analyzeBlockSentence(block, i, mergeBlockIdx).then(() => {
@@ -240,10 +256,28 @@ export default function Edit() {
 
       <Typography variant="h6">Audio</Typography>
       <div>TODO</div>
-      <button onClick={processAudio}>Process</button>
+      <button
+        style={{ width: 100 }}
+        disabled={isProcessing}
+        onClick={processAudio}
+      >
+        {isProcessing ? (
+          <LinearProgress
+            sx={{
+              display: "inline-block",
+              width: "100%",
+              verticalAlign: "middle",
+            }}
+          />
+        ) : (
+          "Process"
+        )}
+      </button>
+      <br />
       <br />
 
       <Typography variant="h6">Speakers</Typography>
+      <Speakers speakers={lesson.speakers} setLesson={setLesson} />
       <br />
 
       <Typography variant="h6">Blocks</Typography>
