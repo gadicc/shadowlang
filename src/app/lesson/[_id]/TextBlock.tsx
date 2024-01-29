@@ -147,7 +147,7 @@ function LayoutTranslation({
   );
 }
 
-export default function TextBlock({
+export default React.memo(function TextBlock({
   text,
   words,
   avatar,
@@ -249,4 +249,4 @@ export default function TextBlock({
       </Stack>
     </>
   );
-}
+});
