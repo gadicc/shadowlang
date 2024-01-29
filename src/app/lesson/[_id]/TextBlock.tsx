@@ -170,12 +170,35 @@ function LayoutTranslation({
   );
 }
 
+/*
+<button class="mic-button-button listening" style="margin-top: 15px; box-shadow: 0px 0px 0px 4.38433px;"></button>
+ transition-duration: .15s;
+.mic-button.light .mic-button-button {
+   color: var(--color-mic-button-box-shadow-light);
+}
+.mic-button .mic-button-button:disabled, .mic-button .mic-button-button:disabled:hover {
+    opacity: .5;
+}
+.mic-button .mic-button-button {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-line-light);
+    border-radius: 100%;
+    color: var(--color-mic-button-box-shadow);
+    display: flex;
+    padding: var(--spacing-xs);
+    transition-duration: 1s;
+    transition-property: box-shadow;
+}
+*/
+
 function useAudio(
   audioRef: React.RefObject<HTMLAudioElement>,
   words: Word[],
   start: number,
   end: number,
+  avatarRef?: React.RefObject<HTMLDivElement>,
 ) {
+  // console.log("useAudio");
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [playingWordIdx, _setPlayingWordIdx] = React.useState(-1);
   const playingWordIdxRef = React.useRef(playingWordIdx);
@@ -187,6 +210,70 @@ function useAudio(
     },
     [playingWordIdxRef],
   );
+
+  React.useEffect(() => {
+    // Adapted from https://stackoverflow.com/a/37021249/1839099
+    // thanks user1693593
+    const actx = new AudioContext();
+    const audio = audioRef.current;
+    let srcNode: MediaElementAudioSourceNode,
+      bquad: BiquadFilterNode,
+      analyser: AnalyserNode,
+      fft: Uint8Array,
+      fftLen: number;
+
+    if (!audio) return;
+
+    audio.addEventListener("canplay", setup);
+
+    function setup(this: HTMLAudioElement) {
+      if (srcNode) return;
+
+      srcNode = actx.createMediaElementSource(this);
+
+      bquad = actx.createBiquadFilter();
+      bquad.type = "lowpass";
+      bquad.frequency.value = 250;
+
+      analyser = actx.createAnalyser();
+      analyser.fftSize = 256;
+
+      // connect nodes: srcNode (input) -> analyzer -> destination (output)
+      srcNode.connect(bquad);
+      bquad.connect(analyser);
+
+      srcNode.connect(actx.destination);
+      fftLen = analyser.frequencyBinCount;
+      fft = new Uint8Array(fftLen);
+
+      const avatar = avatarRef?.current;
+      if (!avatar) return;
+      avatar.style.transitionDuration = ".05s";
+      avatar.style.transitionProperty = "box-shadow";
+
+      render();
+    }
+    function render() {
+      // fill FFT buffer
+      analyser.getByteFrequencyData(fft);
+      // average data from some bands
+      const v = (fft[1] + fft[2]) / 512;
+      console.log(v);
+
+      const avatar = avatarRef?.current;
+      if (!avatar) return;
+      avatar.style.boxShadow =
+        "0px 0px 0px " + 8 * v + "px rgba(100,100,100,0.3)";
+
+      // TODO, stop this!!! when no longer playing
+
+      requestAnimationFrame(render);
+    }
+
+    return () => {
+      audio.removeEventListener("canplay", setup);
+    };
+  }, [avatarRef, audioRef]);
 
   const timeupdate = React.useCallback(
     function timeupdate() {
@@ -265,6 +352,7 @@ export default React.memo(function TextBlock({
   status?: { title: string; showProgress: boolean; message?: string };
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
+  const avatarRef = React.useRef<HTMLDivElement>(null);
   const [done, setDone] = React.useState(false);
 
   const isCorrect = false;
@@ -276,6 +364,7 @@ export default React.memo(function TextBlock({
     words,
     audio.start,
     audio.end,
+    avatarRef,
   );
   // console.log({ results });
 
@@ -286,6 +375,7 @@ export default React.memo(function TextBlock({
       <Stack direction="row" spacing={2}>
         <div>
           <div
+            ref={avatarRef}
             onClick={play}
             style={{
               boxSizing: "content-box",
