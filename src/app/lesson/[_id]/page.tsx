@@ -6,6 +6,7 @@ import { Container, Typography } from "@mui/material";
 import { jmdict } from "../../../dicts";
 jmdict;
 import TextBlock from "./TextBlock";
+import { Lesson } from "../edit/types";
 
 export default function LessonId({
   params: { _id },
@@ -15,22 +16,29 @@ export default function LessonId({
   const idx = 0;
   // const setIdx = () => {};
 
+  const speakers = lesson.speakers;
+  function avatar(block: Lesson["blocks"][0]) {
+    const speakerId = block.speakerId;
+    const speaker = speakers[speakerId];
+    return speaker.avatar;
+  }
+
   return (
     <Container sx={{ my: 2 }}>
       <Typography variant="h5" sx={{ textDecoration: "underline", mb: 2 }}>
-        {lesson.title}
+        {lesson.title.en}
       </Typography>
-      {lesson.texts.map((entry, i) => (
+      {lesson.blocks.map((block, i) => (
         <TextBlock
           key={i}
-          avatar={entry.avatar}
-          text={entry.text}
-          words={entry.words}
-          translations={entry.translations}
+          avatar={avatar(block)}
+          text={block.text}
+          words={block.words}
+          translations={block.translations}
           isCurrent={i === idx}
           // idx={idx}
           // setIdx={setIdx}
-          audio={entry.audio}
+          audio={block.audio}
         />
       ))}
     </Container>

@@ -191,7 +191,7 @@ export default function TextBlock({
             {avatar.includes(".") ? (
               <img
                 alt={avatar + " avatar"}
-                src={`/img/avatars/${avatar}.png`}
+                src={`/img/avatars/${avatar}`}
                 width={70}
                 height={70}
               />

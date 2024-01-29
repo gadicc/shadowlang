@@ -1,8 +1,13 @@
 import type { WordEntry } from "@/app/api/jpSentence/processor";
 
+export interface BlockWord extends WordEntry {
+  start: number;
+  end: number;
+}
+
 export interface Transcription {
   language: string;
-  num_speakers: string;
+  num_speakers: number;
   segments: {
     end: string;
     speaker: string;
@@ -16,18 +21,21 @@ export interface Transcription {
   }[];
 }
 
+export interface Speaker {
+  id: number;
+  name: string;
+  avatar: string;
+}
+
 export interface Lesson {
   title: {
     [key: string]: string;
   };
-  speakers: {
-    id: number;
-    name: string;
-  }[];
+  speakers: Speaker[];
   blocks: {
     speakerId: number;
     text: string;
-    words: WordEntry[];
+    words: BlockWord[];
     translations: BlockTranslations;
     audio: {
       src: string;
