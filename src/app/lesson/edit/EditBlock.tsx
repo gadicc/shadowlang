@@ -3,7 +3,7 @@ import React from "react";
 import { Container } from "@mui/material";
 
 import EditRow from "./EditRow";
-import { WordEntry, Lesson } from "./types";
+import { BlockWord, WordEntry, Lesson } from "./types";
 
 export async function processor(text: string) {
   const request = await fetch("/api/jpSentence", {
@@ -29,7 +29,7 @@ export async function analyzeBlockSentence(
     },
   });
 
-  let words: WordEntry[];
+  let words: BlockWord[];
   try {
     words = await processor(text);
   } catch (error) {
@@ -67,7 +67,7 @@ export default function EditBlock({
   console.log("words", words);
   */
   const words = block.words;
-  const setWords = (words: WordEntry[]) => mergeBlockIdx(i, { words });
+  const setWords = (words: BlockWord[]) => mergeBlockIdx(i, { words });
 
   return (
     <Container sx={{ my: 2 }}>
@@ -99,6 +99,8 @@ export default function EditBlock({
             </th>
             <th>jmdict_id</th>
             <th>senseIdx</th>
+            <th>start</th>
+            <th>end</th>
           </tr>
         </thead>
         <tbody>

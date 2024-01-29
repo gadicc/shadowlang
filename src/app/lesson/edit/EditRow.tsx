@@ -3,7 +3,7 @@ import React from "react";
 import { IconButton } from "@mui/material";
 import { Add, ArrowDownward, ArrowUpward, Delete } from "@mui/icons-material";
 
-import type { WordEntry } from "./types";
+import type { BlockWord } from "./types";
 import Reading from "./Reading";
 import PartOfSpeech from "./PartOfSpeech";
 
@@ -13,14 +13,14 @@ export default function EditRow({
   words,
   setWords,
 }: {
-  word: WordEntry;
+  word: BlockWord;
   i: number;
-  words: WordEntry[];
-  setWords: (words: WordEntry[]) => void;
+  words: BlockWord[];
+  setWords: (words: BlockWord[]) => void;
 }) {
   const iconPadding = 0.2;
   const setWord = React.useCallback(
-    (newWord: WordEntry) => {
+    (newWord: BlockWord) => {
       const newWords = [...words];
       newWords[i] = newWord;
       setWords(newWords);
@@ -90,6 +90,8 @@ export default function EditRow({
       </td>
       <td>{word.jmdict_id}</td>
       <td>{word.jmdict_sense_idx}</td>
+      <td>{word.start}</td>
+      <td>{word.end}</td>
     </tr>
   );
 }

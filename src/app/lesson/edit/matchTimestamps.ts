@@ -2,6 +2,7 @@ import { toHiragana } from "hepburn";
 import type { BlockWord, Transcription, Lesson } from "./types";
 
 function wordsMatch(blockWord: BlockWord, candidate: string) {
+  if (!(blockWord && blockWord.word)) return false;
   const tryWord = candidate.replace(/。/g, "");
   const word = blockWord.word.replace(/。/g, "");
   if (word === tryWord) return true;
@@ -35,6 +36,13 @@ export default function matchTimestamps(
     let swiStart = 0,
       sword = "";
     for (let swi = 0; swi < segment.words.length; swi++) {
+      // Skip punctuation, etc.
+      while (
+        bwi < block.words.length &&
+        block.words[bwi].partOfSpeech === "symbol"
+      )
+        bwi++;
+
       const blockWord = block.words[bwi];
       const tryWord = sword + segment.words[swi].word;
 

@@ -15,6 +15,7 @@ import type { Lesson, Transcription } from "./types";
 import TextBlock from "../[_id]/TextBlock";
 import EditBlock, { analyzeBlockSentence } from "./EditBlock";
 import Translations from "./Translations";
+import matchTimestamps from "./matchTimestamps";
 
 jmdict;
 
@@ -156,11 +157,17 @@ export default function Edit() {
     setLesson(newLesson);
 
     newLesson.blocks.forEach((block, i) =>
-      analyzeBlockSentence(block, i, mergeBlockIdx),
+      analyzeBlockSentence(block, i, mergeBlockIdx).then(() => {
+        if (transRef.current && latestLesson.current) {
+          // @ts-expect-error: another day
+          matchTimestamps(transRef.current, latestLesson.current);
+          setLesson({ ...latestLesson.current });
+        }
+      }),
     );
   }
 
-  console.log(lesson);
+  console.log("lesson", lesson);
 
   return (
     <Container sx={{ my: 2 }}>

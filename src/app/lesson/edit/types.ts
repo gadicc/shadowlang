@@ -1,8 +1,8 @@
 import type { WordEntry } from "@/app/api/jpSentence/processor";
 
 export interface BlockWord extends WordEntry {
-  start: number;
-  end: number;
+  start?: number;
+  end?: number;
 }
 
 export interface Transcription {
