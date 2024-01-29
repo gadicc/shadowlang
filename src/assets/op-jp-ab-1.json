@@ -1,60 +1,63 @@
 {
-  "title": "Absolute Beginner: Lesson 1",
-  "texts": [
+  "title": { "en": "Absolute Beginner: Lesson 1" },
+  "speakers": [
+    { "id": 0, "name": "SPEAKER_00", "avatar": "anming.png" },
+    { "id": 1, "name": "SPEAKER_01", "avatar": "tommy.png" }
+  ],
+  "blocks": [
     {
-      "avatar": "anming",
-      "text": "初めまして。 私はアンミンです。",
-      "audio": {
-        "src": "1absolutebeginner_lesson1.m4a",
-        "start": 0.5,
-        "end": 3.5
-      },
+      "speakerId": 0,
+      "text": "初めまして。私はアンミンです。",
       "words": [
         {
           "word": "初めまして",
-          "reading": "はじめまして",
-          "jmdict": "1625780",
-          "start": 0.5,
-          "end": 1.5,
-          "punctuation": "。",
+          "morpheme": {
+            "surface_form": "はじめまして",
+            "pos": "感動詞",
+            "pos_detail_1": "*",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "はじめまして",
+            "reading": "ハジメマシテ",
+            "pronunciation": "ハジメマシテ",
+            "verbose": {
+              "word_id": 34690,
+              "word_type": "KNOWN",
+              "word_position": 1
+            }
+          },
+          "punctuation": "。 ",
           "partOfSpeech": "exp",
+          "reading": "はじめまして",
           "jmdict_id": "1625780",
           "jmdict_sense_idx": 0
         },
         {
           "word": "私",
-          "reading": "わたし",
-          "start": 1.5,
-          "end": 2,
           "partOfSpeech": "pn",
-          "role": "topic",
+          "reading": "わたし",
           "jmdict_id": "1311110",
           "jmdict_sense_idx": 0
         },
         {
           "word": "は",
-          "reading": "わ",
-          "start": 1.5,
-          "end": 2,
-          "jmdict_id": "2028920",
-          "jmdict_sense_idx": 0,
           "partOfSpeech": "prt",
-          "role": "topic-marker"
+          "reading": "わ",
+          "jmdict_id": "2028920"
         },
         {
           "word": "アンミン",
-          "reading": "アンミン",
-          "start": 2,
-          "end": 3.5,
-          "alsoAccept": ["あみん"],
-          "partOfSpeech": "n-pr"
+          "partOfSpeech": "n",
+          "reading": "アンミン"
         },
         {
           "word": "です",
-          "reading": "です",
-          "start": 3.5,
-          "end": 3.5,
           "partOfSpeech": "cop",
+          "reading": "です",
+          "jmdict_id": "1628500",
+          "jmdict_sense_idx": 0,
           "punctuation": "。"
         }
       ],
@@ -62,122 +65,1549 @@
         "en": [
           {
             "text": "Nice to meet you",
-            "punctuation": ". ",
-            "wordIdx": 0
+            "word": "はじめまして",
+            "punctuation": ". "
           },
-          {
-            "text": "I",
-            "punctuation": " ",
-            "wordIdx": 1
-          },
-          {
-            "text": "am",
-            "punctuation": " ",
-            "wordIdx": 4
-          },
-          {
-            "text": "Anming",
-            "punctuation": ". ",
-            "wordIdx": 3
-          }
+          { "text": "I", "word": "私", "punctuation": " " },
+          { "text": "am", "word": "です", "punctuation": " " },
+          { "text": "Anmin", "word": "アンミン", "punctuation": "." }
         ]
+      },
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 0.43,
+        "end": 3.19
       }
     },
     {
-      "avatar": "tommy",
-      "text": "私はトミです。よろしくお願いします。",
-      "audio": {
-        "src": "1absolutebeginner_lesson1.m4a",
-        "start": 4,
-        "end": 7
-      },
+      "speakerId": 1,
+      "text": "私はトミーです。よろしくお願いします。",
       "words": [
         {
           "word": "私",
-          "reading": "わたし",
-          "start": 4,
-          "end": 4.5,
+
           "partOfSpeech": "pn",
-          "role": "topic",
+          "reading": "わたし",
           "jmdict_id": "1311110",
           "jmdict_sense_idx": 0
         },
         {
           "word": "は",
-          "reading": "わ",
-          "start": 4,
-          "end": 4.5,
-          "jmdict_id": "2028920",
-          "jmdict_sense_idx": 0,
           "partOfSpeech": "prt",
-          "role": "topic-marker"
+          "reading": "わ",
+          "jmdict_id": "2028920"
         },
         {
-          "word": "トミ",
-          "reading": "とみ",
-          "start": 4.5,
-          "end": 5.5,
-          "partOfSpeech": "n-pr"
+          "word": "トミー",
+          "partOfSpeech": "n",
+          "reading": "とみい"
         },
         {
           "word": "です",
-          "reading": "です",
-          "start": 5.5,
-          "end": 5.5,
           "partOfSpeech": "cop",
+          "reading": "です",
+          "jmdict_id": "1628500",
+          "jmdict_sense_idx": 0,
+          "punctuation": "。 "
+        },
+        {
+          "word": "よろしくお願いします",
+          "jmdict_id": "2133750",
+          "reading": "よろしくおねがいします",
+          "partOfSpeech": "exp",
+          "punctuation": "。 "
+        }
+      ],
+      "translations": {
+        "en": [
+          { "text": "I", "word": "私", "punctuation": " " },
+          { "text": "am", "word": "です", "punctuation": " " },
+          { "text": "Tommy", "word": "トミー", "punctuation": ". " },
+          {
+            "text": "Nice to meet you",
+            "word": "よろしくお願いします",
+            "punctuation": "."
+          }
+        ]
+      },
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 3.83,
+        "end": 6.29
+      }
+    },
+    {
+      "speakerId": 0,
+      "text": "こちらこそよろしくお願いします。",
+      "words": [
+        {
+          "word": "こちらこそ",
+          "reading": "こちらこそ",
+          "jmdict_id": "1004510",
+          "partOfSpeech": "exp",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "よろしくお願いします",
+          "jmdict_id": "2133750",
+          "reading": "よろしくおねがいします",
+          "partOfSpeech": "exp",
           "punctuation": "。"
-        },
-        {
-          "word": "よろしく",
-          "reading": "よろしく",
-          "start": 5.5,
-          "end": 6.5,
-          "partOfSpeech": "exp"
-        },
-        {
-          "word": "お願い",
-          "reading": "おねがい",
-          "start": 6.5,
-          "end": 7,
-          "partOfSpeech": "n",
-          "punctuation": "",
-          "jmdict_id": "2028920",
-          "jmdict_sense_idx": 0
-        },
-        {
-          "word": "します",
-          "reading": "します",
-          "start": 7,
-          "end": 7,
-          "partOfSpeech": "v1",
-          "punctuation": "。",
-          "jmdict_id": "2028920",
-          "jmdict_sense_idx": 0
         }
       ],
       "translations": {
         "en": [
           {
-            "text": "I",
-            "punctuation": " ",
-            "wordIdx": 0
+            "text": "Pleased to meet you",
+            "word": "よろしくお願いします",
+            "punctuation": " "
           },
-          {
-            "text": "am",
-            "punctuation": " ",
-            "wordIdx": 3
-          },
-          {
-            "text": "Tommy",
-            "punctuation": ". ",
-            "wordIdx": 2
-          },
-          {
-            "text": "Nice to meet you",
-            "punctuation": ". ",
-            "wordIdx": 4
-          }
+          { "text": "too", "word": "こちらこそ", "punctuation": "." }
         ]
+      },
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 6.83,
+        "end": 8.99
+      }
+    },
+    {
+      "speakerId": 1,
+      "text": "アンミンさんは何人ですか?",
+      "words": [
+        {
+          "word": "アンミン",
+          "partOfSpeech": "n",
+          "reading": "アンミン"
+        },
+        {
+          "word": "さん",
+          "partOfSpeech": "n",
+          "reading": "さん"
+        },
+        {
+          "word": "は",
+          "partOfSpeech": "prt",
+          "reading": "わ",
+          "jmdict_id": "2028920"
+        },
+        {
+          "word": "何人",
+          "partOfSpeech": "n"
+        },
+        {
+          "word": "ですか",
+          "reading": "ですか",
+          "jmdict_id": "2457920",
+          "partOfSpeech": "exp",
+          "jmdict_sense_idx": 0,
+          "punctuation": "。"
+        }
+      ],
+      "translations": {
+        "en": [
+          { "text": "What nationality", "word": "何人", "punctuation": " " },
+          { "text": "is", "word": "ですか", "punctuation": " " },
+          { "text": "Anmin", "word": "アンミン", "punctuation": "?" }
+        ]
+      },
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 10.05,
+        "end": 12.05
+      }
+    },
+    {
+      "speakerId": 0,
+      "text": "私はアメリカ人です。",
+      "words": [
+        {
+          "word": "私",
+          "partOfSpeech": "pn",
+          "reading": "わたし",
+          "jmdict_id": "1311110",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "は",
+          "partOfSpeech": "prt",
+          "reading": "わ",
+          "jmdict_id": "2028920"
+        },
+        {
+          "word": "アメリカ人",
+          "jmdict_id": "1018890",
+          "reading": "アメリカじん",
+          "partOfSpeech": "n",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "です",
+          "partOfSpeech": "cop",
+          "reading": "です",
+          "jmdict_id": "1628500",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "。",
+          "partOfSpeech": "symbol",
+          "reading": "。"
+        }
+      ],
+      "translations": {
+        "en": [
+          { "text": "I", "word": "私", "punctuation": " " },
+          { "text": "am", "word": "です", "punctuation": " " },
+          { "text": "American", "word": "アメリカ人", "punctuation": "." }
+        ]
+      },
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 12.71,
+        "end": 14.33
+      }
+    },
+    {
+      "speakerId": 1,
+      "text": "そうなんですか。日本語はうまいですね。",
+      "words": [
+        {
+          "word": "そうなんですか",
+          "reading": "そうなんですか",
+          "jmdict_id": "2425480",
+          "partOfSpeech": "exp",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "。",
+          "partOfSpeech": "symbol",
+          "reading": "。"
+        },
+        {
+          "word": "日本語",
+          "morpheme": {
+            "surface_form": "日本語",
+            "pos": "名詞",
+            "pos_detail_1": "一般",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "日本語",
+            "reading": "ニホンゴ",
+            "pronunciation": "ニホンゴ",
+            "verbose": {
+              "word_id": 2591070,
+              "word_type": "KNOWN",
+              "word_position": 9
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b242b08aa025ad9dc7b9",
+              "id": "1464530",
+              "kanji": [{ "common": true, "text": "日本語", "tags": [] }],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "にほんご",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "にっぽんご",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["n"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "Japanese (language)"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488962436
+            }
+          ],
+          "partOfSpeech": "n",
+          "reading": "にほんご",
+          "jmdict_id": "1464530",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "は",
+          "morpheme": {
+            "surface_form": "は",
+            "pos": "助詞",
+            "pos_detail_1": "係助詞",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "は",
+            "reading": "ハ",
+            "pronunciation": "ワ",
+            "verbose": {
+              "word_id": 93010,
+              "word_type": "KNOWN",
+              "word_position": 12
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b253b08aa025ad9e8e1d",
+              "id": "2028920",
+              "kanji": [],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "は",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": ["pronounced わ in modern Japanese"],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "indicates sentence topic"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "indicates contrast with another option (stated or unstated)"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "adds emphasis"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488979056
+            }
+          ],
+          "partOfSpeech": "prt",
+          "reading": "わ",
+          "jmdict_id": "2028920"
+        },
+        {
+          "word": "うまい",
+          "morpheme": {
+            "surface_form": "うまい",
+            "pos": "形容詞",
+            "pos_detail_1": "自立",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "形容詞・アウオ段",
+            "conjugated_form": "基本形",
+            "basic_form": "うまい",
+            "reading": "ウマイ",
+            "pronunciation": "ウマイ",
+            "verbose": {
+              "word_id": 2311600,
+              "word_type": "KNOWN",
+              "word_position": 13
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b23db08aa025ad9d8dd9",
+              "id": "1310460",
+              "kanji": [
+                { "common": true, "text": "上手い", "tags": [] },
+                { "common": true, "text": "美味い", "tags": [] },
+                { "common": true, "text": "旨い", "tags": [] },
+                { "common": true, "text": "巧い", "tags": [] },
+                { "common": false, "text": "甘い", "tags": [] },
+                { "common": false, "text": "美い", "tags": ["rK"] }
+              ],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "うまい",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["adj-i"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["uk"],
+                  "info": ["esp. 上手い, 巧い"],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "skillful"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "skilful"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "skilled"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "good"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "expert"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "clever (expression, trick, etc.)"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "apt"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "appropriate"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["adj-i"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["uk"],
+                  "info": ["esp. 旨い, 美味い, 甘い"],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "delicious"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "tasty"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "good"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "nice"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["adj-i"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["uk"],
+                  "info": ["esp. 旨い"],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "good (deal, idea, etc.)"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "profitable"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "promising"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "lucky"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "fortunate"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "successful"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "satisfactory"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "splendid"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488957209
+            }
+          ],
+          "partOfSpeech": "adj-i",
+          "reading": "うまい",
+          "jmdict_id": "1310460"
+        },
+        {
+          "word": "です",
+          "morpheme": {
+            "surface_form": "です",
+            "pos": "助動詞",
+            "pos_detail_1": "*",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "特殊・デス",
+            "conjugated_form": "基本形",
+            "basic_form": "です",
+            "reading": "デス",
+            "pronunciation": "デス",
+            "verbose": {
+              "word_id": 23760,
+              "word_type": "KNOWN",
+              "word_position": 16
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b248b08aa025ad9e0482",
+              "id": "1628500",
+              "kanji": [],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "です",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["cop"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [["だ", 1]],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["pol"],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "be"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "is"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488968647
+            }
+          ],
+          "partOfSpeech": "cop",
+          "reading": "です",
+          "jmdict_id": "1628500",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "ね",
+          "morpheme": {
+            "surface_form": "ね",
+            "pos": "助詞",
+            "pos_detail_1": "終助詞",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "ね",
+            "reading": "ネ",
+            "pronunciation": "ネ",
+            "verbose": {
+              "word_id": 92590,
+              "word_type": "KNOWN",
+              "word_position": 18
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b253b08aa025ad9e8e2c",
+              "id": "2029080",
+              "kanji": [],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "ね",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "ねー",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "ねえ",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "ねぇ",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [
+                    "at sentence end; used as a request for confirmation or agreement"
+                  ],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "right?"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "isn't it?"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "doesn't it?"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "don't you?"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "don't you think?"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["int"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "hey"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "say"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "listen"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "look"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "come on"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [
+                    "at sentence end; used to express one's thoughts or feelings"
+                  ],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "you know"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "you see"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "I must say"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "I should think"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": ["at sentence end; used to make an informal request"],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "will you?"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "please"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [
+                    "at the end of a non-final clause; used to draw the listener's attention to something"
+                  ],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "so, ..."
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "well, ..."
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "you see, ..."
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "you understand?"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["prt"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": ["at sentence end after the question marker か"],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "I'm not sure if ..."
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "I have my doubts about whether ..."
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488979057
+            }
+          ],
+          "partOfSpeech": "prt",
+          "reading": "ね",
+          "jmdict_id": "2029080"
+        },
+        {
+          "word": "。",
+          "morpheme": {
+            "surface_form": "。",
+            "pos": "記号",
+            "pos_detail_1": "句点",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "。",
+            "reading": "。",
+            "pronunciation": "。",
+            "verbose": {
+              "word_id": 90940,
+              "word_type": "KNOWN",
+              "word_position": 19
+            }
+          },
+          "matches": [],
+          "partOfSpeech": "symbol",
+          "reading": "。"
+        }
+      ],
+      "translations": {
+        "en": [
+          {
+            "text": "Is that so",
+            "word": "そうなんですか",
+            "punctuation": "? "
+          },
+          { "text": "Your", "word": null, "punctuation": " " },
+          { "text": "Japanese", "word": "日本語", "punctuation": " " },
+          { "text": "is", "word": "です", "punctuation": " " },
+          { "text": "skillful", "word": "うまい", "punctuation": ", " },
+          { "text": "isn't it", "word": "ね", "punctuation": "?" }
+        ]
+      },
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 15.09,
+        "end": 17.41
+      }
+    },
+    {
+      "speakerId": 0,
+      "text": "いや、まだまだです。",
+      "words": [
+        {
+          "word": "いや",
+          "morpheme": {
+            "surface_form": "いや",
+            "pos": "接続詞",
+            "pos_detail_1": "*",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "いや",
+            "reading": "イヤ",
+            "pronunciation": "イヤ",
+            "verbose": {
+              "word_id": 15360,
+              "word_type": "KNOWN",
+              "word_position": 1
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b244b08aa025ad9ddd77",
+              "id": "1522260",
+              "kanji": [{ "common": true, "text": "本家", "tags": [] }],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "ほんけ",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "ほけ",
+                  "tags": ["ok"],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "いや",
+                  "tags": ["ok"],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "ほんいえ",
+                  "tags": ["ok"],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["n"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "head house (family)"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "birthplace"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "originator"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488964437
+            },
+            {
+              "_id": "65a7b247b08aa025ad9df58a",
+              "id": "1587610",
+              "kanji": [
+                { "common": true, "text": "嫌", "tags": [] },
+                { "common": false, "text": "厭", "tags": ["rK"] }
+              ],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "いや",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": false,
+                  "text": "や",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                },
+                {
+                  "common": true,
+                  "text": "イヤ",
+                  "tags": [],
+                  "appliesToKanji": []
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["adj-na"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "disliking"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "not wanting"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "unwilling (to do)"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "reluctant"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["adj-na"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": [],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "unpleasant"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "disagreeable"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "nasty"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "horrible"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "disgusting"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "undesirable"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "unwelcome"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["int"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["uk"],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "no!"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "quit it!"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "stop!"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488967090
+            },
+            {
+              "_id": "65a7b262b08aa025ad9f576c",
+              "id": "2580180",
+              "kanji": [
+                { "common": false, "text": "弥", "tags": [] },
+                { "common": false, "text": "愈", "tags": [] }
+              ],
+              "kana": [
+                {
+                  "common": false,
+                  "text": "いや",
+                  "tags": [],
+                  "appliesToKanji": ["弥"]
+                },
+                {
+                  "common": false,
+                  "text": "いよ",
+                  "tags": [],
+                  "appliesToKanji": ["弥"]
+                },
+                {
+                  "common": false,
+                  "text": "よ",
+                  "tags": [],
+                  "appliesToKanji": ["弥"]
+                },
+                {
+                  "common": false,
+                  "text": "いよよ",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["adv"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [["愈々", "いよいよ・1", 1]],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["arch"],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "more and more"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "increasingly"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["adv"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["いや"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["arch"],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "extremely"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "very"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488994406
+            }
+          ],
+          "partOfSpeech": "adj-na",
+          "reading": "いや"
+        },
+        {
+          "word": "、",
+          "morpheme": {
+            "surface_form": "、",
+            "pos": "記号",
+            "pos_detail_1": "読点",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "、",
+            "reading": "、",
+            "pronunciation": "、",
+            "verbose": {
+              "word_id": 90910,
+              "word_type": "KNOWN",
+              "word_position": 3
+            }
+          },
+          "matches": [],
+          "partOfSpeech": "symbol",
+          "reading": "、"
+        },
+        {
+          "word": "まだまだ",
+          "morpheme": {
+            "surface_form": "まだまだ",
+            "pos": "副詞",
+            "pos_detail_1": "助詞類接続",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "*",
+            "conjugated_form": "*",
+            "basic_form": "まだまだ",
+            "reading": "マダマダ",
+            "pronunciation": "マダマダ",
+            "verbose": {
+              "word_id": 108330,
+              "word_type": "KNOWN",
+              "word_position": 4
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b244b08aa025ad9ddf47",
+              "id": "1527150",
+              "kanji": [{ "common": true, "text": "未だ未だ", "tags": [] }],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "まだまだ",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["adv"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [["まだ", 1]],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["uk"],
+                  "info": ["more emphatic than まだ"],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "still"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "much more"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "(not) yet"
+                    }
+                  ]
+                },
+                {
+                  "partOfSpeech": ["exp"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["uk"],
+                  "info": ["as 〜だ, 〜です, etc."],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "still a long way to go"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "still a long way off"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "not there yet"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488964637
+            }
+          ],
+          "partOfSpeech": "adv",
+          "reading": "まだまだ",
+          "jmdict_id": "1527150",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "です",
+          "morpheme": {
+            "surface_form": "です",
+            "pos": "助動詞",
+            "pos_detail_1": "*",
+            "pos_detail_2": "*",
+            "pos_detail_3": "*",
+            "conjugated_type": "特殊・デス",
+            "conjugated_form": "基本形",
+            "basic_form": "です",
+            "reading": "デス",
+            "pronunciation": "デス",
+            "verbose": {
+              "word_id": 23760,
+              "word_type": "KNOWN",
+              "word_position": 8
+            }
+          },
+          "matches": [
+            {
+              "_id": "65a7b248b08aa025ad9e0482",
+              "id": "1628500",
+              "kanji": [],
+              "kana": [
+                {
+                  "common": true,
+                  "text": "です",
+                  "tags": [],
+                  "appliesToKanji": ["*"]
+                }
+              ],
+              "sense": [
+                {
+                  "partOfSpeech": ["cop"],
+                  "appliesToKanji": ["*"],
+                  "appliesToKana": ["*"],
+                  "related": [["だ", 1]],
+                  "antonym": [],
+                  "field": [],
+                  "dialect": [],
+                  "misc": ["pol"],
+                  "info": [],
+                  "languageSource": [],
+                  "gloss": [
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "be"
+                    },
+                    {
+                      "lang": "eng",
+                      "gender": null,
+                      "type": null,
+                      "text": "is"
+                    }
+                  ]
+                }
+              ],
+              "__updatedAt": 1705488968647
+            }
+          ],
+          "partOfSpeech": "cop",
+          "reading": "です",
+          "jmdict_id": "1628500",
+          "jmdict_sense_idx": 0
+        },
+        {
+          "word": "。",
+          "partOfSpeech": "symbol",
+          "reading": "。"
+        }
+      ],
+      "translations": {
+        "en": [
+          { "text": "No", "word": "いや", "punctuation": ", " },
+          { "text": "not at all", "word": "まだまだ", "punctuation": "." }
+        ]
+      },
+      "audio": {
+        "src": "1absolutebeginner_lesson1.m4a",
+        "start": 17.83,
+        "end": 19.27
       }
     }
   ]
