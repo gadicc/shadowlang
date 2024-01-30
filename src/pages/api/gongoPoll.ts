@@ -41,6 +41,28 @@ gs.publish("user", async (db, _opts, { auth, updatedAt }) => {
   ];
 });
 
+gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
+  const userId = await auth.userId();
+  if (!userId) return [];
+
+  const user = await db.collection("users").findOne({ _id: userId });
+  if (!user || !user.admin) return [];
+
+  const query = { _id: { $ne: userId } };
+
+  return await db.collection("users").find(query).project({
+    _id: true,
+    emails: true,
+    username: true,
+    displayName: true,
+    credits: true,
+    admin: true,
+    teacher: true,
+    createdAt: true,
+    __updatedAt: true,
+  });
+});
+
 if (gs.dba) {
   const db = gs.dba;
 
