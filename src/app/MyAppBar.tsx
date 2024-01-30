@@ -2,8 +2,8 @@
 import * as React from "react";
 import { useGongoOne, useGongoUserId } from "gongo-client-react";
 import { signIn } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
-import Link from "@/lib/link";
 import { AccountCircle } from "@mui/icons-material";
 
 import {
@@ -26,11 +26,18 @@ import {
 } from "@mui/material";
 import {
   AdminPanelSettings,
+  Forum,
   Home,
   Menu as MenuIcon,
 } from "@mui/icons-material";
 
+import Link from "@/lib/link";
+import pathnames from "./pathnames";
+
 export default function MyAppBar() {
+  const pathname = usePathname();
+  const title = (pathname && pathnames[pathname]) || "ShadowLang";
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -39,6 +46,7 @@ export default function MyAppBar() {
     db.collection("users").find({ _id: userId }),
   );
   const isAdmin = user && user.admin;
+  const isTeacher = user && user.teacher;
 
   const iOS =
     typeof navigator !== "undefined" &&
@@ -89,21 +97,42 @@ export default function MyAppBar() {
               <ListItemText>Home</ListItemText>
             </ListItemButton>
           </ListItem>
-
-          {isAdmin ? (
-            <ListItem disablePadding>
-              <ListItemButton component={Link} href="/admin">
-                <ListItemIcon>
-                  <AdminPanelSettings />
-                </ListItemIcon>
-                <ListItemText>Admin</ListItemText>
-              </ListItemButton>
-            </ListItem>
-          ) : undefined}
         </List>
+
+        {isTeacher ? (
+          <>
+            <Divider />
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} href="/teacher/speakers">
+                  <ListItemIcon>
+                    <Forum />
+                  </ListItemIcon>
+                  <ListItemText>Speakers</ListItemText>
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </>
+        ) : null}
+
+        {isAdmin ? (
+          <>
+            <Divider />
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} href="/admin">
+                  <ListItemIcon>
+                    <AdminPanelSettings />
+                  </ListItemIcon>
+                  <ListItemText>Admin</ListItemText>
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </>
+        ) : undefined}
       </Box>
     ),
-    [isAdmin, toggleDrawer],
+    [isAdmin, isTeacher, toggleDrawer],
   );
 
   return (
@@ -121,7 +150,7 @@ export default function MyAppBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Lesson
+            {title}
           </Typography>
           {userId ? (
             <div>
@@ -162,8 +191,13 @@ export default function MyAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleUserClose}
               >
-                <MenuItem onClick={handleUserClose}>Profile</MenuItem>
-                <MenuItem onClick={handleUserClose}>My account</MenuItem>
+                <MenuItem
+                  onClick={handleUserClose}
+                  component={Link}
+                  href="/account"
+                >
+                  My account
+                </MenuItem>
               </Menu>
             </div>
           ) : (

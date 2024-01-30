@@ -82,6 +82,10 @@ if (gs.dba) {
             // Ok for now
             return true;
           }
+
+          if (doc.patch[0].patch === "/teacher") {
+            return true;
+          }
         }
       }
 
