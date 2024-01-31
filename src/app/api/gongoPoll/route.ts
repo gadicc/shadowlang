@@ -1,4 +1,4 @@
-import gs from "../../api-lib/db";
+import gs from "../../../api-lib/db";
 import {
   GongoDocument,
   CollectionEventProps,
@@ -7,14 +7,10 @@ import {
   // userIdMatches,
 } from "gongo-server-db-mongo/lib/collection";
 import { ChangeSetUpdate } from "gongo-server/lib/DatabaseAdapter";
-import { NextApiRequest, NextApiResponse } from "next";
 // import { ipFromReq, ipPass } from "../../src/api-lib/ipCheck";
-// import { ObjectId } from "bson";
+import { ObjectId } from "@/api-lib/objectId";
 
-export const config = {
-  runtime: "edge",
-  // regions: ['iad1'],
-};
+export const runtime = "edge";
 
 // gs.db.Users.ensureAdmin("dragon@wastelands.net", "initialPassword");
 /*
@@ -66,6 +62,10 @@ gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
 
 gs.publish("speakers", (db) => db.collection("speakers").find());
 
+gs.publish("lesson", async (db, { lessonId }: { lessonId: string }) => {
+  return db.collection("lessons").find({ _id: new ObjectId(lessonId) });
+});
+
 gs.publish("lessons", async (db, opts, { auth }) => {
   if (!opts || !opts.userId) return db.collection("lessons").find();
 
@@ -116,8 +116,9 @@ if (gs.dba) {
 
 // module.exports = gs.expressPost();
 const gsExpressPost =
-  config.runtime === "edge" ? gs.vercelEdgePost() : gs.expressPost();
-async function gongoPoll(req: NextApiRequest, res: NextApiResponse) {
+  runtime === "edge" ? gs.vercelEdgePost() : gs.expressPost();
+
+async function gongoPoll(req: Request) {
   /*
   if (
     process.env.NODE_ENV === "production" &&
@@ -131,4 +132,5 @@ async function gongoPoll(req: NextApiRequest, res: NextApiResponse) {
   // @ts-expect-error: TODO
   return gsExpressPost(req, res);
 }
-module.exports = gongoPoll;
+
+export const POST = gsExpressPost;

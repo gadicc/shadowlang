@@ -29,7 +29,7 @@
     "hepburn": "^1.2.1",
     "mongodb": "^6.3.0",
     "mongodb-rest-relay": "^1.9.4",
-    "next": "14.0.4",
+    "next": "14.1.0",
     "next-auth": "^4.24.5",
     "openai": "^4.25.0",
     "radash": "^11.0.0",
@@ -61,5 +61,8 @@
     "ts-node": "10.9.2",
     "typescript": "^5",
     "typescript-eslint": "^0.0.1-alpha.0"
+  },
+  "browser": {
+    "crypto": false
   }
 }
