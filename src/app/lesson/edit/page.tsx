@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useSearchParams } from "next/navigation";
 
 import {
   Container,
@@ -8,6 +9,7 @@ import {
   Typography,
   Box,
   LinearProgress,
+  Button,
 } from "@mui/material";
 
 import { jmdict } from "@/dicts";
@@ -16,8 +18,14 @@ import TextBlock from "../[_id]/TextBlock";
 import EditBlock, { analyzeBlockSentence } from "./EditBlock";
 import Translations from "./Translations";
 import matchTimestamps from "./matchTimestamps";
+import { useGongoSub, useGongoOne, db } from "gongo-client-react";
 
 jmdict;
+
+function stripUnderscoredKeys(key: string, value: unknown) {
+  if (key.startsWith("_")) return undefined;
+  return value;
+}
 
 function EditableLangTable({
   value,
@@ -155,7 +163,15 @@ const LessonBlock = React.memo(function LessonBlock({
 });
 
 export default function Edit() {
-  const [lesson, _setLesson] = React.useState<Partial<Lesson>>({});
+  const searchParams = useSearchParams();
+  const lessonId = searchParams?.get("id");
+
+  const sub = useGongoSub("lesson", { _id: lessonId });
+  const dbLesson = useGongoOne((db) =>
+    db.collection("lessons").find({ _id: lessonId }),
+  );
+
+  const [lesson, _setLesson] = React.useState<Partial<Lesson> | null>(null);
   const latestLesson = React.useRef<Partial<Lesson>>();
   const transRef = React.useRef<Transcription>();
   const [editIdx, setEditIdx] = React.useState(-1);
@@ -169,6 +185,30 @@ export default function Edit() {
     },
     [_setLesson],
   );
+
+  React.useEffect(() => {
+    if (lesson) return;
+    if (dbLesson) setLesson(dbLesson);
+  }, [dbLesson, lesson, setLesson]);
+
+  // TODO, what if a new update comes in while we're editing?
+  // on the other hand, we rely on this for self updates.
+  const orig = React.useMemo(
+    () => JSON.stringify(dbLesson, stripUnderscoredKeys),
+    [dbLesson],
+  );
+  const hasChanged = React.useMemo(
+    () => orig !== JSON.stringify(lesson, stripUnderscoredKeys),
+    [lesson, orig],
+  );
+
+  console.log({
+    orig,
+    lesson,
+    dbLesson,
+  });
+
+  if (!lesson) return "Loading...";
 
   function mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>) {
     const lesson = latestLesson.current;
@@ -300,6 +340,28 @@ export default function Edit() {
           mergeBlockIdx={mergeBlockIdx}
         />
       ))}
+      {hasChanged ? (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 10,
+            right: 10,
+          }}
+        >
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              const $set = { ...lesson };
+              // @ts-expect-error: trust me :)
+              delete $set._id;
+              db.collection("lessons").update({ _id: lessonId }, { $set });
+            }}
+          >
+            Save Changes
+          </Button>
+        </div>
+      ) : null}
     </Container>
   );
 }
