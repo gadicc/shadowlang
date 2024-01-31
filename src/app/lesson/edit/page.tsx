@@ -14,11 +14,11 @@ import {
 
 import { jmdict } from "@/dicts";
 import type { Lesson, Transcription } from "./types";
-import TextBlock from "../[_id]/TextBlock";
+import TextBlock, { useMergeSpeakers } from "../[_id]/TextBlock";
 import EditBlock, { analyzeBlockSentence } from "./EditBlock";
 import Translations from "./Translations";
 import matchTimestamps from "./matchTimestamps";
-import { useGongoSub, useGongoOne, db } from "gongo-client-react";
+import { useGongoSub, useGongoOne, db, useGongoLive } from "gongo-client-react";
 
 jmdict;
 
@@ -90,12 +90,64 @@ function CustomTabPanel(props: {
 
 function Speakers({
   speakers,
+  lesson,
   setLesson,
 }: {
   speakers?: Lesson["speakers"];
+  lesson: Partial<Lesson>;
   setLesson(lesson: Partial<Lesson>): void;
 }) {
-  return <div></div>;
+  useGongoSub("speakers");
+  const dbSpeakers = useGongoLive((db) => db.collection("speakers").find({}));
+
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <ol>
+        {speakers?.map((speaker, i) => (
+          <li key={i}>
+            <select
+              value={speaker.speakerId || ""}
+              onChange={(e) => {
+                const newSpeakers = [...speakers];
+                newSpeakers[i].speakerId = e.target.value;
+                setLesson({ ...lesson, speakers: newSpeakers });
+              }}
+            >
+              <option value="">Custom</option>
+              {dbSpeakers?.map((dbSpeaker) => (
+                <option key={dbSpeaker._id} value={dbSpeaker._id}>
+                  {dbSpeaker.name}
+                </option>
+              ))}
+            </select>
+            {!speaker.speakerId && (
+              <span>
+                {" "}
+                <input
+                  type="text"
+                  value={speaker.name || ""}
+                  onChange={(e) => {
+                    const newSpeakers = [...speakers];
+                    newSpeakers[i].name = e.target.value;
+                    setLesson({ ...lesson, speakers: newSpeakers });
+                  }}
+                />{" "}
+                <input
+                  type="text"
+                  value={speaker.initials || ""}
+                  onChange={(e) => {
+                    const newSpeakers = [...speakers];
+                    newSpeakers[i].initials = e.target.value;
+                    setLesson({ ...lesson, speakers: newSpeakers });
+                  }}
+                />
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
 }
 
 const LessonBlock = React.memo(function LessonBlock({
@@ -106,6 +158,7 @@ const LessonBlock = React.memo(function LessonBlock({
   editTabIdx,
   setEditTabIdx,
   mergeBlockIdx,
+  speakers,
 }: {
   block: Lesson["blocks"][0];
   i: number;
@@ -114,6 +167,7 @@ const LessonBlock = React.memo(function LessonBlock({
   editTabIdx: number;
   setEditTabIdx(i: number): void;
   mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
+  speakers: Lesson["speakers"];
 }) {
   return (
     <div
@@ -127,7 +181,8 @@ const LessonBlock = React.memo(function LessonBlock({
       <TextBlock
         key={i}
         text={block.text}
-        avatar={String.fromCharCode(65 + block.speakerId)} // TODO
+        speakerId={block.speakerId}
+        speakers={speakers}
         audio={block.audio}
         words={block.words}
         translations={block.translations}
@@ -166,10 +221,12 @@ export default function Edit() {
   const searchParams = useSearchParams();
   const lessonId = searchParams?.get("id");
 
-  const sub = useGongoSub("lesson", { _id: lessonId });
+  useGongoSub("lesson", { _id: lessonId });
+  useGongoSub("speakers");
   const dbLesson = useGongoOne((db) =>
     db.collection("lessons").find({ _id: lessonId }),
   );
+  const dbSpeakers = useGongoLive((db) => db.collection("speakers").find({}));
 
   const [lesson, _setLesson] = React.useState<Partial<Lesson> | null>(null);
   const latestLesson = React.useRef<Partial<Lesson>>();
@@ -202,11 +259,7 @@ export default function Edit() {
     [lesson, orig],
   );
 
-  console.log({
-    orig,
-    lesson,
-    dbLesson,
-  });
+  const speakers = useMergeSpeakers(lesson?.speakers, dbSpeakers);
 
   if (!lesson) return "Loading...";
 
@@ -250,8 +303,8 @@ export default function Edit() {
         speakers[seg.speaker] = { id: speakerCount++, name: seg.speaker };
     }
 
-    console.log(result);
-    console.log({ speakers });
+    // console.log(result);
+    // console.log({ speakers });
 
     const newLesson = { ...lesson };
     newLesson.speakers = Object.values(speakers);
@@ -317,8 +370,11 @@ export default function Edit() {
       <br />
 
       <Typography variant="h6">Speakers</Typography>
-      <Speakers speakers={lesson.speakers} setLesson={setLesson} />
-      <br />
+      <Speakers
+        speakers={lesson.speakers}
+        lesson={lesson}
+        setLesson={setLesson}
+      />
 
       <Typography variant="h6">Blocks</Typography>
       <div style={{ fontSize: "80%" }}>
@@ -338,6 +394,7 @@ export default function Edit() {
           editTabIdx={editTabIdx}
           setEditTabIdx={setEditTabIdx}
           mergeBlockIdx={mergeBlockIdx}
+          speakers={speakers}
         />
       ))}
       {hasChanged ? (

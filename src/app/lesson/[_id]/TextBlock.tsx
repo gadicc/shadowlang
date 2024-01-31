@@ -5,7 +5,27 @@ import hepburn from "hepburn";
 import { ReactFuri } from "react-furi";
 
 import { LinearProgress, Stack } from "@mui/material";
-import { BlockTranslations } from "../edit/types";
+import { BlockTranslations, Speaker } from "../edit/types";
+import type { Speaker as DBSpeaker } from "@/schemas";
+import Image from "next/image";
+
+export function useMergeSpeakers(
+  lessonSpeakers: Speaker[] | undefined,
+  dbSpeakers: DBSpeaker[],
+) {
+  return React.useMemo(
+    () =>
+      lessonSpeakers
+        ? lessonSpeakers?.map((speaker) => ({
+            ...speaker,
+            ...(dbSpeakers?.find(
+              (dbSpeaker) => dbSpeaker._id === speaker.speakerId,
+            ) || {}),
+          }))
+        : [],
+    [lessonSpeakers, dbSpeakers],
+  );
+}
 
 // https://www.edrdg.org/jmwsgi/edhelp.py?svc=jmdict&sid=#kw_pos
 const colors = {
@@ -347,7 +367,8 @@ function useAudio(
 export default React.memo(function TextBlock({
   text,
   words,
-  avatar,
+  speakers,
+  speakerId,
   isCurrent,
   audio,
   translations,
@@ -355,7 +376,8 @@ export default React.memo(function TextBlock({
 }: {
   text: string;
   words: Word[];
-  avatar: string;
+  speakers: Speaker[];
+  speakerId: number;
   isCurrent: boolean;
   audio: { src: string; start: number; end: number };
   translations: BlockTranslations;
@@ -364,6 +386,10 @@ export default React.memo(function TextBlock({
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
   // const [done, setDone] = React.useState(false);
+
+  const speaker = speakers[speakerId];
+  if (!speaker.url && !speaker.initials)
+    speaker.initials = String.fromCharCode(65 + speakerId);
 
   // const isCorrect = false;
   const [isListening, _setIsListening] = React.useState(false);
@@ -396,10 +422,10 @@ export default React.memo(function TextBlock({
               margin: isCurrent ? 0 : 1,
             }}
           >
-            {avatar.includes(".") ? (
-              <img
-                alt={avatar + " avatar"}
-                src={`/img/avatars/${avatar}`}
+            {speaker.url ? (
+              <Image
+                alt={speaker.name || "Speaker Avatar"}
+                src={speaker.url}
                 width={70}
                 height={70}
               />
@@ -417,16 +443,16 @@ export default React.memo(function TextBlock({
                   userSelect: "none",
                   color: "white",
                   backgroundColor:
-                    avatar === "A"
+                    speaker.initials === "A"
                       ? "blue"
-                      : avatar === "B"
+                      : speaker.initials === "B"
                         ? "purple"
-                        : avatar === "C"
+                        : speaker.initials === "C"
                           ? "navy"
                           : "pink",
                 }}
               >
-                {avatar}
+                {speaker.initials}
               </div>
             )}
           </div>

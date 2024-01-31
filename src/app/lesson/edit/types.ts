@@ -23,8 +23,10 @@ export interface Transcription {
 
 export interface Speaker {
   id: number;
-  name: string;
-  avatar: string;
+  speakerId?: string;
+  name?: string;
+  url?: string;
+  initials?: string;
 }
 
 export interface Lesson {

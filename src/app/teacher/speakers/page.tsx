@@ -12,6 +12,7 @@ import { Button, Container } from "@mui/material";
 
 import { Speaker } from "@/schemas";
 import { Collection } from "gongo-client";
+import Image from "next/image";
 
 const update = _.debounce(
   { delay: 1000 },
@@ -27,8 +28,10 @@ function SpeakerItem({
   userId: string;
 }) {
   const [mySpeaker, setMySpeaker] = React.useState(speaker);
+  /*
   const hasChanged =
     mySpeaker.name !== speaker.name || mySpeaker.url !== speaker.url;
+  */
 
   const setSpeaker = (newSpeaker: Speaker) => {
     setMySpeaker(newSpeaker);
@@ -51,7 +54,12 @@ function SpeakerItem({
         textAlign: "center",
       }}
     >
-      <img src={mySpeaker.url} style={{ height: 100, width: 100 }} />
+      <Image
+        src={mySpeaker.url}
+        alt={mySpeaker.name || "Speaker Avatar"}
+        height={100}
+        width={100}
+      />
       <br />
       <input
         type="text"
@@ -75,7 +83,7 @@ function SpeakerItem({
 export default function TeachersSpeakers() {
   const userId = useGongoUserId() as string | null;
 
-  const sub = useGongoSub("speakers");
+  useGongoSub("speakers");
   const speakers = useGongoLive((db) => db.collection("speakers").find({}));
 
   if (!userId) return "Log in first";
