@@ -217,7 +217,7 @@ const LessonBlock = React.memo(function LessonBlock({
   );
 });
 
-export default function Edit() {
+function Edit() {
   const searchParams = useSearchParams();
   const lessonId = searchParams?.get("id");
 
@@ -420,5 +420,13 @@ export default function Edit() {
         </div>
       ) : null}
     </Container>
+  );
+}
+
+export default function WrappedEdit() {
+  return (
+    <React.Suspense>
+      <Edit />
+    </React.Suspense>
   );
 }
