@@ -199,7 +199,17 @@ function useAudio(
   avatarRef?: React.RefObject<HTMLDivElement>,
 ) {
   // console.log("useAudio");
-  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isPlaying, _setIsPlaying] = React.useState(false);
+  const isPlayingRef = React.useRef(isPlaying);
+  const setIsPlaying = React.useCallback(
+    (bool: boolean) => {
+      if (bool === isPlayingRef.current) return;
+      isPlayingRef.current = bool;
+      _setIsPlaying(bool);
+    },
+    [isPlayingRef],
+  );
+
   const [playingWordIdx, _setPlayingWordIdx] = React.useState(-1);
   const playingWordIdxRef = React.useRef(playingWordIdx);
   const setPlayingWordIdx = React.useCallback(
@@ -211,23 +221,77 @@ function useAudio(
     [playingWordIdxRef],
   );
 
+  const timeupdate = React.useCallback(
+    function timeupdate() {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      const currentTime = audio.currentTime;
+
+      if (currentTime >= end + 0.2) {
+        audio.pause();
+        setIsPlaying(false);
+        setPlayingWordIdx(-1);
+        if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
+        return;
+      }
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        if (!(word && word.start && word.end)) continue;
+        if (currentTime > word.start && currentTime < word.end) {
+          if (playingWordIdxRef.current !== i) {
+            if (false)
+              console.log(
+                "currentTime",
+                currentTime,
+                "prev playingWordIndex",
+                playingWordIdxRef.current,
+                "next playingWordIndex",
+                i,
+              );
+            setPlayingWordIdx(i);
+          }
+          break;
+        }
+      }
+    },
+    [audioRef, words, end, setIsPlaying, setPlayingWordIdx, avatarRef],
+  );
+
   React.useEffect(() => {
+    const ref = audioRef.current;
+    if (!ref) return;
+
+    ref.addEventListener("timeupdate", timeupdate);
+    return () => {
+      ref.removeEventListener("timeupdate", timeupdate);
+    };
+  }, [audioRef, timeupdate]);
+
+  const actxRef = React.useRef<AudioContext | null>(null);
+
+  const play = React.useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.currentTime = start;
+    setIsPlaying(true);
+
+    // --- wave scope start ---
     // Adapted from https://stackoverflow.com/a/37021249/1839099
     // thanks user1693593
-    const actx = new AudioContext();
-    const audio = audioRef.current;
     let srcNode: MediaElementAudioSourceNode,
       bquad: BiquadFilterNode,
       analyser: AnalyserNode,
       fft: Uint8Array,
       fftLen: number;
 
-    if (!audio) return;
-
-    audio.addEventListener("canplay", setup);
-
     function setup(this: HTMLAudioElement) {
-      if (srcNode) return;
+      if (srcNode || !audio || actxRef.current) return;
+      audio.removeEventListener("canplay", setup);
+
+      const actx = (actxRef.current = new AudioContext());
 
       srcNode = actx.createMediaElementSource(this);
 
@@ -254,82 +318,28 @@ function useAudio(
       render();
     }
     function render() {
-      // fill FFT buffer
-      analyser.getByteFrequencyData(fft);
-      // average data from some bands
-      const v = (fft[1] + fft[2]) / 512;
-      console.log(v);
+      // This was an easy way to avoid the calcs when not playing, but
+      // really we should stop the requestAnimationFrame loop.  TODO.
+      if (isPlayingRef.current) {
+        // fill FFT buffer
+        analyser.getByteFrequencyData(fft);
+        // average data from some bands
+        const v = (fft[1] + fft[2]) / 512;
+        // console.log(v);
 
-      const avatar = avatarRef?.current;
-      if (!avatar) return;
-      avatar.style.boxShadow =
-        "0px 0px 0px " + 8 * v + "px rgba(100,100,100,0.3)";
-
-      // TODO, stop this!!! when no longer playing
+        const avatar = avatarRef?.current;
+        if (!avatar) return;
+        avatar.style.boxShadow =
+          "0px 0px 0px " + 8 * v + "px rgba(100,100,100,0.3)";
+      }
 
       requestAnimationFrame(render);
     }
+    if (!actxRef.current) audio.addEventListener("canplay", setup);
+    // --- wave scope end ---
 
-    return () => {
-      audio.removeEventListener("canplay", setup);
-    };
-  }, [avatarRef, audioRef]);
-
-  const timeupdate = React.useCallback(
-    function timeupdate() {
-      const audio = audioRef.current;
-      if (!audio) return;
-
-      const currentTime = audio.currentTime;
-
-      if (currentTime >= end + 0.2) {
-        audio.pause();
-        setIsPlaying(false);
-        setPlayingWordIdx(-1);
-        return;
-      }
-
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-        if (!(word && word.start && word.end)) continue;
-        if (currentTime > word.start && currentTime < word.end) {
-          if (playingWordIdxRef.current !== i) {
-            if (false)
-              console.log(
-                "currentTime",
-                currentTime,
-                "prev playingWordIndex",
-                playingWordIdxRef.current,
-                "next playingWordIndex",
-                i,
-              );
-            setPlayingWordIdx(i);
-          }
-          break;
-        }
-      }
-    },
-    [audioRef, words, end, setPlayingWordIdx],
-  );
-
-  React.useEffect(() => {
-    const ref = audioRef.current;
-    if (!ref) return;
-
-    ref.addEventListener("timeupdate", timeupdate);
-    return () => {
-      ref.removeEventListener("timeupdate", timeupdate);
-    };
-  }, [audioRef, timeupdate]);
-
-  const play = React.useCallback(() => {
-    const ref = audioRef.current;
-    if (!ref) return;
-
-    ref.currentTime = start;
-    setIsPlaying(true);
-    ref.play();
-  }, [audioRef, start]);
+    audio.play();
+  }, [audioRef, start, setIsPlaying, avatarRef]);
 
   return { isPlaying, play, playingWordIdx };
 }
