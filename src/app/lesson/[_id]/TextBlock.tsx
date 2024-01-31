@@ -363,10 +363,10 @@ export default React.memo(function TextBlock({
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
-  const [done, setDone] = React.useState(false);
+  // const [done, setDone] = React.useState(false);
 
-  const isCorrect = false;
-  const [isListening, setIsListening] = React.useState(false);
+  // const isCorrect = false;
+  const [isListening, _setIsListening] = React.useState(false);
   const translation = translations?.en;
 
   const { isPlaying, play, playingWordIdx } = useAudio(
