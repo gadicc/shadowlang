@@ -4,7 +4,7 @@ import { useGongoOne, useGongoUserId } from "gongo-client-react";
 import { signIn } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, LocalLibrary } from "@mui/icons-material";
 
 import {
   AppBar,
@@ -108,7 +108,15 @@ export default function MyAppBar() {
                   <ListItemIcon>
                     <Forum />
                   </ListItemIcon>
-                  <ListItemText>Speakers</ListItemText>
+                  <ListItemText>My Speakers</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} href="/teacher/lessons">
+                  <ListItemIcon>
+                    <LocalLibrary />
+                  </ListItemIcon>
+                  <ListItemText>My Lessons</ListItemText>
                 </ListItemButton>
               </ListItem>
             </List>

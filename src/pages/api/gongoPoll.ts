@@ -66,6 +66,13 @@ gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
 
 gs.publish("speakers", (db) => db.collection("speakers").find());
 
+gs.publish("lessons", async (db, opts, { auth }) => {
+  if (!opts || !opts.userId) return db.collection("lessons").find();
+
+  const userId = await auth.userId();
+  return db.collection("lessons").find({ userId });
+});
+
 if (gs.dba) {
   const db = gs.dba;
 
@@ -100,6 +107,11 @@ if (gs.dba) {
   speakers.allow("insert", userIdMatches);
   speakers.allow("update", userIdMatches);
   speakers.allow("remove", userIdMatches);
+
+  const lessons = db.collection("lessons");
+  lessons.allow("insert", userIdMatches);
+  lessons.allow("update", userIdMatches);
+  lessons.allow("remove", userIdMatches);
 }
 
 // module.exports = gs.expressPost();

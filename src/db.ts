@@ -3,13 +3,13 @@ import db from "gongo-client";
 import HTTPTransport from "gongo-client/lib/transports/http";
 
 import { Collection } from "gongo-client";
-import GongoAuth from "gongo-client/lib/auth";
+// import GongoAuth from "gongo-client/lib/auth";
 
-import type { User, Speaker } from "./schemas";
+import type { User, Lesson, Speaker } from "./schemas";
 
 // const out = { db };
 
-db.extend("auth", GongoAuth);
+// db.extend("auth", GongoAuth);
 db.extend("transport", HTTPTransport, {
   pollInterval: 60 /*5*/ * 1000,
   pollWhenIdle: false,
@@ -39,11 +39,13 @@ if (typeof window !== "undefined")
 
 db.collection("users").persist();
 db.collection("speakers").persist();
+db.collection("lessons").persist();
 
 declare module "gongo-client" {
   class Database {
     collection(name: "users"): Collection<User>;
     collection(name: "speakers"): Collection<Speaker>;
+    collection(name: "lessons"): Collection<Lesson>;
   }
 }
 
