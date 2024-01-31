@@ -97,6 +97,14 @@ export default function MyAppBar() {
               <ListItemText>Home</ListItemText>
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} href="/lessons">
+              <ListItemIcon>
+                <LocalLibrary />
+              </ListItemIcon>
+              <ListItemText>Lessons</ListItemText>
+            </ListItemButton>
+          </ListItem>
         </List>
 
         {isTeacher ? (
