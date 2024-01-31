@@ -118,6 +118,7 @@ if (gs.dba) {
 const gsExpressPost =
   runtime === "edge" ? gs.vercelEdgePost() : gs.expressPost();
 
+/*
 async function gongoPoll(req: Request) {
   /*
   if (
@@ -127,10 +128,11 @@ async function gongoPoll(req: Request) {
     res.status(403).end("IP not allowed");
     return;
   }
-  */
+  */ /*
 
-  // @ts-expect-error: TODO
+  // @ ts-expect-error: TODO
   return gsExpressPost(req, res);
 }
+*/
 
 export const POST = gsExpressPost;

@@ -33,7 +33,7 @@ function TeacherLessonRow({ lesson }: { lesson: Lesson }) {
 
 export default function TeacherLessons() {
   const userId = useGongoUserId();
-  const sub = useGongoSub("lessons", { userId });
+  useGongoSub("lessons", { userId });
   const lessons = useGongoLive((db) =>
     db.collection("lessons").find({ userId }),
   );

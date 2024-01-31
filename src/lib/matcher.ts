@@ -97,11 +97,11 @@ export default class Matcher {
   match(results: GenericSpeechRecognitionList) {
     for (let ri = 0; ri < results.length; ri++) {
       const result = results[ri];
-      const isFinal = result.isFinal;
+      // const isFinal = result.isFinal;
 
       for (let ai = 0; ai < result.length; ai++) {
         const alternative = result[ai];
-        const { transcript, confidence } = alternative;
+        const { transcript /*, confidence */ } = alternative;
         this.matchTranscript(transcript);
       }
     }
