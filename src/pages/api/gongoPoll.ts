@@ -3,6 +3,7 @@ import {
   GongoDocument,
   CollectionEventProps,
   userIsAdmin,
+  userIdMatches,
   // userIdMatches,
 } from "gongo-server-db-mongo/lib/collection";
 import { ChangeSetUpdate } from "gongo-server/lib/DatabaseAdapter";
@@ -63,6 +64,8 @@ gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
   });
 });
 
+gs.publish("speakers", (db) => db.collection("speakers").find());
+
 if (gs.dba) {
   const db = gs.dba;
 
@@ -92,6 +95,11 @@ if (gs.dba) {
       return "ACCESS_DENIED";
     },
   );
+
+  const speakers = db.collection("speakers");
+  speakers.allow("insert", userIdMatches);
+  speakers.allow("update", userIdMatches);
+  speakers.allow("remove", userIdMatches);
 }
 
 // module.exports = gs.expressPost();

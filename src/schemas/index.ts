@@ -6,3 +6,4 @@ export type {
 } from "@scriptin/jmdict-simplified-types";
 
 export * from "./user";
+export * from "./speaker";
