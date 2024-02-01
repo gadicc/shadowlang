@@ -160,6 +160,7 @@ const LessonBlock = React.memo(function LessonBlock({
   setEditTabIdx,
   mergeBlockIdx,
   speakers,
+  lessonAudio,
 }: {
   block: Lesson["blocks"][0];
   i: number;
@@ -169,6 +170,7 @@ const LessonBlock = React.memo(function LessonBlock({
   setEditTabIdx(i: number): void;
   mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
   speakers: Lesson["speakers"];
+  lessonAudio?: Lesson["audio"];
 }) {
   return (
     <div
@@ -189,6 +191,7 @@ const LessonBlock = React.memo(function LessonBlock({
         translations={block.translations}
         isCurrent={false} // XXX event logic TODO
         status={block.status}
+        lessonAudio={lessonAudio}
       />
       {editIdx === i ? (
         <>
@@ -421,6 +424,7 @@ function Edit() {
           setEditTabIdx={setEditTabIdx}
           mergeBlockIdx={mergeBlockIdx}
           speakers={speakers}
+          lessonAudio={lesson.audio}
         />
       ))}
       {hasChanged ? (

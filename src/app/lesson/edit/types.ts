@@ -46,7 +46,7 @@ export interface Lesson {
     words: BlockWord[];
     translations: BlockTranslations;
     audio: {
-      src: string;
+      src?: string;
       start: number;
       end: number;
     };

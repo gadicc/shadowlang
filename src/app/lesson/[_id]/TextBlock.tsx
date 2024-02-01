@@ -6,7 +6,7 @@ import { ReactFuri } from "react-furi";
 
 import { LinearProgress, Stack } from "@mui/material";
 import { BlockTranslations, Speaker } from "../edit/types";
-import type { Speaker as DBSpeaker } from "@/schemas";
+import type { Speaker as DBSpeaker, Lesson } from "@/schemas";
 import Image from "next/image";
 
 export function useMergeSpeakers(
@@ -373,15 +373,17 @@ export default React.memo(function TextBlock({
   audio,
   translations,
   status,
+  lessonAudio,
 }: {
   text: string;
   words: Word[];
   speakers: Speaker[];
   speakerId: number;
   isCurrent: boolean;
-  audio: { src: string; start: number; end: number };
+  audio: Lesson["blocks"][0]["audio"];
   translations: BlockTranslations;
   status?: { title: string; showProgress: boolean; message?: string };
+  lessonAudio?: Lesson["audio"];
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
@@ -408,10 +410,14 @@ export default React.memo(function TextBlock({
     avatarRef,
   );
   // console.log({ results });
+  const audioSrc =
+    audio.src ||
+    (lessonAudio && "/api/file2?sha256=" + lessonAudio.sha256) ||
+    "";
 
   return (
     <>
-      <audio ref={audioRef} src={"/audio/" + audio.src} />
+      <audio ref={audioRef} src={audioSrc} />
 
       <Stack direction="row" spacing={2}>
         <div>

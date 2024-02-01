@@ -40,6 +40,7 @@ export default function LessonId({
           // idx={idx}
           // setIdx={setIdx}
           audio={block.audio}
+          lessonAudio={lesson.audio}
         />
       ))}
     </Container>
