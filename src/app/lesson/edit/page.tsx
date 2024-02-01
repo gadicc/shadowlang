@@ -319,7 +319,6 @@ function Edit() {
       words: [],
       translations: { en: [] },
       audio: {
-        src: "1absolutebeginner_lesson1.m4a",
         start: parseFloat(seg.start),
         end: parseFloat(seg.end),
       },

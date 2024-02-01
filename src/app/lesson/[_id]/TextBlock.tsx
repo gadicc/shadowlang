@@ -405,8 +405,8 @@ export default React.memo(function TextBlock({
   const { isPlaying, play, playingWordIdx } = useAudio(
     audioRef,
     words,
-    typeof words[0].start === "number" ? words[0].start : audio.start,
-    typeof lastWord.end === "number" ? lastWord.end : audio.end,
+    typeof words?.[0]?.start === "number" ? words[0].start : audio.start,
+    typeof lastWord?.end === "number" ? lastWord.end : audio.end,
     avatarRef,
   );
   // console.log({ results });
