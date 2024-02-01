@@ -62,8 +62,8 @@ gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
 
 gs.publish("speakers", (db) => db.collection("speakers").find());
 
-gs.publish("lesson", async (db, { lessonId }: { lessonId: string }) => {
-  return db.collection("lessons").find({ _id: new ObjectId(lessonId) });
+gs.publish("lesson", async (db, { _id }: { _id: string }) => {
+  return db.collection("lessons").find({ _id: new ObjectId(_id) });
 });
 
 gs.publish("lessons", async (db, opts, { auth }) => {
