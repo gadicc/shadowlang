@@ -2,6 +2,7 @@
   "name": "shadowlang",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -21,7 +22,9 @@
     "@sglkc/kuroshiro": "^1.0.1",
     "@sglkc/kuroshiro-analyzer-kuromoji": "^1.0.1",
     "@types/hepburn": "^1.2.2",
+    "aws-sdk": "^2.1548.0",
     "date-fns": "^3.3.1",
+    "file-type": "^19.0.0",
     "gongo-client": "^2.7.1",
     "gongo-client-react": "^0.5.0",
     "gongo-server": "^3.5.0",
@@ -29,6 +32,7 @@
     "hepburn": "^1.2.1",
     "mongodb": "^6.3.0",
     "mongodb-rest-relay": "^1.9.4",
+    "music-metadata": "^7.14.0",
     "next": "14.1.0",
     "next-auth": "^4.24.5",
     "openai": "^4.25.0",
@@ -38,6 +42,7 @@
     "react-furi": "^2.0.2",
     "react-virtuoso": "^4.6.3",
     "replicate": "^0.25.2",
+    "sharp": "^0.33.2",
     "tone": "^14.7.77"
   },
   "devDependencies": {
