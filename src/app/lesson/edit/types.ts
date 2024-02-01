@@ -33,6 +33,12 @@ export interface Lesson {
   title: {
     [key: string]: string;
   };
+  audio: {
+    filename: string;
+    sha256: string;
+    size: number;
+    duration?: number;
+  };
   speakers: Speaker[];
   blocks: {
     speakerId: number;

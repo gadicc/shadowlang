@@ -350,11 +350,34 @@ function Edit() {
       <br />
 
       <Typography variant="h6">Audio</Typography>
-      <Upload onResult={setFileEntry} />
+      <Upload
+        onResult={(entry: FileEntry) => {
+          setFileEntry(entry);
+          if (entry.type === "audio") {
+            setLesson({
+              ...lesson,
+              audio: {
+                filename: entry.filename || "unknown",
+                size: entry.size,
+                sha256: entry.sha256,
+                duration: entry.audio.duration,
+              },
+            });
+          }
+        }}
+      />
+      {!fileEntry && lesson.audio && (
+        <div>
+          <br />
+          <b>Previously uploaded:</b> {lesson.audio.filename},{" "}
+          {lesson.audio.size} bytes, {lesson.audio.duration?.toFixed(2)} seconds
+        </div>
+      )}
+
       <br />
       <button
         style={{ width: 100 }}
-        disabled={!fileEntry || isProcessing}
+        disabled={isProcessing || (!fileEntry && !lesson.audio)}
         onClick={processAudio}
       >
         {isProcessing ? (
