@@ -395,11 +395,16 @@ export default React.memo(function TextBlock({
   const [isListening, _setIsListening] = React.useState(false);
   const translation = translations?.en;
 
+  const lastIndex = words.findLastIndex(
+    (word) => word.partOfSpeech !== "symbol",
+  );
+  const lastWord = words[lastIndex !== -1 ? lastIndex : words.length - 1];
+
   const { isPlaying, play, playingWordIdx } = useAudio(
     audioRef,
     words,
-    audio.start,
-    audio.end,
+    typeof words[0].start === "number" ? words[0].start : audio.start,
+    typeof lastWord.end === "number" ? lastWord.end : audio.end,
     avatarRef,
   );
   // console.log({ results });
