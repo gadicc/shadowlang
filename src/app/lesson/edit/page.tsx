@@ -19,6 +19,7 @@ import EditBlock, { analyzeBlockSentence } from "./EditBlock";
 import Translations from "./Translations";
 import matchTimestamps from "./matchTimestamps";
 import { useGongoSub, useGongoOne, db, useGongoLive } from "gongo-client-react";
+import Upload, { FileEntry } from "@/lib/upload";
 
 jmdict;
 
@@ -234,6 +235,7 @@ function Edit() {
   const [editIdx, setEditIdx] = React.useState(-1);
   const [editTabIdx, setEditTabIdx] = React.useState(0);
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [fileEntry, setFileEntry] = React.useState<FileEntry | null>(null);
 
   const setLesson = React.useCallback(
     function setLesson(lesson: Partial<Lesson>) {
@@ -348,10 +350,11 @@ function Edit() {
       <br />
 
       <Typography variant="h6">Audio</Typography>
-      <div>TODO</div>
+      <Upload onResult={setFileEntry} />
+      <br />
       <button
         style={{ width: 100 }}
-        disabled={isProcessing}
+        disabled={!fileEntry || isProcessing}
         onClick={processAudio}
       >
         {isProcessing ? (
