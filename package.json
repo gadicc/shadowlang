@@ -42,7 +42,7 @@
     "react-furi": "^2.0.2",
     "react-virtuoso": "^4.6.3",
     "replicate": "^0.25.2",
-    "sharp": "^0.33.2",
+    "sharp": "0.32.6",
     "tone": "^14.7.77"
   },
   "devDependencies": {
