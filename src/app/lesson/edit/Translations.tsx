@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { IconButton, LinearProgress } from "@mui/material";
+import { IconButton } from "@mui/material";
 import { Add, ArrowDownward, ArrowUpward, Delete } from "@mui/icons-material";
 
 import type { WordEntry, BlockTranslations, Lesson } from "./types";
@@ -34,6 +34,12 @@ export default function Translations({
     targetLang = "English",
   ) {
     setIsFetching(true);
+    mergeBlockIdx(i, {
+      status: {
+        title: "Translating",
+        showProgress: true,
+      },
+    });
 
     const wordsToSend = words.map((word) => ({
       word: word.word,
@@ -57,6 +63,7 @@ export default function Translations({
 
     const trans = (translations.en = result.parts as BlockTranslations["en"]);
     setIsFetching(false);
+    mergeBlockIdx(i, { words, status: undefined });
     setTranslations({ ...translations, en: trans });
   }
 
@@ -72,7 +79,8 @@ export default function Translations({
             getTranslation(text, words);
           }}
         >
-          {isFetching ? <LinearProgress /> : "English"}
+          {/* isFetching ? <LinearProgress /> : "English" */}
+          English
         </button>
       </div>
       <br />
