@@ -52,10 +52,12 @@ export default function EditBlock({
   block,
   i,
   mergeBlockIdx,
+  matchTimestampsAll,
 }: {
   block: Lesson["blocks"][0];
   i: number;
   mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
+  matchTimestampsAll: (i?: number) => Promise<void>;
 }) {
   /*
   const ref = React.useRef<HTMLTextAreaElement>(null);
@@ -81,7 +83,11 @@ export default function EditBlock({
       <button
         disabled={block.status?.title === "Analyzing"}
         style={{ width: 150, height: "2em" }}
-        onClick={() => analyzeBlockSentence(block, i, mergeBlockIdx)}
+        onClick={async () => {
+          // we do this in lesson/edit/page.tsx too
+          await analyzeBlockSentence(block, i, mergeBlockIdx);
+          await matchTimestampsAll(i);
+        }}
       >
         {/* block.status?.title === "Analyzing" ? <LinearProgress /> : "Analyze" */}
         Analyze

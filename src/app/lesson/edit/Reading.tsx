@@ -14,11 +14,12 @@ export default function Reading({
   if (word.partOfSpeech === "symbol") return null;
 
   const options: string[] = [];
-  for (const match of word.matches) {
-    for (const kana of match.kana) {
-      if (!options.includes(kana.text)) options.push(kana.text);
+  if (word.matches)
+    for (const match of word.matches) {
+      for (const kana of match.kana) {
+        if (!options.includes(kana.text)) options.push(kana.text);
+      }
     }
-  }
   if (word.reading && !options.includes(word.reading))
     options.push(word.reading);
 

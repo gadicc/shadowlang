@@ -179,6 +179,7 @@ const LessonBlock = React.memo(function LessonBlock({
   mergeBlockIdx,
   speakers,
   lessonAudio,
+  matchTimestampsAll,
 }: {
   block: Lesson["blocks"][0];
   i: number;
@@ -189,6 +190,7 @@ const LessonBlock = React.memo(function LessonBlock({
   mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
   speakers: Lesson["speakers"];
   lessonAudio?: Lesson["audio"];
+  matchTimestampsAll: () => Promise<void>;
 }) {
   return (
     <div
@@ -221,7 +223,12 @@ const LessonBlock = React.memo(function LessonBlock({
             <Tab label="Translations" />
           </Tabs>
           <CustomTabPanel value={editTabIdx} index={0}>
-            <EditBlock block={block} i={i} mergeBlockIdx={mergeBlockIdx} />
+            <EditBlock
+              block={block}
+              i={i}
+              mergeBlockIdx={mergeBlockIdx}
+              matchTimestampsAll={matchTimestampsAll}
+            />
           </CustomTabPanel>
           <CustomTabPanel value={editTabIdx} index={1}>
             <Translations
@@ -293,6 +300,19 @@ function Edit() {
     [lesson, orig],
   );
 
+  // the "all" is to also get `trans` and setLesson().
+  const matchTimestampsAll = React.useCallback(
+    async function matchTimestampsAll(i?: number) {
+      const trans = transDb?.transcription || transRef.current;
+      if (trans && latestLesson.current) {
+        // @ts-expect-error: another day
+        matchTimestamps(trans, latestLesson.current, i);
+        setLesson({ ...latestLesson.current });
+      }
+    },
+    [setLesson, transDb?.transcription],
+  );
+
   const speakers = useMergeSpeakers(lesson?.speakers, dbSpeakers);
 
   if (!lesson) return "Loading...";
@@ -362,16 +382,11 @@ function Edit() {
     setLesson(newLesson);
     setIsProcessing(false);
 
-    newLesson.blocks.forEach((block, i) =>
-      analyzeBlockSentence(block, i, mergeBlockIdx).then(() => {
-        const trans = transDb?.transcription || transRef.current;
-        if (trans && latestLesson.current) {
-          // @ts-expect-error: another day
-          matchTimestamps(trans, latestLesson.current);
-          setLesson({ ...latestLesson.current });
-        }
-      }),
-    );
+    // we do this in EditBlock too
+    newLesson.blocks.forEach(async (block, i) => {
+      await analyzeBlockSentence(block, i, mergeBlockIdx);
+      matchTimestampsAll(i);
+    });
   }
 
   // console.log("lesson", lesson);
@@ -461,6 +476,7 @@ function Edit() {
           mergeBlockIdx={mergeBlockIdx}
           speakers={speakers}
           lessonAudio={lesson.audio}
+          matchTimestampsAll={matchTimestampsAll}
         />
       ))}
       {hasChanged ? (
