@@ -101,7 +101,10 @@ ${JSON.stringify(words)}
     querySha256: sha256,
   })) as unknown as OpenAI.Chat.ChatCompletion;
 
-  if (!chatCompletion) {
+  if (chatCompletion) {
+    console.log("Cache hit");
+  } else {
+    console.log("Cache miss");
     chatCompletion = await openai().chat.completions.create(params);
     // console.log(chatCompletion);
 
