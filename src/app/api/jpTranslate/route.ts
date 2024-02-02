@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
+import { db } from "@/api-lib/db";
+import SHA256 from "@/lib/sha256";
+
 export const runtime = "edge";
+
+const OpenAICache = db.collection("openai_cache");
+// db.openai_cache.createIndex({ "querySha256": 1 }, { name: 'querySha256' });
 
 let _openai: OpenAI | null = null;
 function openai() {
@@ -11,6 +17,7 @@ function openai() {
 
 export async function POST(request: Request) {
   const { text, targetLang = "English", words } = await request.json();
+
   const systemContent = `
 You are a helpful assistant for a Japanese language learner.
 The user will give you a Japanese sentence, followed by a JSON
@@ -74,7 +81,7 @@ JSON list of words / expressions and parts of speech:
 ${JSON.stringify(words)}
 `;
 
-  console.log({ systemContent, userContent });
+  // console.log({ systemContent, userContent });
 
   const params: OpenAI.Chat.ChatCompletionCreateParams = {
     model: "gpt-4-1106-preview",
@@ -84,12 +91,26 @@ ${JSON.stringify(words)}
       { role: "user", content: userContent },
     ],
   };
-  const chatCompletion: OpenAI.Chat.ChatCompletion =
-    await openai().chat.completions.create(params);
-  console.log(chatCompletion);
+
+  const sha256 = await SHA256(
+    JSON.stringify({ api: "chat.completions", params }),
+  );
+
+  let chatCompletion: OpenAI.Chat.ChatCompletion | null = null;
+  chatCompletion = (await OpenAICache.findOne({
+    querySha256: sha256,
+  })) as unknown as OpenAI.Chat.ChatCompletion;
+
+  if (!chatCompletion) {
+    chatCompletion = await openai().chat.completions.create(params);
+    // console.log(chatCompletion);
+
+    const doc = { querySha256: sha256, ...chatCompletion };
+    await OpenAICache.insertOne(doc);
+  }
 
   const content = chatCompletion.choices[0].message.content || "";
-  console.log(content);
+  // console.log(content);
 
   const result = JSON.parse(content);
   console.log(result);
