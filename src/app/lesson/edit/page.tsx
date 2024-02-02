@@ -28,6 +28,24 @@ function stripUnderscoredKeys(key: string, value: unknown) {
   return value;
 }
 
+function stripMatchesAndMorphemes(lesson: Partial<Lesson>) {
+  const newLesson = { ...lesson };
+  newLesson.blocks = newLesson.blocks?.map((block) => {
+    const newBlock = {
+      ...block,
+      words: block.words?.map((word) => {
+        const newWord = { ...word };
+        // @ts-expect-error: TODO, different types
+        delete newWord.matches;
+        delete newWord.morpheme;
+        return newWord;
+      }),
+    };
+    return newBlock;
+  });
+  return newLesson;
+}
+
 function EditableLangTable({
   value,
   setValue,
@@ -266,7 +284,12 @@ function Edit() {
     [dbLesson],
   );
   const hasChanged = React.useMemo(
-    () => orig !== JSON.stringify(lesson, stripUnderscoredKeys),
+    () =>
+      orig !==
+      JSON.stringify(
+        stripMatchesAndMorphemes(lesson || {}),
+        stripUnderscoredKeys,
+      ),
     [lesson, orig],
   );
 
@@ -452,7 +475,7 @@ function Edit() {
             variant="contained"
             color="error"
             onClick={() => {
-              const $set = { ...lesson };
+              const $set = stripMatchesAndMorphemes(lesson);
               // @ts-expect-error: trust me :)
               delete $set._id;
               db.collection("lessons").update({ _id: lessonId }, { $set });
