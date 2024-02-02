@@ -81,7 +81,17 @@ export default function EditRow({
           <Delete fontSize="inherit" />
         </IconButton>
       </td>
-      <td>{word.word}</td>
+      <td>
+        <input
+          type="text"
+          style={{
+            width: "100%",
+            border: "none",
+          }}
+          value={word.word}
+          onChange={(e) => setWord({ ...word, word: e.target.value })}
+        />
+      </td>
       <td>
         <Reading word={word} setWord={setWord} />
       </td>
@@ -92,8 +102,13 @@ export default function EditRow({
       <td>{word.jmdict_sense_idx}</td>
       <td>
         <input
-          style={{ width: 50 }}
           type="text"
+          style={{
+            width: 50,
+            border: "none",
+            marginLeft: 1,
+            marginRight: 1,
+          }}
           value={word.start || ""}
           onChange={(e) =>
             setWord({
@@ -106,7 +121,7 @@ export default function EditRow({
       <td>
         {" "}
         <input
-          style={{ width: 50 }}
+          style={{ width: 50, border: "none" }}
           type="text"
           value={word.end || ""}
           onChange={(e) =>
