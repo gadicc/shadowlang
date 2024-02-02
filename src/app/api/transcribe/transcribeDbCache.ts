@@ -2,7 +2,7 @@ import transcribe from "./transcribe";
 import { db } from "@/api-lib/db";
 
 const Transcriptions = db.collection("transcriptions");
-// db.transcriptions.createIndex({ "sha256": 1 }, { name: 'sha256' });
+// db.transcriptions.createIndex({ "audioSHA256": 1 }, { name: 'audioSHA256' });
 
 export default async function transcribeDbCache({
   sha256,
@@ -11,7 +11,7 @@ export default async function transcribeDbCache({
   sha256: string;
   language: string;
 }) {
-  const cached = await Transcriptions.findOne({ sha256 });
+  const cached = await Transcriptions.findOne({ audioSHA256: sha256 });
   if (cached) {
     return cached;
   }
