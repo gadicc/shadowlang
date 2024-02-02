@@ -4,8 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   createFileFromBuffer,
   Files,
-  FileEntry,
-  FileError,
   AWS_S3_BUCKET,
   AWS,
 } from "./createFileFromBuffer";
@@ -85,5 +83,4 @@ async function GET(req: NextRequest) {
   return new Response(result.Body as Buffer, { status: 200, headers });
 }
 
-export type { FileEntry, FileError };
-export { POST, GET, createFileFromBuffer };
+export { POST, GET };

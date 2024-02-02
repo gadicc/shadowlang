@@ -1,5 +1,8 @@
 import React from "react";
-import type { FileEntry, FileError } from "@/app/api/file2/route";
+import type {
+  FileEntry,
+  FileError,
+} from "@/app/api/file2/createFileFromBuffer";
 
 async function sha256bytes(bytes: Uint8Array) {
   const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
