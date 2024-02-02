@@ -289,12 +289,19 @@ function Edit() {
   }
 
   async function processAudio() {
+    const sha256 = fileEntry?.sha256 || lesson?.audio?.sha256;
+    if (!sha256) {
+      alert("No sha256 to process");
+      return;
+    }
+
     setIsProcessing(true);
     const request = await fetch("/api/transcribe", {
       method: "POST",
-      body: JSON.stringify({ src: "/audio/lesson1.mp3" }),
+      body: JSON.stringify({ sha256, language: "ja" }),
     });
-    const result = (await request.json()) as Transcription;
+    const dbResult = await request.json();
+    const result = dbResult.transcription as Transcription;
 
     // Because we can't rely on the segmentation from the transcription,
     // we'll need this again later after the analysis to assign the

@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
-import transcript from "./1absolutebeginner_lesson1.json";
+import transcribeDbCache from "./transcribeDbCache";
+// import transcript from "./1absolutebeginner_lesson1.json";
 
-export async function POST(_request: Request) {
-  // const { text, targetLang = "English", words } = await request.json();
-  return NextResponse.json(transcript);
+export async function POST(request: Request) {
+  const { sha256, language }: { sha256: string; language: string } =
+    await request.json();
+
+  const result = await transcribeDbCache({ sha256, language });
+  return NextResponse.json(result);
 }
