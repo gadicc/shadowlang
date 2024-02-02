@@ -233,8 +233,14 @@ function Edit() {
   const dbSpeakers = useGongoLive((db) => db.collection("speakers").find({}));
 
   const [lesson, _setLesson] = React.useState<Partial<Lesson> | null>(null);
+  useGongoSub("transcriptions", { audioSHA256: lesson?.audio?.sha256 });
   const latestLesson = React.useRef<Partial<Lesson>>();
   const transRef = React.useRef<Transcription>();
+  const transDb = useGongoOne((db) =>
+    db
+      .collection("transcriptions")
+      .find({ audioSHA256: lesson?.audio?.sha256 }),
+  ) as { transcription: Transcription } | null;
   const [editIdx, setEditIdx] = React.useState(-1);
   const [editTabIdx, setEditTabIdx] = React.useState(0);
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -335,16 +341,17 @@ function Edit() {
 
     newLesson.blocks.forEach((block, i) =>
       analyzeBlockSentence(block, i, mergeBlockIdx).then(() => {
-        if (transRef.current && latestLesson.current) {
+        const trans = transDb?.transcription || transRef.current;
+        if (trans && latestLesson.current) {
           // @ts-expect-error: another day
-          matchTimestamps(transRef.current, latestLesson.current);
+          matchTimestamps(trans, latestLesson.current);
           setLesson({ ...latestLesson.current });
         }
       }),
     );
   }
 
-  console.log("lesson", lesson);
+  // console.log("lesson", lesson);
 
   return (
     <Container sx={{ my: 2 }}>

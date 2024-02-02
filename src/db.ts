@@ -40,6 +40,7 @@ if (typeof window !== "undefined")
 db.collection("users").persist();
 db.collection("speakers").persist();
 db.collection("lessons").persist();
+db.collection("transcriptions").persist();
 
 declare module "gongo-client" {
   class Database {

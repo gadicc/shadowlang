@@ -73,6 +73,10 @@ gs.publish("lessons", async (db, opts, { auth }) => {
   return db.collection("lessons").find({ userId });
 });
 
+gs.publish("transcriptions", async (db, { audioSHA256 }) => {
+  return db.collection("transcriptions").find({ audioSHA256 });
+});
+
 if (gs.dba) {
   const db = gs.dba;
 
