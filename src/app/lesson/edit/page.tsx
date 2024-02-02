@@ -16,7 +16,7 @@ import { jmdict } from "@/dicts";
 import type { Lesson, Transcription } from "./types";
 import TextBlock, { useMergeSpeakers } from "../[_id]/TextBlock";
 import EditBlock, { analyzeBlockSentence } from "./EditBlock";
-import Translations from "./Translations";
+import Translations, { translateBlockSentence } from "./Translations";
 import matchTimestamps from "./matchTimestamps";
 import { useGongoSub, useGongoOne, db, useGongoLive } from "gongo-client-react";
 import Upload, { FileEntry } from "@/lib/upload";
@@ -231,14 +231,7 @@ const LessonBlock = React.memo(function LessonBlock({
             />
           </CustomTabPanel>
           <CustomTabPanel value={editTabIdx} index={1}>
-            <Translations
-              text={block.text}
-              words={block.words}
-              translations={block.translations}
-              // setTranslations={setTranslations}
-              i={i}
-              mergeBlockIdx={mergeBlockIdx}
-            />
+            <Translations block={block} i={i} mergeBlockIdx={mergeBlockIdx} />
           </CustomTabPanel>
         </>
       ) : null}
@@ -382,10 +375,13 @@ function Edit() {
     setLesson(newLesson);
     setIsProcessing(false);
 
-    // we do this in EditBlock too
+    // we do this in EditBlock too, but without translate
     newLesson.blocks.forEach(async (block, i) => {
       await analyzeBlockSentence(block, i, mergeBlockIdx);
       matchTimestampsAll(i);
+      const updatedBlock = latestLesson.current?.blocks?.[i];
+      if (updatedBlock)
+        await translateBlockSentence(updatedBlock, i, mergeBlockIdx);
     });
   }
 

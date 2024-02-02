@@ -4,79 +4,76 @@ import React from "react";
 import { IconButton } from "@mui/material";
 import { Add, ArrowDownward, ArrowUpward, Delete } from "@mui/icons-material";
 
-import type { WordEntry, BlockTranslations, Lesson } from "./types";
+import type { BlockTranslations, Lesson } from "./types";
+
+export async function translateBlockSentence(
+  block: Lesson["blocks"][0],
+  i: number,
+  mergeBlockIdx: (i: number, blockMerge: Partial<Lesson["blocks"][0]>) => void,
+  targetLang = "English",
+) {
+  mergeBlockIdx(i, {
+    status: {
+      title: "Translating",
+      showProgress: true,
+    },
+  });
+
+  const wordsToSend = block.words.map((word) => ({
+    word: word.word,
+    pos: word.partOfSpeech,
+  }));
+
+  const request = await fetch("/api/jpTranslate", {
+    method: "POST",
+    body: JSON.stringify({ text: block.text, words: wordsToSend, targetLang }),
+  });
+
+  const result = (await request.json()) as {
+    translation: string;
+    parts: {
+      text: string;
+      word: string | null;
+      punctuation: string | null;
+    }[];
+  };
+  console.log("result", result);
+
+  const trans = (block.translations.en =
+    result.parts as BlockTranslations["en"]);
+  mergeBlockIdx(i, {
+    status: undefined,
+    ...{ ...block.translations, en: trans },
+  });
+}
 
 export default function Translations({
-  text,
-  words,
-  translations,
-  // setTranslations,
+  block,
   i,
   mergeBlockIdx,
 }: {
-  text: string;
-  words: WordEntry[];
-  translations: BlockTranslations;
+  block: Lesson["blocks"][0];
   i: number;
   // setTranslations: (translations: BlockTranslations) => void;
   mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
 }) {
-  const [isFetching, setIsFetching] = React.useState(false);
-
   const setTranslations = (translations: BlockTranslations) =>
     mergeBlockIdx(i, { translations });
 
   const iconPadding = 0.2;
 
-  async function getTranslation(
-    text: string,
-    words: WordEntry[],
-    targetLang = "English",
-  ) {
-    setIsFetching(true);
-    mergeBlockIdx(i, {
-      status: {
-        title: "Translating",
-        showProgress: true,
-      },
-    });
-
-    const wordsToSend = words.map((word) => ({
-      word: word.word,
-      pos: word.partOfSpeech,
-    }));
-
-    const request = await fetch("/api/jpTranslate", {
-      method: "POST",
-      body: JSON.stringify({ text, words: wordsToSend, targetLang }),
-    });
-
-    const result = (await request.json()) as {
-      translation: string;
-      parts: {
-        text: string;
-        word: string | null;
-        punctuation: string | null;
-      }[];
-    };
-    console.log("result", result);
-
-    const trans = (translations.en = result.parts as BlockTranslations["en"]);
-    setIsFetching(false);
-    mergeBlockIdx(i, { words, status: undefined });
-    setTranslations({ ...translations, en: trans });
-  }
+  const { text, words, translations } = block;
 
   return (
     <div>
       <div>
         Add translations:{" "}
         <button
-          disabled={isFetching}
+          disabled={block.status?.title === "Translating"}
           style={{ width: 150, height: "2em" }}
           onClick={() => {
             if (!text) return;
-            getTranslation(text, words);
+            translateBlockSentence(block, i, mergeBlockIdx, "English");
           }}
         >
           {/* isFetching ? <LinearProgress /> : "English" */}

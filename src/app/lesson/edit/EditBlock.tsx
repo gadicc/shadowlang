@@ -84,7 +84,7 @@ export default function EditBlock({
         disabled={block.status?.title === "Analyzing"}
         style={{ width: 150, height: "2em" }}
         onClick={async () => {
-          // we do this in lesson/edit/page.tsx too
+          // we do this in lesson/edit/page.tsx too (but translate after)
           await analyzeBlockSentence(block, i, mergeBlockIdx);
           await matchTimestampsAll(i);
         }}
