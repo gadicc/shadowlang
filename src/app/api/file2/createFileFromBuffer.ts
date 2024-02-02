@@ -14,6 +14,8 @@ const defaults = {
   AWS_REGION: "eu-west-3", // Paris
 };
 
+// db.files.createIndex({ "sha256": 1 }, { name: 'sha256' });
+
 const env = process.env;
 AWS.config.update({
   accessKeyId: env.AWS_ACCESS_KEY_ID_APP || env.AWS_ACCESS_KEY_ID,
