@@ -10,9 +10,6 @@ export default function Reading({
   word: WordEntry;
   setWord: (word: WordEntry) => void;
 }) {
-  if (isKatakana(word.word)) return null;
-  if (word.partOfSpeech === "symbol") return null;
-
   const options: string[] = [];
   if (word.matches)
     for (const match of word.matches) {
@@ -22,6 +19,15 @@ export default function Reading({
     }
   if (word.reading && !options.includes(word.reading))
     options.push(word.reading);
+
+  React.useEffect(() => {
+    if (isKatakana(word.word) || word.partOfSpeech === "symbol") return;
+    if (word.reading === undefined && options.length)
+      setWord({ ...word, reading: options[0] });
+  }, [options, word, setWord]);
+
+  if (isKatakana(word.word)) return null;
+  if (word.partOfSpeech === "symbol") return null;
 
   return (
     <select
