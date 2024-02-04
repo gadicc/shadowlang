@@ -97,14 +97,14 @@ export default function EditBlock({
       <table border={1} cellSpacing={0} width="100%">
         <thead>
           <tr>
-            <th></th>
+            <th>Actions</th>
+            <th>Dict</th>
+            {/* <th>senseIdx</th> */}
             <th>Word</th>
             <th>Reading</th>
             <th>
               <a title="Part of Speech">PoS</a>
             </th>
-            <th>jmdict_id</th>
-            <th>senseIdx</th>
             <th>start</th>
             <th>end</th>
           </tr>
