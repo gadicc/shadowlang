@@ -3,11 +3,13 @@ import React from "react";
 import hepburn from "hepburn";
 // @ts-expect-error: no types
 import { ReactFuri } from "react-furi";
+import Image from "next/image";
 
 import { LinearProgress, Stack } from "@mui/material";
+
 import { BlockTranslations, Speaker } from "../edit/types";
 import type { Speaker as DBSpeaker, Lesson } from "@/schemas";
-import Image from "next/image";
+import posColors from "@/lib/pos-colors";
 
 export function useMergeSpeakers(
   lessonSpeakers: Speaker[] | undefined,
@@ -26,30 +28,6 @@ export function useMergeSpeakers(
     [lessonSpeakers, dbSpeakers],
   );
 }
-
-// https://www.edrdg.org/jmwsgi/edhelp.py?svc=jmdict&sid=#kw_pos
-const colors = {
-  // Based on https://etcmontessorionline.com/grammar-command-cards-parts-of-speech-on-plastic-cut/
-  // n: "black",
-  art: "turquoise",
-  adj: "navy",
-  v: "red",
-  prep: "green",
-  adv: "orange",
-  pn: "purple",
-  conj: "pink",
-  int: "gold",
-  // And our own
-  exp: "#070",
-  // prt: "gray",
-  // "n-pr": "#aa0",
-  // cop: "magenta",
-  // Japanese Ammo with Misa colors
-  cop: "#66c1ce",
-  n: "#7bd07d",
-  prt: "#cfacc4",
-  "n-pr": "#dfb500", // "#bcad6b",
-};
 
 interface Word {
   word: string;
@@ -91,8 +69,7 @@ function LayoutWords({
         <span key={i} style={{ whiteSpace: "nowrap" }}>
           <span
             style={{
-              // @ts-expect-error: TODO, align types
-              color: word.partOfSpeech ? colors[word.partOfSpeech] : "",
+              color: word.partOfSpeech ? posColors[word.partOfSpeech] : "",
               // textShadow: "0 0 1px #555",
               textShadow: playingWordIdx === i ? "0 0 2px #555" : "",
             }}
@@ -127,8 +104,7 @@ function LayoutHepburn({
         <span key={i} style={{ wordBreak: "break-word" }}>
           <span
             style={{
-              // @ts-expect-error: TODO, align types
-              color: word.partOfSpeech ? colors[word.partOfSpeech] : "",
+              color: word.partOfSpeech ? posColors[word.partOfSpeech] : "",
               // textShadow: "0 0 1px #555",
               textShadow: playingWordIdx === i ? "0 0 2px #555" : "",
             }}
@@ -172,10 +148,7 @@ function LayoutTranslation({
           <span key={i}>
             <span
               style={{
-                color: word?.partOfSpeech
-                  ? // @ts-expect-error: TODO, align types
-                    colors[word.partOfSpeech]
-                  : "",
+                color: word?.partOfSpeech ? posColors[word.partOfSpeech] : "",
                 // textShadow: "0 0 1px #555",
                 textShadow: playingWordIdx === wordIdx ? "0 0 2px #555" : "",
               }}
