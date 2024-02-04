@@ -8,10 +8,9 @@ db.jmdict.createIndex({ "kana.text": 1 }, { name: 'kana-text' });
 db.jmdict.createIndex({ "id": 1 }, { name: 'jmdict-id' });
 */
 
-export const config = {
-  runtime: "edge",
-  // regions: ['iad1'],
-};
+export const runtime = "edge";
+// TODO, dev only
+// export const dynamic = "force-dynamic";
 
 const jmdict = db.collection("jmdict");
 const kanjidic = db.collection("kanjidic");
@@ -27,6 +26,8 @@ export default async function handler(req: NextRequest) {
     return new Response("Missing parameters", { status: 400 });
   }
 
+  // console.log({ dict, key, value });
+
   let result;
   if (dict === "jmdict") {
     const query: GongoDocument = {};
@@ -38,6 +39,11 @@ export default async function handler(req: NextRequest) {
       result = await jmdict.find(query).toArray();
     } else if (key === "kanji") {
       query["kanji.text"] = value;
+      result = await jmdict.find(query).toArray();
+    } else if (key === "kanjiAndKana") {
+      const [kanji, kana] = value.split("+");
+      if (kanji) query["kanji.text"] = kanji;
+      if (kana) query["kana.text"] = kana;
       result = await jmdict.find(query).toArray();
     } else return new Response("Not such key: " + key, { status: 404 });
   } else if (dict === "kanjidic") {

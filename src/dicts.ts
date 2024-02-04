@@ -18,6 +18,14 @@ const jmdict = {
       res.json(),
     );
   },
+  async findByKanjiAndKana(
+    kanji?: string,
+    kana?: string,
+  ): Promise<JMdictWord[]> {
+    return await fetch(
+      "/api/dicts/jmdict/kanjiAndKana/" + (kanji || "") + "+" + (kana || ""),
+    ).then((res) => res.json());
+  },
 };
 
 const kanjidic = {
