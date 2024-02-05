@@ -50,6 +50,7 @@ export default function EditRow({
             newWords[i] = { ...newWords[i], jmdict_id: id };
 
             const entry = await jmdict.findById(id);
+
             const oneKana = entry?.kana?.[0]?.text;
             const oneKanji = entry?.kanji?.[0]?.text;
             if (oneKana) {
@@ -60,6 +61,15 @@ export default function EditRow({
                 newWords[i].word = oneKana;
                 newWords[i].reading = oneKana;
               }
+            }
+
+            const oneSense = entry?.sense?.[0];
+            if (oneSense) {
+              let sensePos = oneSense.partOfSpeech[0];
+              if (sensePos.startsWith("adj-")) sensePos = "adj";
+              else if (sensePos.startsWith("n-") && sensePos !== "n-pn")
+                sensePos = "n";
+              newWords[i].partOfSpeech = sensePos;
             }
 
             setWords(newWords);
