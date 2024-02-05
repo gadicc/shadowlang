@@ -18,7 +18,7 @@ export default function LessonId({
   const dbSpeakers = useGongoLive((db) => db.collection("speakers").find());
   const speakers = useMergeSpeakers(lesson?.speakers, dbSpeakers);
 
-  const idx = 0;
+  const idx = -1;
   // const setIdx = () => {};
 
   if (!lesson) return "Loading...";
