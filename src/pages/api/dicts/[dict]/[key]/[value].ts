@@ -319,7 +319,7 @@ export default async function handler(req: NextRequest) {
       query["kanji.text"] = value;
       result = await jmdict.find(query).toArray();
     } else if (key === "kanjiAndKana") {
-      const [kanji, kana] = value.split("+");
+      const [kanji, kana] = value.split(";");
       if (!kanji && !kana)
         return new Response("Missing kanji or kana", { status: 400 });
       if (kanji) query["kanji.text"] = kanji.trim();

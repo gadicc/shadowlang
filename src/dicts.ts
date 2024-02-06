@@ -33,7 +33,7 @@ const jmdict = {
   ): Promise<JMdictWord[]> {
     if (!kanji && !kana) return [];
     return await fetch(
-      "/api/dicts/jmdict/kanjiAndKana/" + (kanji || "") + "+" + (kana || ""),
+      "/api/dicts/jmdict/kanjiAndKana/" + (kanji || "") + ";" + (kana || ""),
     ).then((res) => res.json());
   },
   async lookupTag(tag: string): Promise<string> {
