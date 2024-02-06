@@ -4,6 +4,7 @@ import { Container } from "@mui/material";
 
 import EditRow from "./EditRow";
 import { BlockWord, WordEntry, Lesson } from "./types";
+import { CheckBox, Search } from "@mui/icons-material";
 
 export async function processor(text: string) {
   const request = await fetch("/api/jpSentence", {
@@ -72,7 +73,7 @@ export default function EditBlock({
   const setWords = (words: BlockWord[]) => mergeBlockIdx(i, { words });
 
   return (
-    <Container sx={{ my: 2 }}>
+    <Container sx={{ mt: 2 }}>
       <textarea
         // ref={ref}
         style={{ width: "100%" }}
@@ -121,6 +122,15 @@ export default function EditBlock({
           ))}
         </tbody>
       </table>
+
+      <div style={{ fontSize: "80%", marginTop: "10px" }}>
+        Start with <b>Dict</b>; click on the
+        <Search fontSize="small" sx={{ verticalAlign: "middle" }} />
+        to search. The{" "}
+        <CheckBox fontSize="small" sx={{ verticalAlign: "middle" }} /> means we
+        automatically found a good match (but you can still change it). Then
+        make sure the other fields are correct... click on a field to edit it.
+      </div>
     </Container>
   );
 }

@@ -190,6 +190,10 @@ const JmDictModal = React.memo(function JmDictModal({
             <CircularProgress size="1em" sx={{ marginTop: "9px" }} />
           )}
         </Stack>
+        <div style={{ fontSize: "65%", fontWeight: "normal" }}>
+          Enter either kanji or kana to search, or use both to try find an exact
+          match.
+        </div>
       </DialogTitle>
       <DialogContent>
         {results.length ? (
