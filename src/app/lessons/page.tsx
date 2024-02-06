@@ -17,7 +17,9 @@ function Lesson({ lesson }: { lesson: Lesson }) {
 
 export default function Lessons() {
   const _userId = useGongoUserId();
-  const lessons = useGongoLive((db) => db.collection("lessons").find());
+  const lessons = useGongoLive((db) =>
+    db.collection("lessons").find({ public: true }),
+  );
   useGongoSub("lessons");
   console.log("lessons", lessons);
 

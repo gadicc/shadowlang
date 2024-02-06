@@ -1,12 +1,18 @@
 "use client";
 import React from "react";
-import { useGongoLive, useGongoSub, useGongoUserId } from "gongo-client-react";
+import {
+  useGongoLive,
+  useGongoSub,
+  useGongoUserId,
+  db,
+} from "gongo-client-react";
 import { formatDate } from "date-fns";
 
 import {
   Button,
   Container,
   Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -27,6 +33,17 @@ function TeacherLessonRow({ lesson }: { lesson: Lesson }) {
       <TableCell>
         <Link href={"/lesson/edit?id=" + lesson._id}>{lesson?.title?.en}</Link>
       </TableCell>
+      <TableCell width="50">
+        <Switch
+          checked={(lesson.public as boolean) || false}
+          onChange={(e, value) => {
+            db.collection("lessons").update(
+              { _id: lesson._id },
+              { $set: { public: value } },
+            );
+          }}
+        />
+      </TableCell>
     </TableRow>
   );
 }
@@ -46,6 +63,7 @@ export default function TeacherLessons() {
             <TableRow>
               <TableCell>Date</TableCell>
               <TableCell>Title</TableCell>
+              <TableCell>Public</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -57,14 +75,15 @@ export default function TeacherLessons() {
       </TableContainer>
       <br />
       <Button
-        onClick={() =>
-          // @ts-expect-error: really?  make insert take an OptionalId<>
-          db.collection("lessons").insert({
-            userId,
-            title: { en: "New Lesson" },
-            createdAt: new Date(),
-          })
-        }
+        onClick={() => {
+          if (typeof userId === "string")
+            // @ts-expect-error: really?  make insert take an OptionalId<>
+            db.collection("lessons").insert({
+              userId,
+              title: { en: "New Lesson" },
+              createdAt: new Date(),
+            });
+        }}
         variant="outlined"
       >
         Add Lesson
