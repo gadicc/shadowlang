@@ -20,7 +20,7 @@ export default async function handler(req: NextRequest) {
   const params = url.searchParams;
   const dict = params.get("dict");
   const key = params.get("key");
-  const value = params.get("value");
+  const value = params.get("value")?.trim();
 
   if (!dict || !key || !value) {
     return new Response("Missing parameters", { status: 400 });
@@ -322,8 +322,8 @@ export default async function handler(req: NextRequest) {
       const [kanji, kana] = value.split("+");
       if (!kanji && !kana)
         return new Response("Missing kanji or kana", { status: 400 });
-      if (kanji) query["kanji.text"] = kanji;
-      if (kana) query["kana.text"] = kana;
+      if (kanji) query["kanji.text"] = kanji.trim();
+      if (kana) query["kana.text"] = kana.trim();
       result = await jmdict.find(query).toArray();
     } else return new Response("Not such key: " + key, { status: 404 });
   } else if (dict === "kanjidic") {
