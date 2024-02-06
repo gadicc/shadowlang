@@ -245,7 +245,10 @@ export default function useJmDictModal() {
   const lookup = React.useCallback(
     _.debounce({ delay: 750 }, async (state: JmDictModalState) => {
       setIsFetching(true);
-      const results = await jmdict.findByKanjiAndKana(state.kanji, state.kana);
+      const results = await jmdict.findByKanjiAndKana(
+        state.kanji?.trim(),
+        state.kana?.trim(),
+      );
       console.log(results);
       setResults(results);
       setIsFetching(false);
