@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { useSearchParams } from "next/navigation";
+import { useGongoSub, useGongoOne, db, useGongoLive } from "gongo-client-react";
+import stringify from "json-stable-stringify";
 
 import {
   Container,
@@ -18,13 +20,13 @@ import TextBlock, { useMergeSpeakers } from "../[_id]/TextBlock";
 import EditBlock, { analyzeBlockSentence } from "./EditBlock";
 import Translations, { translateBlockSentence } from "./Translations";
 import matchTimestamps from "./matchTimestamps";
-import { useGongoSub, useGongoOne, db, useGongoLive } from "gongo-client-react";
 import Upload, { FileEntry } from "@/lib/upload";
 
 jmdict;
 
-function stripUnderscoredKeys(key: string, value: unknown) {
-  if (key.startsWith("_")) return undefined;
+// Note: real JSON.stringify (unlike stable-stringify) always gives string keys
+function stripUnderscoredKeys(key: string | number, value: unknown) {
+  if (typeof key === "string" && key.startsWith("_")) return undefined;
   return value;
 }
 
@@ -280,18 +282,27 @@ function Edit() {
   // TODO, what if a new update comes in while we're editing?
   // on the other hand, we rely on this for self updates.
   const orig = React.useMemo(
-    () => JSON.stringify(dbLesson, stripUnderscoredKeys),
+    () => stringify(dbLesson, { replacer: stripUnderscoredKeys }),
     [dbLesson],
   );
   const hasChanged = React.useMemo(
     () =>
       orig !==
-      JSON.stringify(
-        stripMatchesAndMorphemes(lesson || {}),
-        stripUnderscoredKeys,
-      ),
+      stringify(stripMatchesAndMorphemes(lesson || {}), {
+        replacer: stripUnderscoredKeys,
+      }),
     [lesson, orig],
   );
+  if (hasChanged && false) {
+    console.log("hasChanged", {
+      orig: JSON.stringify(JSON.parse(orig), null, 2),
+      current: JSON.stringify(
+        stripMatchesAndMorphemes(lesson || {}),
+        stripUnderscoredKeys,
+        2,
+      ),
+    });
+  }
 
   // the "all" is to also get `trans` and setLesson().
   const matchTimestampsAll = React.useCallback(
