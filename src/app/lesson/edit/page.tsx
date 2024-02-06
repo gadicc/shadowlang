@@ -129,7 +129,8 @@ function Speakers({
             <select
               value={speaker.speakerId || ""}
               onChange={(e) => {
-                const newSpeakers = [...speakers];
+                // We need more than just a new array, we need new objects.
+                const newSpeakers = JSON.parse(JSON.stringify(speakers));
                 newSpeakers[i].speakerId = e.target.value;
                 setLesson({ ...lesson, speakers: newSpeakers });
               }}
@@ -148,7 +149,8 @@ function Speakers({
                   type="text"
                   value={speaker.name || ""}
                   onChange={(e) => {
-                    const newSpeakers = [...speakers];
+                    // We need more than just a new array, we need new objects.
+                    const newSpeakers = JSON.parse(JSON.stringify(speakers));
                     newSpeakers[i].name = e.target.value;
                     setLesson({ ...lesson, speakers: newSpeakers });
                   }}
@@ -157,7 +159,8 @@ function Speakers({
                   type="text"
                   value={speaker.initials || ""}
                   onChange={(e) => {
-                    const newSpeakers = [...speakers];
+                    // We need more than just a new array, we need new objects.
+                    const newSpeakers = JSON.parse(JSON.stringify(speakers));
                     newSpeakers[i].initials = e.target.value;
                     setLesson({ ...lesson, speakers: newSpeakers });
                   }}
