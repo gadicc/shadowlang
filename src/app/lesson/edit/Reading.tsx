@@ -10,15 +10,18 @@ export default function Reading({
   word: WordEntry;
   setWord: (word: WordEntry) => void;
 }) {
-  const options: string[] = [];
-  if (word.matches)
-    for (const match of word.matches) {
-      for (const kana of match.kana) {
-        if (!options.includes(kana.text)) options.push(kana.text);
+  const options = React.useMemo(() => {
+    const options: string[] = [];
+    if (word.matches)
+      for (const match of word.matches) {
+        for (const kana of match.kana) {
+          if (!options.includes(kana.text)) options.push(kana.text);
+        }
       }
-    }
-  if (word.reading && !options.includes(word.reading))
-    options.push(word.reading);
+    if (word.reading && !options.includes(word.reading))
+      options.push(word.reading);
+    return options;
+  }, [word]);
 
   React.useEffect(() => {
     if (isKatakana(word.word) || word.partOfSpeech === "symbol") return;
