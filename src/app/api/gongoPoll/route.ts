@@ -67,36 +67,38 @@ gs.publish("lesson", async (db, { _id }: { _id: string }) => {
 });
 
 gs.publish("lessons", async (db, opts, { auth }) => {
-  if (!opts || !opts.userId) {
-    // Mmm, we can't just query { public: true } because what if the user has
-    // a persisted lesson that WAS public but is now private?  For now let's
-    // just query all lessons and filter.
-    //
-    // Need to think if it's better to send the client all the non-public stubs,
-    // or for client to send a list of all it's lessons and have server tell it
-    // what to delete.
-    const results = await db
-      .collection("lessons")
-      .find(/* { public: true } */)
-      .toArray();
-    return [
-      {
-        coll: "lessons",
-        entries: results.map((lesson) =>
-          lesson.public
-            ? lesson
-            : {
-                _id: lesson._id,
-                public: false,
-                __updatedAt: lesson.__updatedAt,
-              },
-        ),
-      },
-    ];
-  }
+  // Note, lesson stores userId as string.  Mmm.
+  const strUserId = (await auth.userId())?.toString();
+  const reqUserId = opts?.userId;
+  let query: Record<string, unknown> = { public: true };
+  if (reqUserId === strUserId) query = { $or: [query, { userId: reqUserId }] };
+  else if (reqUserId) query.userId = reqUserId;
+  // console.log({ strUserId, reqUserId, query });
 
-  const userId = await auth.userId();
-  return db.collection("lessons").find({ userId });
+  // Mmm, we can't just query { public: true } because what if the user has
+  // a persisted lesson that WAS public but is now private?  For now let's
+  // just query all lessons and filter.
+  //
+  // Need to think if it's better to send the client all the non-public stubs,
+  // or for client to send a list of all it's lessons and have server tell it
+  // what to delete.
+  const results = await db.collection("lessons").find(query).toArray();
+  return [
+    {
+      coll: "lessons",
+      entries: results.map((lesson) =>
+        lesson.public || lesson.userId === strUserId
+          ? lesson
+          : {
+              _id: lesson._id,
+              public: false,
+              __updatedAt: lesson.__updatedAt,
+            },
+      ),
+    },
+  ];
+
+  // return db.collection("lessons").find({ userId });
 });
 
 gs.publish("transcriptions", async (db, { audioSHA256 }) => {
