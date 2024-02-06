@@ -338,12 +338,23 @@ function Edit() {
     }
 
     setIsProcessing(true);
-    const request = await fetch("/api/transcribe", {
-      method: "POST",
-      body: JSON.stringify({ sha256, language: "ja" }),
-    });
-    const dbResult = await request.json();
-    const result = dbResult.transcription as Transcription;
+    const result = await (async function () {
+      try {
+        const request = await fetch("/api/transcribe", {
+          method: "POST",
+          body: JSON.stringify({ sha256, language: "ja" }),
+        });
+        const dbResult = await request.json();
+        return dbResult.transcription as Transcription;
+      } catch (error) {
+        console.error("Error processing audio", error);
+        alert("Error processing audio: " + error);
+      }
+    })();
+    if (!result) {
+      setIsProcessing(false);
+      return;
+    }
 
     // Because we can't rely on the segmentation from the transcription,
     // we'll need this again later after the analysis to assign the
