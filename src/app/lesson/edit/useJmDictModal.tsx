@@ -26,20 +26,20 @@ interface JmDictModalState {
   partsOfSpeech?: string;
 }
 
-function DictionaryEntry({
+export function DictionaryEntry({
   entry,
   selected,
   setSelected,
   jmDictMetadata,
 }: {
   entry: JMdictWord;
-  selected: boolean;
-  setSelected: (id: string) => void;
+  selected?: boolean;
+  setSelected?: (id: string) => void;
   jmDictMetadata: JMdictDictionaryMetadata | null;
 }) {
   return (
     <Box
-      onClick={() => setSelected(entry.id)}
+      onClick={() => setSelected && setSelected(entry.id)}
       sx={{
         border: "1px solid #ccc",
         borderRadius: "5px",
@@ -48,6 +48,7 @@ function DictionaryEntry({
         fontSize: "80%",
         background: selected ? "#f0f0f0" : "",
         marginBottom: "8px",
+        cursor: setSelected ? "pointer" : "default",
       }}
     >
       <div>

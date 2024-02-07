@@ -5,11 +5,13 @@ import hepburn from "hepburn";
 import { ReactFuri } from "react-furi";
 import Image from "next/image";
 
-import { LinearProgress, Stack } from "@mui/material";
+import { LinearProgress, Popover, Stack } from "@mui/material";
 
 import { BlockTranslations, Speaker } from "../edit/types";
-import type { Speaker as DBSpeaker, Lesson } from "@/schemas";
+import { JMdictWord, type Speaker as DBSpeaker, type Lesson } from "@/schemas";
 import posColors from "@/lib/pos-colors";
+import { DictionaryEntry } from "../edit/useJmDictModal";
+import { jmdict } from "@/dicts";
 
 export function useMergeSpeakers(
   lessonSpeakers: Speaker[] | undefined,
@@ -61,12 +63,34 @@ function LayoutWords({
   words: Word[];
   playingWordIdx: number;
 }) {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const handlePopoverClose = React.useCallback(
+    () => setAnchorEl(null),
+    [setAnchorEl],
+  );
+  const [jmdictWord, setJmDictWord] = React.useState<JMdictWord | null>(null);
+  const open = Boolean(anchorEl);
+
   // console.log("LayoutWords", words, "playingWordIndex", playingWordIdx);
 
   return (
     <div>
       {words.map((word, i) => (
-        <span key={i} style={{ whiteSpace: "nowrap" }}>
+        <span
+          key={i}
+          style={{ whiteSpace: "nowrap" }}
+          aria-owns={open ? "jmdict-popover" : undefined}
+          aria-haspopup="true"
+          onMouseEnter={async (event: React.MouseEvent<HTMLElement>) => {
+            // @ts-expect-error: TODO
+            if (!word.jmdict_id) return;
+            setJmDictWord(null);
+            setAnchorEl(event.currentTarget);
+            // @ts-expect-error: TODO
+            setJmDictWord(await jmdict.findById(word.jmdict_id));
+          }}
+          onMouseLeave={handlePopoverClose}
+        >
           <span
             style={{
               color: word.partOfSpeech ? posColors[word.partOfSpeech] : "",
@@ -87,6 +111,29 @@ function LayoutWords({
           </span>
         </span>
       ))}
+      <Popover
+        id="jmdict-popover"
+        sx={{ pointerEvents: "none" }}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        {jmdictWord ? (
+          // @ts-expect-error: TODO, missing metadata
+          <DictionaryEntry entry={jmdictWord} />
+        ) : (
+          "Loading..."
+        )}
+      </Popover>
     </div>
   );
 }
