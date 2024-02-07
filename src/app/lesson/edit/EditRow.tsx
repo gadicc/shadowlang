@@ -38,6 +38,30 @@ export default function EditRow({
     [words, setWords, i],
   );
 
+  // Need these as strings to allow insertion of decimal point :)
+  const [start, _setStart] = React.useState(word.start || "");
+  const [end, _setEnd] = React.useState(word.end || "");
+  const setStart = React.useCallback(
+    (start: string) => {
+      _setStart(start);
+      setWord({
+        ...word,
+        start: parseFloat(start),
+      });
+    },
+    [word, setWord],
+  );
+  const setEnd = React.useCallback(
+    (end: string) => {
+      _setEnd(end);
+      setWord({
+        ...word,
+        end: parseFloat(end),
+      });
+    },
+    [word, setWord],
+  );
+
   const iconPadding = 0.2;
 
   return (
@@ -180,13 +204,8 @@ export default function EditRow({
             marginLeft: 1,
             marginRight: 1,
           }}
-          value={word.start || ""}
-          onChange={(e) =>
-            setWord({
-              ...word,
-              start: parseFloat(e.target.value),
-            })
-          }
+          value={start}
+          onChange={(e) => setStart(e.target.value)}
         />
       </td>
       <td width={52}>
@@ -200,13 +219,8 @@ export default function EditRow({
             marginRight: 1,
           }}
           type="text"
-          value={word.end || ""}
-          onChange={(e) =>
-            setWord({
-              ...word,
-              end: parseFloat(e.target.value),
-            })
-          }
+          value={end}
+          onChange={(e) => setEnd(e.target.value)}
         />
       </td>
     </tr>
