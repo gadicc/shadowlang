@@ -276,6 +276,8 @@ function useAudio(
 
       const currentTime = audio.currentTime;
 
+      /*
+      // Do this instead via setTimeout which is more accurate for pausing.
       if (currentTime >= startEndRef.current.end + 0.2) {
         audio.pause();
         setIsPlaying(false);
@@ -283,6 +285,7 @@ function useAudio(
         if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
         return;
       }
+      */
 
       for (let i = 0; i < words.length; i++) {
         const word = words[i];
@@ -304,7 +307,7 @@ function useAudio(
         }
       }
     },
-    [audioRef, words, setIsPlaying, setPlayingWordIdx, avatarRef],
+    [audioRef, words, setPlayingWordIdx],
   );
 
   React.useEffect(() => {
@@ -332,6 +335,17 @@ function useAudio(
 
       audio.currentTime = startEndRef.current.start;
       setIsPlaying(true);
+
+      // This works much better than relying on `timeupdate`.
+      setTimeout(
+        () => {
+          audio.pause();
+          setIsPlaying(false);
+          setPlayingWordIdx(-1);
+          if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
+        },
+        (startEndRef.current.end - startEndRef.current.start) * 1000,
+      );
 
       // --- wave scope start ---
       // Adapted from https://stackoverflow.com/a/37021249/1839099
@@ -395,7 +409,7 @@ function useAudio(
 
       audio.play();
     },
-    [audioRef, start, setIsPlaying, avatarRef, end],
+    [audioRef, start, setIsPlaying, setPlayingWordIdx, avatarRef, end],
   );
 
   return { isPlaying, play, playingWordIdx };
