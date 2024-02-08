@@ -59,9 +59,11 @@ interface Word {
 function LayoutWords({
   words,
   playingWordIdx,
+  play,
 }: {
   words: Word[];
   playingWordIdx: number;
+  play: (range?: { start: number; end: number }) => void;
 }) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const handlePopoverClose = React.useCallback(
@@ -88,6 +90,8 @@ function LayoutWords({
             setAnchorEl(event.currentTarget);
             // @ts-expect-error: TODO
             setJmDictWord(await jmdict.findById(word.jmdict_id));
+            if (word.start && word.end)
+              play({ start: word.start, end: word.end });
           }}
           onMouseLeave={handlePopoverClose}
         >
@@ -113,7 +117,7 @@ function LayoutWords({
       ))}
       <Popover
         id="jmdict-popover"
-        sx={{ pointerEvents: "none" }}
+        sx={{ pointerEvents: "none", top: 25 }}
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopoverClose}
@@ -249,6 +253,10 @@ function useAudio(
     },
     [isPlayingRef],
   );
+  const startEndRef = React.useRef({ start, end });
+
+  // Can't play until user has interacted.
+  const userInteractionRef = React.useRef(false);
 
   const [playingWordIdx, _setPlayingWordIdx] = React.useState(-1);
   const playingWordIdxRef = React.useRef(playingWordIdx);
@@ -268,7 +276,7 @@ function useAudio(
 
       const currentTime = audio.currentTime;
 
-      if (currentTime >= end + 0.2) {
+      if (currentTime >= startEndRef.current.end + 0.2) {
         audio.pause();
         setIsPlaying(false);
         setPlayingWordIdx(-1);
@@ -296,7 +304,7 @@ function useAudio(
         }
       }
     },
-    [audioRef, words, end, setIsPlaying, setPlayingWordIdx, avatarRef],
+    [audioRef, words, setIsPlaying, setPlayingWordIdx, avatarRef],
   );
 
   React.useEffect(() => {
@@ -311,75 +319,84 @@ function useAudio(
 
   const actxRef = React.useRef<AudioContext | null>(null);
 
-  const play = React.useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+  const play = React.useCallback(
+    (range?: { start: number; end: number }) => {
+      const audio = audioRef.current;
+      if (!audio) return;
 
-    audio.currentTime = start;
-    setIsPlaying(true);
+      // We should probably have an explicit API to set this.
+      if (!range) userInteractionRef.current = true;
+      if (!userInteractionRef.current) return;
 
-    // --- wave scope start ---
-    // Adapted from https://stackoverflow.com/a/37021249/1839099
-    // thanks user1693593
-    let srcNode: MediaElementAudioSourceNode,
-      bquad: BiquadFilterNode,
-      analyser: AnalyserNode,
-      fft: Uint8Array,
-      fftLen: number;
+      startEndRef.current = range || { start, end };
 
-    function setup(this: HTMLAudioElement) {
-      if (srcNode || !audio || actxRef.current) return;
-      audio.removeEventListener("canplay", setup);
+      audio.currentTime = startEndRef.current.start;
+      setIsPlaying(true);
 
-      const actx = (actxRef.current = new AudioContext());
+      // --- wave scope start ---
+      // Adapted from https://stackoverflow.com/a/37021249/1839099
+      // thanks user1693593
+      let srcNode: MediaElementAudioSourceNode,
+        bquad: BiquadFilterNode,
+        analyser: AnalyserNode,
+        fft: Uint8Array,
+        fftLen: number;
 
-      srcNode = actx.createMediaElementSource(this);
+      function setup(this: HTMLAudioElement) {
+        if (srcNode || !audio || actxRef.current) return;
+        audio.removeEventListener("canplay", setup);
 
-      bquad = actx.createBiquadFilter();
-      bquad.type = "lowpass";
-      bquad.frequency.value = 250;
+        const actx = (actxRef.current = new AudioContext());
 
-      analyser = actx.createAnalyser();
-      analyser.fftSize = 256;
+        srcNode = actx.createMediaElementSource(this);
 
-      // connect nodes: srcNode (input) -> analyzer -> destination (output)
-      srcNode.connect(bquad);
-      bquad.connect(analyser);
+        bquad = actx.createBiquadFilter();
+        bquad.type = "lowpass";
+        bquad.frequency.value = 250;
 
-      srcNode.connect(actx.destination);
-      fftLen = analyser.frequencyBinCount;
-      fft = new Uint8Array(fftLen);
+        analyser = actx.createAnalyser();
+        analyser.fftSize = 256;
 
-      const avatar = avatarRef?.current;
-      if (!avatar) return;
-      avatar.style.transitionDuration = ".05s";
-      avatar.style.transitionProperty = "box-shadow";
+        // connect nodes: srcNode (input) -> analyzer -> destination (output)
+        srcNode.connect(bquad);
+        bquad.connect(analyser);
 
-      render();
-    }
-    function render() {
-      // This was an easy way to avoid the calcs when not playing, but
-      // really we should stop the requestAnimationFrame loop.  TODO.
-      if (isPlayingRef.current) {
-        // fill FFT buffer
-        analyser.getByteFrequencyData(fft);
-        // average data from some bands
-        const v = (fft[1] + fft[2]) / 512;
-        // console.log(v);
+        srcNode.connect(actx.destination);
+        fftLen = analyser.frequencyBinCount;
+        fft = new Uint8Array(fftLen);
 
         const avatar = avatarRef?.current;
         if (!avatar) return;
-        avatar.style.boxShadow =
-          "0px 0px 0px " + 8 * v + "px rgba(100,100,100,0.3)";
+        avatar.style.transitionDuration = ".05s";
+        avatar.style.transitionProperty = "box-shadow";
+
+        render();
       }
+      function render() {
+        // This was an easy way to avoid the calcs when not playing, but
+        // really we should stop the requestAnimationFrame loop.  TODO.
+        if (isPlayingRef.current) {
+          // fill FFT buffer
+          analyser.getByteFrequencyData(fft);
+          // average data from some bands
+          const v = (fft[1] + fft[2]) / 512;
+          // console.log(v);
 
-      requestAnimationFrame(render);
-    }
-    if (!actxRef.current) audio.addEventListener("canplay", setup);
-    // --- wave scope end ---
+          const avatar = avatarRef?.current;
+          if (!avatar) return;
+          avatar.style.boxShadow =
+            "0px 0px 0px " + 8 * v + "px rgba(100,100,100,0.3)";
+        }
 
-    audio.play();
-  }, [audioRef, start, setIsPlaying, avatarRef]);
+        requestAnimationFrame(render);
+      }
+      if (!actxRef.current) audio.addEventListener("canplay", setup);
+      // --- wave scope end ---
+
+      audio.play();
+    },
+    [audioRef, start, setIsPlaying, avatarRef, end],
+  );
 
   return { isPlaying, play, playingWordIdx };
 }
@@ -443,7 +460,7 @@ export default React.memo(function TextBlock({
         <div>
           <div
             ref={avatarRef}
-            onClick={play}
+            onClick={() => play()}
             style={{
               boxSizing: "content-box",
               height: 70,
@@ -492,7 +509,11 @@ export default React.memo(function TextBlock({
         <div>
           {words.length ? (
             <>
-              <LayoutWords words={words} playingWordIdx={playingWordIdx} />
+              <LayoutWords
+                words={words}
+                playingWordIdx={playingWordIdx}
+                play={play}
+              />
               <div style={{ opacity: 0.65 }}>
                 <LayoutHepburn words={words} playingWordIdx={playingWordIdx} />
                 {translations ? (
