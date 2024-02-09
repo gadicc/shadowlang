@@ -276,16 +276,14 @@ function useAudio(
 
       const currentTime = audio.currentTime;
 
-      /*
-      // Do this instead via setTimeout which is more accurate for pausing.
-      if (currentTime >= startEndRef.current.end + 0.2) {
+      // Alternatively via setTimeout; each has pros/cons on different devices :(
+      if (currentTime >= startEndRef.current.end) {
         audio.pause();
         setIsPlaying(false);
         setPlayingWordIdx(-1);
         if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
         return;
       }
-      */
 
       for (let i = 0; i < words.length; i++) {
         const word = words[i];
@@ -307,7 +305,7 @@ function useAudio(
         }
       }
     },
-    [audioRef, words, setPlayingWordIdx],
+    [audioRef, words, setPlayingWordIdx, setIsPlaying, avatarRef, startEndRef],
   );
 
   React.useEffect(() => {
@@ -333,19 +331,22 @@ function useAudio(
 
       startEndRef.current = range || { start, end };
 
-      audio.currentTime = startEndRef.current.start;
-      setIsPlaying(true);
-
-      // This works much better than relying on `timeupdate`.
-      setTimeout(
-        () => {
-          audio.pause();
-          setIsPlaying(false);
-          setPlayingWordIdx(-1);
-          if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
-        },
-        (startEndRef.current.end - startEndRef.current.start) * 1000,
-      );
+      /*
+      // This maybe works much better than relying on `timeupdate`.
+      function timedStop() {
+        setTimeout(
+          () => {
+            audio?.pause();
+            audio?.removeEventListener("play", timedStop);
+            setIsPlaying(false);
+            setPlayingWordIdx(-1);
+            if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
+          },
+          (startEndRef.current.end - startEndRef.current.start) * 1000,
+        );
+      }
+      audio.addEventListener("play", timedStop);
+      */
 
       // --- wave scope start ---
       // Adapted from https://stackoverflow.com/a/37021249/1839099
@@ -407,9 +408,11 @@ function useAudio(
       if (!actxRef.current) audio.addEventListener("canplay", setup);
       // --- wave scope end ---
 
+      audio.currentTime = startEndRef.current.start;
+      setIsPlaying(true);
       audio.play();
     },
-    [audioRef, start, setIsPlaying, setPlayingWordIdx, avatarRef, end],
+    [audioRef, start, setIsPlaying, avatarRef, end],
   );
 
   return { isPlaying, play, playingWordIdx };
