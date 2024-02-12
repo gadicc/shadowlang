@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import hepburn from "hepburn";
-// @ts-expect-error: no types
-import { ReactFuri } from "react-furi";
 import Image from "next/image";
 
 import { LinearProgress, Popover, Stack } from "@mui/material";
@@ -12,6 +10,8 @@ import { JMdictWord, type Speaker as DBSpeaker, type Lesson } from "@/schemas";
 import posColors from "@/lib/pos-colors";
 import { DictionaryEntry } from "../edit/useJmDictModal";
 import { jmdict } from "@/dicts";
+import useBreakPoint from "@/lib/useBreakPoint";
+import Furigana from "@/lib/furigana";
 
 export function useMergeSpeakers(
   lessonSpeakers: Speaker[] | undefined,
@@ -60,10 +60,12 @@ function LayoutWords({
   words,
   playingWordIdx,
   play,
+  breakpoint,
 }: {
   words: Word[];
   playingWordIdx: number;
   play: (range?: { start: number; end: number }) => void;
+  breakpoint?: string;
 }) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const handlePopoverClose = React.useCallback(
@@ -103,7 +105,11 @@ function LayoutWords({
             }}
           >
             {word.reading ? (
-              <ReactFuri word={word.word} reading={word.reading} />
+              <Furigana
+                word={word.word}
+                reading={word.reading}
+                textStyle={{ fontSize: breakpoint === "xs" ? "16px" : "24px" }}
+              />
             ) : (
               word.word
             )}
@@ -454,6 +460,7 @@ export default React.memo(function TextBlock({
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
   // const [done, setDone] = React.useState(false);
+  const breakpoint = useBreakPoint();
 
   const speaker = speakers[speakerId];
   if (!speaker.url && !speaker.initials)
@@ -504,20 +511,22 @@ export default React.memo(function TextBlock({
             onClick={() => play()}
             style={{
               boxSizing: "content-box",
-              height: 70,
-              width: 70,
+              height: breakpoint === "xs" ? 28 : 70,
+              width: breakpoint === "xs" ? 28 : 70,
               borderRadius: "50%",
               border: isCurrent ? "2px solid blue" : "1px solid black",
               margin: isCurrent ? 0 : 1,
               scrollMarginTop: 200,
+              position: "relative",
+              top: 9, // breakpoint === "xs" ? 9 : 9,
             }}
           >
             {speaker.url ? (
               <Image
                 alt={speaker.name || "Speaker Avatar"}
                 src={speaker.url}
-                width={70}
-                height={70}
+                width={breakpoint === "xs" ? 28 : 70}
+                height={breakpoint === "xs" ? 28 : 70}
               />
             ) : (
               <div
@@ -555,6 +564,7 @@ export default React.memo(function TextBlock({
                 words={words}
                 playingWordIdx={playingWordIdx}
                 play={play}
+                breakpoint={breakpoint}
               />
               <div style={{ opacity: 0.65 }}>
                 <LayoutHepburn words={words} playingWordIdx={playingWordIdx} />
