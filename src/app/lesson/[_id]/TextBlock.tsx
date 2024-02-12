@@ -241,6 +241,7 @@ function useAudio(
   start: number,
   end: number,
   avatarRef?: React.RefObject<HTMLDivElement>,
+  eventDone?: (event: string) => void,
 ) {
   // console.log("useAudio");
   const [isPlaying, _setIsPlaying] = React.useState(false);
@@ -282,6 +283,7 @@ function useAudio(
         setIsPlaying(false);
         setPlayingWordIdx(-1);
         if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
+        if (eventDone) eventDone("play");
         return;
       }
 
@@ -305,7 +307,15 @@ function useAudio(
         }
       }
     },
-    [audioRef, words, setPlayingWordIdx, setIsPlaying, avatarRef, startEndRef],
+    [
+      audioRef,
+      words,
+      setPlayingWordIdx,
+      setIsPlaying,
+      avatarRef,
+      startEndRef,
+      eventDone,
+    ],
   );
 
   React.useEffect(() => {
@@ -423,21 +433,23 @@ export default React.memo(function TextBlock({
   words,
   speakers,
   speakerId,
-  isCurrent,
   audio,
   translations,
   status,
   lessonAudio,
+  event,
+  eventDone,
 }: {
   text: string;
   words: Word[];
   speakers: Speaker[];
   speakerId: number;
-  isCurrent: boolean;
   audio: Lesson["blocks"][0]["audio"];
   translations: BlockTranslations;
   status?: { title: string; showProgress: boolean; message?: string };
   lessonAudio?: Lesson["audio"];
+  event?: string;
+  eventDone?: (event: string) => void;
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
@@ -459,15 +471,27 @@ export default React.memo(function TextBlock({
   const { isPlaying, play, playingWordIdx } = useAudio(
     audioRef,
     words,
-    typeof words?.[0]?.start === "number" ? words[0].start : audio.start,
-    typeof lastWord?.end === "number" ? lastWord.end : audio.end,
+    // typeof words?.[0]?.start === "number" ? words[0].start : audio.start,
+    audio.start || words?.[0]?.start || 0,
+    // typeof lastWord?.end === "number" ? lastWord.end : audio.end,
+    audio.end || lastWord.end || 0,
     avatarRef,
+    event === "play" ? eventDone : undefined,
   );
   // console.log({ results });
   const audioSrc =
     audio.src ||
     (lessonAudio && "/api/file2?sha256=" + lessonAudio.sha256) ||
     "";
+
+  React.useEffect(() => {
+    // if (event) console.log("event", event);
+    if (event === "play") play();
+    if (event)
+      avatarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [event, play]);
+
+  const isCurrent = !!event;
 
   return (
     <>
@@ -485,6 +509,7 @@ export default React.memo(function TextBlock({
               borderRadius: "50%",
               border: isCurrent ? "2px solid blue" : "1px solid black",
               margin: isCurrent ? 0 : 1,
+              scrollMarginTop: 200,
             }}
           >
             {speaker.url ? (
