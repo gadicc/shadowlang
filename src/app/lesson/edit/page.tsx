@@ -201,8 +201,10 @@ const LessonBlock = React.memo(function LessonBlock({
     <div
       key={i}
       style={{
+        background: "#efeae2",
         border: editIdx === i ? "1px dotted black" : "1px solid transparent",
-        padding: 5,
+        margin: editIdx === i ? "20px 0 20px 0" : 0,
+        padding: 20,
       }}
       onClick={() => setEditIdx(i)}
     >
@@ -214,7 +216,8 @@ const LessonBlock = React.memo(function LessonBlock({
         audio={block.audio}
         words={block.words}
         translations={block.translations}
-        isCurrent={false} // XXX event logic TODO
+        // isCurrent={false} // XXX event logic TODO
+        // event="done"
         status={block.status}
         lessonAudio={lessonAudio}
       />
@@ -223,6 +226,7 @@ const LessonBlock = React.memo(function LessonBlock({
           <Tabs
             value={editTabIdx}
             onChange={(e, value) => setEditTabIdx(value)}
+            style={{ marginTop: 10 }}
           >
             <Tab label="Text" />
             <Tab label="Translations" />
@@ -485,21 +489,24 @@ function Edit() {
         </ol>
       </div>
 
-      {lesson.blocks?.map((block, i) => (
-        <LessonBlock
-          key={i}
-          block={block}
-          i={i}
-          editIdx={editIdx}
-          setEditIdx={setEditIdx}
-          editTabIdx={editTabIdx}
-          setEditTabIdx={setEditTabIdx}
-          mergeBlockIdx={mergeBlockIdx}
-          speakers={speakers}
-          lessonAudio={lesson.audio}
-          matchTimestampsAll={matchTimestampsAll}
-        />
-      ))}
+      <div>
+        {lesson.blocks?.map((block, i) => (
+          <LessonBlock
+            key={i}
+            block={block}
+            i={i}
+            editIdx={editIdx}
+            setEditIdx={setEditIdx}
+            editTabIdx={editTabIdx}
+            setEditTabIdx={setEditTabIdx}
+            mergeBlockIdx={mergeBlockIdx}
+            speakers={speakers}
+            lessonAudio={lesson.audio}
+            matchTimestampsAll={matchTimestampsAll}
+          />
+        ))}
+      </div>
+
       {hasChanged ? (
         <div
           style={{

@@ -82,7 +82,7 @@ export default function Translations({
       </div>
       <br />
       {translations.en.length > 0 ? (
-        <table border={1} cellSpacing={0}>
+        <table border={1} cellSpacing={0} style={{ background: "#fafafa" }}>
           <tbody>
             {translations.en.map((entry, i) => (
               <tr key={entry.text}>

@@ -12,6 +12,7 @@ import { DictionaryEntry } from "../edit/useJmDictModal";
 import { jmdict } from "@/dicts";
 import useBreakPoint from "@/lib/useBreakPoint";
 import Furigana from "@/lib/furigana";
+import Tail from "@/lib/tail";
 
 export function useMergeSpeakers(
   lessonSpeakers: Speaker[] | undefined,
@@ -445,6 +446,7 @@ export default React.memo(function TextBlock({
   lessonAudio,
   event,
   eventDone,
+  style,
 }: {
   text: string;
   words: Word[];
@@ -456,6 +458,7 @@ export default React.memo(function TextBlock({
   lessonAudio?: Lesson["audio"];
   event?: string;
   eventDone?: (event: string) => void;
+  style?: React.CSSProperties;
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
@@ -501,10 +504,10 @@ export default React.memo(function TextBlock({
   const isCurrent = !!event;
 
   return (
-    <>
+    <div style={style}>
       <audio ref={audioRef} src={audioSrc} />
 
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={breakpoint === "xs" ? 1 : 2}>
         <div>
           <div
             ref={avatarRef}
@@ -518,7 +521,7 @@ export default React.memo(function TextBlock({
               margin: isCurrent ? 0 : 1,
               scrollMarginTop: 200,
               position: "relative",
-              top: 9, // breakpoint === "xs" ? 9 : 9,
+              // top: 9, // breakpoint === "xs" ? 9 : 9,
             }}
           >
             {speaker.url ? (
@@ -557,54 +560,73 @@ export default React.memo(function TextBlock({
           </div>
         </div>
 
-        <div>
-          {words.length ? (
-            <>
-              <LayoutWords
-                words={words}
-                playingWordIdx={playingWordIdx}
-                play={play}
-                breakpoint={breakpoint}
-              />
-              <div style={{ opacity: 0.65 }}>
-                <LayoutHepburn words={words} playingWordIdx={playingWordIdx} />
-                {translations ? (
-                  <LayoutTranslation
-                    translation={translation}
+        <div
+          style={{
+            position: "relative",
+          }}
+        >
+          <Tail />
+
+          <div
+            style={{
+              background: "white",
+              borderTopLeftRadius: "none",
+              borderTopRightRadius: "7.5px",
+              borderBottomLeftRadius: "7.5px",
+              borderBottomRightRadius: "7.5px",
+              boxShadow: "0 1px 0.5px rgba(0,0,0,.13)",
+              padding: "5px 10px 5px 10px",
+            }}
+          >
+            {words.length ? (
+              <>
+                <LayoutWords
+                  words={words}
+                  playingWordIdx={playingWordIdx}
+                  play={play}
+                  breakpoint={breakpoint}
+                />
+                <div style={{ opacity: 0.65 }}>
+                  <LayoutHepburn
                     words={words}
                     playingWordIdx={playingWordIdx}
                   />
-                ) : null}
-              </div>
-            </>
-          ) : (
-            <div style={{ color: isPlaying ? "blue" : "" }}>{text}</div>
-          )}
-          {isListening ? "🎤" : ""}
-          <div>
-            {/*
+                  {translations ? (
+                    <LayoutTranslation
+                      translation={translation}
+                      words={words}
+                      playingWordIdx={playingWordIdx}
+                    />
+                  ) : null}
+                </div>
+              </>
+            ) : (
+              <div style={{ color: isPlaying ? "blue" : "" }}>{text}</div>
+            )}
+            {isListening ? "🎤" : ""}
+            <div>
+              {/*
           {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
           */}
-          </div>
-          {status ? (
-            <div>
-              {status.title}{" "}
-              {status.showProgress ? (
-                <LinearProgress
-                  sx={{
-                    display: "inline-block",
-                    width: 200,
-                    verticalAlign: "middle",
-                  }}
-                />
-              ) : null}
-              {status.message}
             </div>
-          ) : null}
-
-          <br />
+            {status ? (
+              <div>
+                {status.title}{" "}
+                {status.showProgress ? (
+                  <LinearProgress
+                    sx={{
+                      display: "inline-block",
+                      width: 200,
+                      verticalAlign: "middle",
+                    }}
+                  />
+                ) : null}
+                {status.message}
+              </div>
+            ) : null}
+          </div>
         </div>
       </Stack>
-    </>
+    </div>
   );
 });

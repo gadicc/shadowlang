@@ -95,7 +95,12 @@ export default function EditBlock({
       </button>
       <br />
       <br />
-      <table border={1} cellSpacing={0} width="100%">
+      <table
+        border={1}
+        cellSpacing={0}
+        width="100%"
+        style={{ background: "#fafafa" }}
+      >
         <thead>
           <tr>
             <th>Actions</th>

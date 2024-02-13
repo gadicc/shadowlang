@@ -68,13 +68,13 @@ export default function LessonId({
   if (!lesson) return "Loading...";
 
   return (
-    <Container sx={{ my: 2 }}>
+    <Container sx={{ py: 2, background: "#efeae2" }}>
       <Typography variant="h5" sx={{ textDecoration: "underline", mb: 2 }}>
         {lesson.title.en}
       </Typography>
       <Button
         variant="outlined"
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, background: "#fafafa" }}
         onClick={() => {
           if (
             currentBlockIdx === -1 ||
@@ -98,6 +98,7 @@ export default function LessonId({
           lessonAudio={lesson.audio}
           event={currentBlockIdx === i ? currentEvent : undefined}
           eventDone={currentBlockIdx === i ? eventDone : undefined}
+          style={{ marginBottom: "20px" }}
         />
       ))}
     </Container>
