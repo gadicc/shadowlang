@@ -249,6 +249,7 @@ function useAudio(
   end: number,
   avatarRef?: React.RefObject<HTMLDivElement>,
   eventDone?: (event: string) => void,
+  breakpoint?: string,
 ) {
   // console.log("useAudio");
   const [isPlaying, _setIsPlaying] = React.useState(false);
@@ -416,8 +417,9 @@ function useAudio(
 
           const avatar = avatarRef?.current;
           if (!avatar) return;
+          const multiplier = breakpoint === "xs" ? 4 : 8;
           avatar.style.boxShadow =
-            "0px 0px 0px " + 8 * v + "px rgba(100,100,100,0.3)";
+            "0px 0px 0px " + multiplier * v + "px rgba(100,100,100,0.3)";
         }
 
         requestAnimationFrame(render);
@@ -429,7 +431,7 @@ function useAudio(
       setIsPlaying(true);
       audio.play();
     },
-    [audioRef, start, setIsPlaying, avatarRef, end],
+    [audioRef, start, setIsPlaying, avatarRef, end, breakpoint],
   );
 
   return { isPlaying, play, playingWordIdx };
@@ -487,6 +489,7 @@ export default React.memo(function TextBlock({
     audio.end || lastWord.end || 0,
     avatarRef,
     event === "play" ? eventDone : undefined,
+    breakpoint,
   );
   // console.log({ results });
   const audioSrc =
