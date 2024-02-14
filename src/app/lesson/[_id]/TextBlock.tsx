@@ -86,7 +86,7 @@ function LayoutWords({
           style={{ whiteSpace: "nowrap" }}
           aria-owns={open ? "jmdict-popover" : undefined}
           aria-haspopup="true"
-          onMouseEnter={async (event: React.MouseEvent<HTMLElement>) => {
+          onClick={async (event: React.MouseEvent<HTMLElement>) => {
             // @ts-expect-error: TODO
             if (!word.jmdict_id) return;
             setJmDictWord(null);
