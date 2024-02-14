@@ -68,7 +68,14 @@ export default function LessonId({
   if (!lesson) return "Loading...";
 
   return (
-    <Container sx={{ py: 2, background: "#efeae2" }}>
+    <Container
+      sx={{
+        py: 2,
+        backgroundColor: "#efeae2",
+        backgroundImage: "url(/img/bg-tile.png)",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <Typography variant="h5" sx={{ textDecoration: "underline", mb: 2 }}>
         {lesson.title.en}
       </Typography>
