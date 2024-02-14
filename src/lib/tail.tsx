@@ -36,7 +36,7 @@ export function TailSVG({
       version="1.1"
       x="0px"
       y="0px"
-      enable-background={`new 0 0 ${width} ${height}}`}
+      enableBackground={`new 0 0 ${width} ${height}}`}
       style={{ position: "absolute", top: 0, zIndex: 0 }}
     >
       <title>tail-in</title>
