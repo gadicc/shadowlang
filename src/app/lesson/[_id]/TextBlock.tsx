@@ -62,11 +62,13 @@ function LayoutWords({
   playingWordIdx,
   play,
   breakpoint,
+  showFuri = true,
 }: {
   words: Word[];
   playingWordIdx: number;
   play: (range?: { start: number; end: number }) => void;
   breakpoint?: string;
+  showFuri?: boolean;
 }) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const handlePopoverClose = React.useCallback(
@@ -110,6 +112,7 @@ function LayoutWords({
                 word={word.word}
                 reading={word.reading}
                 textStyle={{ fontSize: breakpoint === "xs" ? "16px" : "24px" }}
+                showFuri={showFuri}
               />
             ) : (
               word.word
@@ -449,6 +452,9 @@ export default React.memo(function TextBlock({
   event,
   eventDone,
   style,
+  showFuri = true,
+  showRomaji = true,
+  showTranslation = true,
 }: {
   text: string;
   words: Word[];
@@ -461,6 +467,9 @@ export default React.memo(function TextBlock({
   event?: string;
   eventDone?: (event: string) => void;
   style?: React.CSSProperties;
+  showFuri?: boolean;
+  showRomaji?: boolean;
+  showTranslation?: boolean;
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
@@ -504,11 +513,11 @@ export default React.memo(function TextBlock({
       avatarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [event, play]);
 
-  const isCurrent = !!event;
+  const isCurrent = event && event !== "delay";
 
   return (
     <div style={style}>
-      <audio ref={audioRef} src={audioSrc} />
+      <audio ref={audioRef} src={audioSrc} preload="auto" />
 
       <Stack direction="row" spacing={breakpoint === "xs" ? 1 : 2}>
         <div>
@@ -588,13 +597,16 @@ export default React.memo(function TextBlock({
                   playingWordIdx={playingWordIdx}
                   play={play}
                   breakpoint={breakpoint}
+                  showFuri={showFuri}
                 />
                 <div style={{ opacity: 0.65 }}>
-                  <LayoutHepburn
-                    words={words}
-                    playingWordIdx={playingWordIdx}
-                  />
-                  {translations ? (
+                  {showRomaji && (
+                    <LayoutHepburn
+                      words={words}
+                      playingWordIdx={playingWordIdx}
+                    />
+                  )}
+                  {translations && showTranslation ? (
                     <LayoutTranslation
                       translation={translation}
                       words={words}
