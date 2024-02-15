@@ -287,6 +287,7 @@ function useAudio(
       if (!audio) return;
 
       const currentTime = audio.currentTime;
+      // console.log("currentTime", currentTime);
 
       // Alternatively via setTimeout; each has pros/cons on different devices :(
       if (currentTime >= startEndRef.current.end) {
@@ -348,7 +349,9 @@ function useAudio(
 
       // We should probably have an explicit API to set this.
       if (!range) userInteractionRef.current = true;
-      if (!userInteractionRef.current) return;
+      // Except now we onClick instead of onMouseOver, so we don't need this.
+      // if (!userInteractionRef.current) return;
+      // console.log(range);
 
       startEndRef.current = range || { start, end };
 
@@ -431,6 +434,7 @@ function useAudio(
       // --- wave scope end ---
 
       audio.currentTime = startEndRef.current.start;
+      // console.log("set currentTime to ", startEndRef.current.start);
       setIsPlaying(true);
       audio.play();
     },
