@@ -11,6 +11,9 @@ import {
   Button,
   DialogActions,
   Box,
+  Input,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 
 import { jmdict } from "@/dicts";
@@ -19,6 +22,7 @@ import {
   JMdictWord,
 } from "@scriptin/jmdict-simplified-types";
 import posColors from "@/lib/pos-colors";
+import { Delete } from "@mui/icons-material";
 
 interface JmDictModalState {
   kanji?: string;
@@ -177,6 +181,19 @@ const JmDictModal = React.memo(function JmDictModal({
             sx={{ width: "222px" }}
             value={state.kanji || ""}
             onChange={(e) => mergeAndLookupState({ kanji: e.target.value })}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="clear kanji"
+                    edge="end"
+                    onClick={() => mergeAndLookupState({ kanji: "" })}
+                  >
+                    <Delete />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <TextField
             id="outlined-basic"
@@ -186,10 +203,31 @@ const JmDictModal = React.memo(function JmDictModal({
             sx={{ width: "222px" }}
             value={state.kana || ""}
             onChange={(e) => mergeAndLookupState({ kana: e.target.value })}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="clear kana"
+                    edge="end"
+                    onClick={() => mergeAndLookupState({ kana: "" })}
+                  >
+                    <Delete />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-          {isFetching && (
-            <CircularProgress size="1em" sx={{ marginTop: "9px" }} />
-          )}
+          <CircularProgress
+            size="1em"
+            variant={isFetching ? "indeterminate" : "determinate"}
+            value={isFetching ? undefined : 100}
+            sx={{
+              marginTop: "auto !important",
+              marginBottom: "auto !important",
+              opacity: isFetching ? 1 : 0.075,
+              color: isFetching ? "#1976d2" : "#555",
+            }}
+          />
         </Stack>
         <div style={{ fontSize: "65%", fontWeight: "normal" }}>
           Enter either kanji or kana to search, or use both to try find an exact
