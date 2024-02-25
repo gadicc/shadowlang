@@ -1,9 +1,10 @@
 import React from "react";
 
-import { IconButton } from "@mui/material";
+import { IconButton, Stack } from "@mui/material";
 import {
   Add,
   ArrowDownward,
+  ArrowDropUp,
   ArrowUpward,
   CheckBox,
   Delete,
@@ -39,8 +40,8 @@ export default function EditRow({
   );
 
   // Need these as strings to allow insertion of decimal point :)
-  const [start, _setStart] = React.useState(word.start || "");
-  const [end, _setEnd] = React.useState(word.end || "");
+  const [start, _setStart] = React.useState(word.start?.toString() || "");
+  const [end, _setEnd] = React.useState(word.end?.toString() || "");
   const setStart = React.useCallback(
     (start: string) => {
       _setStart(start);
@@ -196,21 +197,35 @@ export default function EditRow({
         <PartOfSpeech word={word} setWord={setWord} />
       </td>
       <td width={52}>
-        <input
-          type="text"
-          style={{
-            width: 50,
-            border: "none",
-            marginLeft: 1,
-            marginRight: 1,
-          }}
-          value={start}
-          onChange={(e) => setStart(e.target.value)}
-        />
+        <Stack direction="row" sx={{ background: "white" }}>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            style={{
+              width: 50,
+              border: "none",
+              marginLeft: 1,
+              marginRight: 1,
+            }}
+            value={start}
+            onChange={(e) => setStart(e.target.value)}
+          />
+          <IconButton
+            size="small"
+            onClick={() => {
+              setStart((parseFloat(start) + 0.05).toString());
+            }}
+          >
+            <ArrowDropUp fontSize="small" />
+          </IconButton>
+        </Stack>
       </td>
       <td width={52}>
         {" "}
         <input
+          inputMode="numeric"
+          pattern="[0-9]*"
           style={{
             width: 50,
             border: "none",
