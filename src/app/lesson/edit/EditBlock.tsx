@@ -1,4 +1,5 @@
 import React from "react";
+import { Howl } from "howler";
 
 import { Container } from "@mui/material";
 
@@ -71,7 +72,6 @@ export default function EditBlock({
   });
   console.log("words", words);
   */
-  const audioRef = React.useRef<HTMLAudioElement>(null);
   // console.log("EditBlock", { lessonAudio });
 
   const words = block.words;
@@ -80,11 +80,12 @@ export default function EditBlock({
     block?.audio?.src ||
     (lessonAudio && "/api/file2?sha256=" + lessonAudio.sha256) ||
     "";
+  const sound = React.useMemo(() => {
+    return new Howl({ src: [audioSrc], format: "m4a" });
+  }, [audioSrc]);
 
   return (
     <Container sx={{ mt: 2 }}>
-      {audioSrc && <audio ref={audioRef} src={audioSrc} />}
-
       <textarea
         // ref={ref}
         style={{ width: "100%" }}
@@ -134,7 +135,7 @@ export default function EditBlock({
               i={i}
               words={words}
               setWords={setWords}
-              audioRef={audioRef}
+              sound={sound}
             />
           ))}
         </tbody>

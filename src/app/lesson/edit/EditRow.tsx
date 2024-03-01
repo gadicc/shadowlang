@@ -17,37 +17,29 @@ import Reading from "./Reading";
 import PartOfSpeech from "./PartOfSpeech";
 import useJmDictModal from "./useJmDictModal";
 import { jmdict } from "@/dicts";
+import * as _ from "radash";
 
-function playRange(
-  audioRef: React.RefObject<HTMLAudioElement>,
-  start: number,
-  end: number,
-) {
-  const audio = audioRef?.current;
-  if (!audio) return;
-
-  audio.currentTime = start;
-  audio.play();
-  setTimeout(
-    () => {
-      audio.pause();
-    },
-    (end - start) * 1000,
-  );
-}
+const playRange = _.debounce(
+  { delay: 500 },
+  function playRange(sound: Howl, start: number, end: number) {
+    // @ts-expect-error: ok
+    sound._sprite.word = [start * 1000, (end - start) * 1000];
+    sound.play("word");
+  },
+);
 
 export default function EditRow({
   word,
   i,
   words,
   setWords,
-  audioRef,
+  sound,
 }: {
   word: BlockWord;
   i: number;
   words: BlockWord[];
   setWords: (words: BlockWord[]) => void;
-  audioRef: React.RefObject<HTMLAudioElement>;
+  sound: Howl;
 }) {
   const { openJmDict, JmDictModal, jmDictProps } = useJmDictModal();
 
@@ -233,7 +225,7 @@ export default function EditRow({
             value={start}
             onChange={(e) => {
               setStart(e.target.value);
-              playRange(audioRef, parseFloat(e.target.value), parseFloat(end));
+              playRange(sound, parseFloat(e.target.value), parseFloat(end));
             }}
           />
           <IconButton
@@ -241,7 +233,7 @@ export default function EditRow({
             onClick={() => {
               const startFloat = parseFloat(start) + 0.05;
               setStart(startFloat.toFixed(2));
-              playRange(audioRef, startFloat, parseFloat(end));
+              playRange(sound, startFloat, parseFloat(end));
             }}
           >
             <ArrowDropUp fontSize="small" />
@@ -251,7 +243,7 @@ export default function EditRow({
             onClick={() => {
               const startFloat = parseFloat(start) - 0.05;
               setStart(startFloat.toFixed(2));
-              playRange(audioRef, startFloat, parseFloat(end));
+              playRange(sound, startFloat, parseFloat(end));
             }}
           >
             <ArrowDropDown fontSize="small" />
@@ -274,11 +266,7 @@ export default function EditRow({
             value={end}
             onChange={(e) => {
               setEnd(e.target.value);
-              playRange(
-                audioRef,
-                parseFloat(start),
-                parseFloat(e.target.value),
-              );
+              playRange(sound, parseFloat(start), parseFloat(e.target.value));
             }}
           />
           <IconButton
@@ -286,7 +274,7 @@ export default function EditRow({
             onClick={() => {
               const endFloat = parseFloat(end) + 0.05;
               setEnd(endFloat.toFixed(2));
-              playRange(audioRef, parseFloat(start), endFloat);
+              playRange(sound, parseFloat(start), endFloat);
             }}
           >
             <ArrowDropUp fontSize="small" />
@@ -296,7 +284,7 @@ export default function EditRow({
             onClick={() => {
               const endFloat = parseFloat(end) - 0.05;
               setEnd(endFloat.toFixed(2));
-              playRange(audioRef, parseFloat(start), endFloat);
+              playRange(sound, parseFloat(start), endFloat);
             }}
           >
             <ArrowDropDown fontSize="small" />
