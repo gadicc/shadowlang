@@ -1,9 +1,11 @@
 import React from "react";
 
-import { IconButton } from "@mui/material";
+import { IconButton, Stack } from "@mui/material";
 import {
   Add,
   ArrowDownward,
+  ArrowDropDown,
+  ArrowDropUp,
   ArrowUpward,
   CheckBox,
   Delete,
@@ -16,16 +18,36 @@ import PartOfSpeech from "./PartOfSpeech";
 import useJmDictModal from "./useJmDictModal";
 import { jmdict } from "@/dicts";
 
+function playRange(
+  audioRef: React.RefObject<HTMLAudioElement>,
+  start: number,
+  end: number,
+) {
+  const audio = audioRef?.current;
+  if (!audio) return;
+
+  audio.currentTime = start;
+  audio.play();
+  setTimeout(
+    () => {
+      audio.pause();
+    },
+    (end - start) * 1000,
+  );
+}
+
 export default function EditRow({
   word,
   i,
   words,
   setWords,
+  audioRef,
 }: {
   word: BlockWord;
   i: number;
   words: BlockWord[];
   setWords: (words: BlockWord[]) => void;
+  audioRef: React.RefObject<HTMLAudioElement>;
 }) {
   const { openJmDict, JmDictModal, jmDictProps } = useJmDictModal();
 
@@ -39,8 +61,9 @@ export default function EditRow({
   );
 
   // Need these as strings to allow insertion of decimal point :)
-  const [start, _setStart] = React.useState(word.start || "");
-  const [end, _setEnd] = React.useState(word.end || "");
+  const [start, _setStart] = React.useState(word.start?.toFixed(2) || "");
+  const [end, _setEnd] = React.useState(word.end?.toFixed(2) || "");
+
   const setStart = React.useCallback(
     (start: string) => {
       _setStart(start);
@@ -196,32 +219,89 @@ export default function EditRow({
         <PartOfSpeech word={word} setWord={setWord} />
       </td>
       <td width={52}>
-        <input
-          type="text"
-          style={{
-            width: 50,
-            border: "none",
-            marginLeft: 1,
-            marginRight: 1,
-          }}
-          value={start}
-          onChange={(e) => setStart(e.target.value)}
-        />
+        <Stack direction="row" sx={{ background: "white" }}>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            style={{
+              width: 50,
+              border: "none",
+              marginLeft: 1,
+              marginRight: 1,
+            }}
+            value={start}
+            onChange={(e) => {
+              setStart(e.target.value);
+              playRange(audioRef, parseFloat(e.target.value), parseFloat(end));
+            }}
+          />
+          <IconButton
+            size="small"
+            onClick={() => {
+              const startFloat = parseFloat(start) + 0.05;
+              setStart(startFloat.toFixed(2));
+              playRange(audioRef, startFloat, parseFloat(end));
+            }}
+          >
+            <ArrowDropUp fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => {
+              const startFloat = parseFloat(start) - 0.05;
+              setStart(startFloat.toFixed(2));
+              playRange(audioRef, startFloat, parseFloat(end));
+            }}
+          >
+            <ArrowDropDown fontSize="small" />
+          </IconButton>
+        </Stack>
       </td>
       <td width={52}>
         {" "}
-        <input
-          style={{
-            width: 50,
-            border: "none",
-            boxSizing: "border-box",
-            marginLeft: 1,
-            marginRight: 1,
-          }}
-          type="text"
-          value={end}
-          onChange={(e) => setEnd(e.target.value)}
-        />
+        <Stack direction="row" sx={{ background: "white" }}>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            style={{
+              width: 50,
+              border: "none",
+              marginLeft: 1,
+              marginRight: 1,
+            }}
+            value={end}
+            onChange={(e) => {
+              setEnd(e.target.value);
+              playRange(
+                audioRef,
+                parseFloat(start),
+                parseFloat(e.target.value),
+              );
+            }}
+          />
+          <IconButton
+            size="small"
+            onClick={() => {
+              const endFloat = parseFloat(end) + 0.05;
+              setEnd(endFloat.toFixed(2));
+              playRange(audioRef, parseFloat(start), endFloat);
+            }}
+          >
+            <ArrowDropUp fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => {
+              const endFloat = parseFloat(end) - 0.05;
+              setEnd(endFloat.toFixed(2));
+              playRange(audioRef, parseFloat(start), endFloat);
+            }}
+          >
+            <ArrowDropDown fontSize="small" />
+          </IconButton>
+        </Stack>
       </td>
     </tr>
   );

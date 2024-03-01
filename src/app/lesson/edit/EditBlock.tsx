@@ -52,11 +52,13 @@ export async function analyzeBlockSentence(
 export default function EditBlock({
   block,
   i,
+  lessonAudio,
   mergeBlockIdx,
   matchTimestampsAll,
 }: {
   block: Lesson["blocks"][0];
   i: number;
+  lessonAudio?: Lesson["audio"];
   mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
   matchTimestampsAll: (i?: number) => Promise<void>;
 }) {
@@ -69,11 +71,20 @@ export default function EditBlock({
   });
   console.log("words", words);
   */
+  const audioRef = React.useRef<HTMLAudioElement>(null);
+  // console.log("EditBlock", { lessonAudio });
+
   const words = block.words;
   const setWords = (words: BlockWord[]) => mergeBlockIdx(i, { words });
+  const audioSrc =
+    block?.audio?.src ||
+    (lessonAudio && "/api/file2?sha256=" + lessonAudio.sha256) ||
+    "";
 
   return (
     <Container sx={{ mt: 2 }}>
+      {audioSrc && <audio ref={audioRef} src={audioSrc} />}
+
       <textarea
         // ref={ref}
         style={{ width: "100%" }}
@@ -123,6 +134,7 @@ export default function EditBlock({
               i={i}
               words={words}
               setWords={setWords}
+              audioRef={audioRef}
             />
           ))}
         </tbody>

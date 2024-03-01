@@ -197,6 +197,8 @@ const LessonBlock = React.memo(function LessonBlock({
   lessonAudio?: Lesson["audio"];
   matchTimestampsAll: () => Promise<void>;
 }) {
+  // console.log("LessonBlock", { lessonAudio });
+
   return (
     <div
       key={i}
@@ -237,6 +239,7 @@ const LessonBlock = React.memo(function LessonBlock({
               i={i}
               mergeBlockIdx={mergeBlockIdx}
               matchTimestampsAll={matchTimestampsAll}
+              lessonAudio={lessonAudio}
             />
           </CustomTabPanel>
           <CustomTabPanel value={editTabIdx} index={1}>
