@@ -337,8 +337,13 @@ export default React.memo(function TextBlock({
               height: breakpoint === "xs" ? 28 : 70,
               width: breakpoint === "xs" ? 28 : 70,
               borderRadius: "50%",
-              border: isCurrent ? "2px solid blue" : "1px solid black",
-              margin: isCurrent ? 0 : 1,
+
+              // 1px border can be calculated as 0.887 so this doesn't work:
+              // border: isCurrent ? "2px solid blue" : "1px solid black",
+              // margin: isCurrent ? 0 : 1,
+              border: "1px solid black",
+              outline: isCurrent ? "1px solid blue" : "none",
+
               scrollMarginTop: 200,
               position: "relative",
               // top: 9, // breakpoint === "xs" ? 9 : 9,
