@@ -263,6 +263,7 @@ export default React.memo(function TextBlock({
   showFuri = true,
   showRomaji = true,
   showTranslation = true,
+  playbackRate = 1,
 }: {
   text: string;
   words: Word[];
@@ -278,6 +279,7 @@ export default React.memo(function TextBlock({
   showFuri?: boolean;
   showRomaji?: boolean;
   showTranslation?: boolean;
+  playbackRate?: number;
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
@@ -314,6 +316,8 @@ export default React.memo(function TextBlock({
     breakpoint,
   );
   // console.log({ results });
+
+  if (audioRef.current) audioRef.current.playbackRate = playbackRate;
 
   React.useEffect(() => {
     // if (event) console.log("event", event);

@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 import {
-  Checkbox,
+  // Checkbox,
   Container,
-  FormControlLabel,
-  FormGroup,
+  // FormControlLabel,
+  // FormGroup,
   IconButton,
   LinearProgress,
   Typography,
@@ -86,6 +86,7 @@ export default function LessonId({
   const [showFuri, setShowFuri] = React.useState(true);
   const [showRomaji, setShowRomaji] = React.useState(true);
   const [showTranslation, setShowTranslation] = React.useState(true);
+  const [playbackRate, setPlaybackRate] = React.useState(1);
 
   // console.log("currentBlockIdx", currentBlockIdx, "currentEvent", currentEvent);
 
@@ -121,6 +122,7 @@ export default function LessonId({
             showFuri={showFuri}
             showRomaji={showRomaji}
             showTranslation={showTranslation}
+            playbackRate={playbackRate}
           />
         ))}
       </Container>
@@ -170,40 +172,47 @@ export default function LessonId({
           <span>
             {currentBlockIdx + 1}/{lesson.blocks.length}
           </span>
-          <FormGroup>
-            <FormControlLabel
-              sx={{ ml: 0, mr: 0 }}
-              control={
-                <Checkbox
-                  checked={showFuri}
-                  onChange={() => setShowFuri(!showFuri)}
-                />
-              }
-              label={
-                <Furigana
-                  word="葉"
-                  reading="⏺⏺"
-                  wrapperStyle={{ verticalAlign: "middle" }}
-                  textStyle={{ fontSize: 16 }}
-                  furiStyle={{ fontSize: 2 }}
-                />
-              }
+          <span
+            style={{ opacity: showFuri ? 1 : 0.2, cursor: "pointer" }}
+            onClick={() => setShowFuri(!showFuri)}
+          >
+            <Furigana
+              word="葉"
+              reading="⏺⏺"
+              wrapperStyle={{ verticalAlign: "middle" }}
+              textStyle={{ fontSize: 16 }}
+              furiStyle={{ fontSize: 2 }}
             />
-          </FormGroup>
+          </span>
 
-          <FormGroup>
-            <FormControlLabel
-              sx={{ ml: 0, mr: 0 }}
-              control={
-                <Checkbox
-                  checked={showRomaji}
-                  onChange={() => setShowRomaji(!showRomaji)}
-                />
-              }
-              label="あa"
-            />
-          </FormGroup>
+          <span
+            style={{ opacity: showRomaji ? 1 : 0.2, cursor: "pointer" }}
+            onClick={() => setShowRomaji(!showRomaji)}
+          >
+            あa
+          </span>
 
+          <span
+            style={{ opacity: showTranslation ? 1 : 0.2, cursor: "pointer" }}
+            onClick={() => setShowTranslation(!showTranslation)}
+          >
+            Trans
+          </span>
+
+          <span
+            style={{
+              border: "1px solid #aaa",
+              borderRadius: "5px",
+              padding: "2px 5px 2px 5px",
+              fontSize: "12px",
+              background: "rgba(0,0,0,0.1)",
+            }}
+            onClick={() => setPlaybackRate(playbackRate === 1 ? 0.5 : 1)}
+          >
+            {playbackRate}x
+          </span>
+
+          {/* 
           <FormGroup>
             <FormControlLabel
               sx={{ ml: 0, mr: 0 }}
@@ -216,6 +225,7 @@ export default function LessonId({
               label="Trans"
             />
           </FormGroup>
+          */}
         </Stack>
       </Container>
     </>
