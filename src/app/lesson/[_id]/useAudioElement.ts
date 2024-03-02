@@ -38,6 +38,8 @@ export default function useAudioElement(
     [playingWordIdxRef],
   );
 
+  const responseShift = 0.1;
+
   const timeupdate = React.useCallback(
     function timeupdate() {
       const audio = audioRef.current;
@@ -59,7 +61,10 @@ export default function useAudioElement(
       for (let i = 0; i < words.length; i++) {
         const word = words[i];
         if (!(word && word.start && word.end)) continue;
-        if (currentTime > word.start && currentTime < word.end) {
+        if (
+          currentTime > word.start - responseShift &&
+          currentTime < word.end - responseShift
+        ) {
           if (playingWordIdxRef.current !== i) {
             if (false)
               console.log(

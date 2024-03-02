@@ -42,6 +42,8 @@ export default function useAudioHowler(
     [playingWordIdxRef],
   );
 
+  const responseShift = 0.1;
+
   React.useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;
     const play = () => {
@@ -53,7 +55,10 @@ export default function useAudioHowler(
         for (let i = 0; i < words.length; i++) {
           const word = words[i];
           if (!(word && word.start && word.end)) continue;
-          if (currentTime > word.start && currentTime < word.end) {
+          if (
+            currentTime > word.start - responseShift &&
+            currentTime < word.end - responseShift
+          ) {
             if (playingWordIdxRef.current !== i) {
               if (false)
                 console.log(
