@@ -2,6 +2,7 @@
 import React from "react";
 import hepburn from "hepburn";
 import Image from "next/image";
+import { Howl, Howler } from "howler";
 
 import { LinearProgress, Popover, Stack } from "@mui/material";
 
@@ -246,7 +247,7 @@ function LayoutTranslation({
 */
 
 function useAudio(
-  audioRef: React.RefObject<HTMLAudioElement>,
+  audioSrc: string,
   words: Word[],
   start: number,
   end: number,
@@ -255,6 +256,11 @@ function useAudio(
   breakpoint?: string,
 ) {
   // console.log("useAudio");
+  const howl = React.useMemo(
+    () => new Howl({ src: [audioSrc], format: "m4a" }),
+    [audioSrc],
+  );
+
   const [isPlaying, _setIsPlaying] = React.useState(false);
   const isPlayingRef = React.useRef(isPlaying);
   const setIsPlaying = React.useCallback(
@@ -265,10 +271,8 @@ function useAudio(
     },
     [isPlayingRef],
   );
-  const startEndRef = React.useRef({ start, end });
 
-  // Can't play until user has interacted.
-  const userInteractionRef = React.useRef(false);
+  const startEndRef = React.useRef({ start, end });
 
   const [playingWordIdx, _setPlayingWordIdx] = React.useState(-1);
   const playingWordIdxRef = React.useRef(playingWordIdx);
@@ -281,164 +285,122 @@ function useAudio(
     [playingWordIdxRef],
   );
 
-  const timeupdate = React.useCallback(
-    function timeupdate() {
-      const audio = audioRef.current;
-      if (!audio) return;
+  React.useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    const play = () => {
+      setIsPlaying(true);
+      function checkTime() {
+        const currentTime = howl.seek();
 
-      const currentTime = audio.currentTime;
-      // console.log("currentTime", currentTime);
-
-      // Alternatively via setTimeout; each has pros/cons on different devices :(
-      if (currentTime >= startEndRef.current.end) {
-        audio.pause();
-        setIsPlaying(false);
-        setPlayingWordIdx(-1);
-        if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
-        if (eventDone) eventDone("play");
-        return;
-      }
-
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-        if (!(word && word.start && word.end)) continue;
-        if (currentTime > word.start && currentTime < word.end) {
-          if (playingWordIdxRef.current !== i) {
-            if (false)
-              console.log(
-                "currentTime",
-                currentTime,
-                "prev playingWordIndex",
-                playingWordIdxRef.current,
-                "next playingWordIndex",
-                i,
-              );
-            setPlayingWordIdx(i);
+        for (let i = 0; i < words.length; i++) {
+          const word = words[i];
+          if (!(word && word.start && word.end)) continue;
+          if (currentTime > word.start && currentTime < word.end) {
+            if (playingWordIdxRef.current !== i) {
+              if (false)
+                console.log(
+                  "currentTime",
+                  currentTime,
+                  "prev playingWordIndex",
+                  playingWordIdxRef.current,
+                  "next playingWordIndex",
+                  i,
+                );
+              setPlayingWordIdx(i);
+            }
+            break;
           }
-          break;
         }
       }
-    },
-    [
-      audioRef,
-      words,
-      setPlayingWordIdx,
-      setIsPlaying,
-      avatarRef,
-      startEndRef,
-      eventDone,
-    ],
-  );
-
-  React.useEffect(() => {
-    const ref = audioRef.current;
-    if (!ref) return;
-
-    ref.addEventListener("timeupdate", timeupdate);
-    return () => {
-      ref.removeEventListener("timeupdate", timeupdate);
+      interval = setInterval(checkTime, 50);
     };
-  }, [audioRef, timeupdate]);
 
-  const actxRef = React.useRef<AudioContext | null>(null);
+    const stop = () => {
+      if (interval) clearInterval(interval);
+      setIsPlaying(false);
+      setPlayingWordIdx(-1);
+      if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
+      if (eventDone) eventDone("play");
+    };
 
-  const play = React.useCallback(
-    (range?: { start: number; end: number }) => {
-      const audio = audioRef.current;
-      if (!audio) return;
+    howl.on("play", play);
+    howl.on("end", stop);
+    howl.on("stop", stop);
+    howl.on("pause", stop);
 
-      // We should probably have an explicit API to set this.
-      if (!range) userInteractionRef.current = true;
-      // Except now we onClick instead of onMouseOver, so we don't need this.
-      // if (!userInteractionRef.current) return;
-      // console.log(range);
+    return () => {
+      howl.off("play", play);
+      howl.off("end", stop);
+      howl.off("stop", stop);
+      howl.off("pause", stop);
+    };
+  }, [howl, words, setIsPlaying, avatarRef, eventDone, setPlayingWordIdx]);
 
-      startEndRef.current = range || { start, end };
+  // Waveform
+  React.useEffect(() => {
+    const actx = Howler.ctx; // new AudioContext();
 
-      /*
-      // This maybe works much better than relying on `timeupdate`.
-      function timedStop() {
-        setTimeout(
-          () => {
-            audio?.pause();
-            audio?.removeEventListener("play", timedStop);
-            setIsPlaying(false);
-            setPlayingWordIdx(-1);
-            if (avatarRef?.current) avatarRef.current.style.boxShadow = "";
-          },
-          (startEndRef.current.end - startEndRef.current.start) * 1000,
-        );
-      }
-      audio.addEventListener("play", timedStop);
-      */
+    const bquad = actx.createBiquadFilter();
+    bquad.type = "lowpass";
+    bquad.frequency.value = 250;
 
-      // --- wave scope start ---
-      // Adapted from https://stackoverflow.com/a/37021249/1839099
-      // thanks user1693593
-      let srcNode: MediaElementAudioSourceNode,
-        bquad: BiquadFilterNode,
-        analyser: AnalyserNode,
-        fft: Uint8Array,
-        fftLen: number;
+    const analyser = actx.createAnalyser();
+    analyser.fftSize = 256;
 
-      function setup(this: HTMLAudioElement) {
-        if (srcNode || !audio || actxRef.current) return;
-        audio.removeEventListener("canplay", setup);
+    // connect nodes: srcNode (input) -> analyzer -> destination (output)
+    // @ts-expect-error: ok
+    howl._sounds[0]._node.connect(bquad);
+    bquad.connect(analyser);
 
-        const actx = (actxRef.current = new AudioContext());
+    // srcNode.connect(actx.destination);
 
-        srcNode = actx.createMediaElementSource(this);
+    const fftLen = analyser.frequencyBinCount;
+    const fft = new Uint8Array(fftLen);
 
-        bquad = actx.createBiquadFilter();
-        bquad.type = "lowpass";
-        bquad.frequency.value = 250;
+    const avatar = avatarRef?.current;
+    if (!avatar) return;
+    avatar.style.transitionDuration = ".05s";
+    avatar.style.transitionProperty = "box-shadow";
 
-        analyser = actx.createAnalyser();
-        analyser.fftSize = 256;
-
-        // connect nodes: srcNode (input) -> analyzer -> destination (output)
-        srcNode.connect(bquad);
-        bquad.connect(analyser);
-
-        srcNode.connect(actx.destination);
-        fftLen = analyser.frequencyBinCount;
-        fft = new Uint8Array(fftLen);
+    function render() {
+      // This was an easy way to avoid the calcs when not playing, but
+      // really we should stop the requestAnimationFrame loop.  TODO.
+      if (isPlayingRef.current) {
+        // fill FFT buffer
+        analyser.getByteFrequencyData(fft);
+        // average data from some bands
+        const v = (fft[1] + fft[2]) / 512;
+        // console.log(v);
 
         const avatar = avatarRef?.current;
         if (!avatar) return;
-        avatar.style.transitionDuration = ".05s";
-        avatar.style.transitionProperty = "box-shadow";
-
-        render();
+        const multiplier = breakpoint === "xs" ? 4 : 8;
+        avatar.style.boxShadow =
+          "0px 0px 0px " + multiplier * v + "px rgba(100,100,100,0.3)";
       }
-      function render() {
-        // This was an easy way to avoid the calcs when not playing, but
-        // really we should stop the requestAnimationFrame loop.  TODO.
-        if (isPlayingRef.current) {
-          // fill FFT buffer
-          analyser.getByteFrequencyData(fft);
-          // average data from some bands
-          const v = (fft[1] + fft[2]) / 512;
-          // console.log(v);
 
-          const avatar = avatarRef?.current;
-          if (!avatar) return;
-          const multiplier = breakpoint === "xs" ? 4 : 8;
-          avatar.style.boxShadow =
-            "0px 0px 0px " + multiplier * v + "px rgba(100,100,100,0.3)";
-        }
+      requestAnimationFrame(render);
+    }
 
-        requestAnimationFrame(render);
-      }
-      if (!actxRef.current) audio.addEventListener("canplay", setup);
-      // --- wave scope end ---
+    render();
+  }, [howl, avatarRef, breakpoint]);
 
-      audio.currentTime = startEndRef.current.start;
-      // console.log("set currentTime to ", startEndRef.current.start);
-      setIsPlaying(true);
-      audio.play();
+  const play = React.useCallback(
+    (range?: { start: number; end: number }) => {
+      startEndRef.current = range || {
+        start: words?.[0].start ?? start,
+        end: words.findLast((w) => w.end)?.end ?? end,
+      };
+
+      // @ts-expect-error: ok
+      howl._sprite.play = [
+        startEndRef.current.start * 1000,
+        (startEndRef.current.end - startEndRef.current.start) * 1000,
+      ];
+
+      howl.play("play");
     },
-    [audioRef, start, setIsPlaying, avatarRef, end, breakpoint],
+    [howl, start, end, words],
   );
 
   return { isPlaying, play, playingWordIdx };
@@ -475,7 +437,6 @@ export default React.memo(function TextBlock({
   showRomaji?: boolean;
   showTranslation?: boolean;
 }) {
-  const audioRef = React.useRef<HTMLAudioElement>(null);
   const avatarRef = React.useRef<HTMLDivElement>(null);
   // const [done, setDone] = React.useState(false);
   const breakpoint = useBreakPoint();
@@ -493,8 +454,12 @@ export default React.memo(function TextBlock({
   );
   const lastWord = words[lastIndex !== -1 ? lastIndex : words.length - 1];
 
+  const audioSrc =
+    audio.src ||
+    (lessonAudio && "/api/file2?sha256=" + lessonAudio.sha256) ||
+    "";
   const { isPlaying, play, playingWordIdx } = useAudio(
-    audioRef,
+    audioSrc,
     words,
     // typeof words?.[0]?.start === "number" ? words[0].start : audio.start,
     audio.start || words?.[0]?.start || 0,
@@ -505,10 +470,6 @@ export default React.memo(function TextBlock({
     breakpoint,
   );
   // console.log({ results });
-  const audioSrc =
-    audio.src ||
-    (lessonAudio && "/api/file2?sha256=" + lessonAudio.sha256) ||
-    "";
 
   React.useEffect(() => {
     // if (event) console.log("event", event);
@@ -521,8 +482,6 @@ export default React.memo(function TextBlock({
 
   return (
     <div style={style}>
-      <audio ref={audioRef} src={audioSrc} preload="auto" />
-
       <Stack direction="row" spacing={breakpoint === "xs" ? 1 : 2}>
         <div>
           <div
