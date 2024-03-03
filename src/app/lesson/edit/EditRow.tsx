@@ -82,7 +82,10 @@ export default function EditRow({
       _setAlsoAccept(alsoAcceptStr);
       setWord({
         ...word,
-        alsoAccept: alsoAcceptStr.split(",").map((s) => s.trim()),
+        alsoAccept: alsoAcceptStr
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s !== ""),
       });
     },
     [word, setWord],
