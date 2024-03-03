@@ -44,8 +44,9 @@ export default class Matcher {
   }
 
   matchTranscript(transcript: string) {
+    let updated = false;
     transcript = transcript.replace(/ /g, "");
-    console.log(transcript);
+    // console.log(transcript);
 
     for (let i = 0; i < this.words.length; i++) {
       const word = this.words[i];
@@ -64,6 +65,7 @@ export default class Matcher {
       if (transcript.startsWith(word.word)) {
         // Full match: mark as matched and remove from transcript (and clear partials)
         word.matched = true;
+        updated = true;
         delete word.partial;
         transcript = transcript.replace(new RegExp("^" + word.word), "");
         continue;
@@ -78,6 +80,7 @@ export default class Matcher {
             word.matched = true;
             word.matchedWord = alt;
             delete word.partial;
+            updated = true;
             console.log("alt: " + alt);
             console.log("1) " + transcript);
             transcript = transcript.replace(new RegExp("^" + alt), "");
@@ -89,9 +92,12 @@ export default class Matcher {
       // Partial match: update partial and remove from transcript
       if (transcript.length && this.words[i].word.startsWith(transcript)) {
         this.words[i].partial = transcript;
+        updated = true;
         continue;
       }
     }
+
+    if (updated) this.words = this.words.slice();
   }
 
   match(results: GenericSpeechRecognitionList) {
@@ -105,5 +111,6 @@ export default class Matcher {
         this.matchTranscript(transcript);
       }
     }
+    return this.words;
   }
 }
