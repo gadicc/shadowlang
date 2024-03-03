@@ -125,6 +125,11 @@ export default function EditBlock({
             </th>
             <th>start</th>
             <th>end</th>
+            <th>
+              <span title="A comma separated list of alternative words that will also be accepted (used for speech recognition misses)">
+                alsoAccept
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>

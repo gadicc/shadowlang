@@ -55,6 +55,7 @@ export default function EditRow({
   // Need these as strings to allow insertion of decimal point :)
   const [start, _setStart] = React.useState(word.start?.toFixed(2) || "");
   const [end, _setEnd] = React.useState(word.end?.toFixed(2) || "");
+  const [alsoAccept, _setAlsoAccept] = React.useState("");
 
   const setStart = React.useCallback(
     (start: string) => {
@@ -72,6 +73,16 @@ export default function EditRow({
       setWord({
         ...word,
         end: parseFloat(end),
+      });
+    },
+    [word, setWord],
+  );
+  const setAlsoAccept = React.useCallback(
+    (alsoAcceptStr: string) => {
+      _setAlsoAccept(alsoAcceptStr);
+      setWord({
+        ...word,
+        alsoAccept: alsoAcceptStr.split(",").map((s) => s.trim()),
       });
     },
     [word, setWord],
@@ -290,6 +301,20 @@ export default function EditRow({
             <ArrowDropDown fontSize="small" />
           </IconButton>
         </Stack>
+      </td>
+      <td>
+        <input
+          type="text"
+          style={{
+            // width: 50,
+            width: "100%",
+            border: "none",
+            marginLeft: 1,
+            marginRight: 1,
+          }}
+          value={alsoAccept}
+          onChange={(e) => setAlsoAccept(e.target.value)}
+        />
       </td>
     </tr>
   );
