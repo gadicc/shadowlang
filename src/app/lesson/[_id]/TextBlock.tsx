@@ -16,6 +16,9 @@ import { jmdict } from "@/dicts";
 import useBreakPoint from "@/lib/useBreakPoint";
 import Furigana from "@/lib/furigana";
 import Tail from "@/lib/tail";
+import { globalSpeechRecognizer } from "@/lib/speechRecognizer";
+import Matcher from "@/lib/matcher";
+import { playTone } from "./tones";
 
 export function useMergeSpeakers(
   lessonSpeakers: Speaker[] | undefined,
@@ -259,6 +262,7 @@ export default React.memo(function TextBlock({
   lessonAudio,
   event,
   eventDone,
+  prevEvent,
   style,
   showFuri = true,
   showRomaji = true,
@@ -275,6 +279,7 @@ export default React.memo(function TextBlock({
   lessonAudio?: Lesson["audio"];
   event?: string;
   eventDone?: (event: string) => void;
+  prevEvent?: string;
   style?: React.CSSProperties;
   showFuri?: boolean;
   showRomaji?: boolean;
@@ -291,7 +296,7 @@ export default React.memo(function TextBlock({
     speaker.initials = String.fromCharCode(65 + speakerId);
 
   // const isCorrect = false;
-  const [isListening, _setIsListening] = React.useState(false);
+  const [isListening, setIsListening] = React.useState(false);
   const translation = translations?.en;
 
   const lastIndex = words.findLastIndex(
@@ -317,7 +322,59 @@ export default React.memo(function TextBlock({
   );
   // console.log({ results });
 
+  const matcher = React.useMemo(
+    () => new Matcher(words.filter((w) => w.partOfSpeech !== "symbol")),
+    [words],
+  );
+  const [srResults, setSrResults] =
+    React.useState<SpeechRecognitionResultList | null>(null);
+
+  const srResultsText = React.useMemo(() => {
+    if (!srResults) return "";
+    return Array.from(srResults)
+      .map((result) => result[0].transcript)
+      .join(" ");
+  }, [srResults]);
+
+  const matchedWords = React.useMemo(
+    () => (srResults ? matcher.match(srResults) : []),
+    [matcher, srResults],
+  );
+  // React.useEffect(() => console.log(matchedWords), [matchedWords]);
+
+  const matchedWordsMarkup = React.useMemo(
+    () =>
+      matchedWords.map((word, i) => (
+        <span key={i} style={{ color: word.matched ? "green" : "" }}>
+          {word.word}
+        </span>
+      )),
+    [matchedWords],
+  );
+  const allWordsMatched = React.useMemo(
+    () => matchedWords.every((w) => w.matched),
+    [matchedWords],
+  );
+
   if (audioRef.current) audioRef.current.playbackRate = playbackRate;
+
+  React.useEffect(() => {
+    if (allWordsMatched) globalSpeechRecognizer.speechRecognition.abort();
+  }, [allWordsMatched]);
+
+  const onEndRef = React.useRef(false);
+  React.useEffect(() => {
+    if (onEndRef.current === false) return;
+    onEndRef.current = false;
+
+    if (prevEvent === "listen") {
+      if (allWordsMatched) {
+        playTone("correct");
+      } else {
+        playTone("incorrect");
+      }
+    }
+  }, [prevEvent, allWordsMatched, onEndRef]);
 
   React.useEffect(() => {
     // if (event) console.log("event", event);
@@ -325,6 +382,42 @@ export default React.memo(function TextBlock({
     if (event)
       avatarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [event, play]);
+
+  React.useEffect(() => {
+    const sr = globalSpeechRecognizer.speechRecognition;
+    function onResult(event: SpeechRecognitionEvent) {
+      const results = event.results;
+      setSrResults(results);
+      // console.log(results);
+    }
+    function onEnd() {
+      setIsListening(false);
+      eventDone?.("listen");
+      onEndRef.current = true;
+    }
+
+    if (event === "listen") {
+      playTone("listen");
+      sr.addEventListener("result", onResult);
+      sr.addEventListener("end", onEnd);
+      sr.start();
+      setIsListening(true);
+    }
+    if (prevEvent === "listen") {
+      setIsListening(false);
+      sr.removeEventListener("result", onResult);
+      sr.removeEventListener("end", onEnd);
+      sr.stop();
+      sr.abort();
+    }
+    return () => {
+      setIsListening(false);
+      sr.removeEventListener("result", onResult);
+      sr.removeEventListener("end", onEnd);
+      sr.stop();
+      sr.abort();
+    };
+  }, [event, prevEvent, eventDone]);
 
   const isCurrent = event && event !== "delay";
 
@@ -435,12 +528,15 @@ export default React.memo(function TextBlock({
             ) : (
               <div style={{ color: isPlaying ? "blue" : "" }}>{text}</div>
             )}
+            {srResultsText}
+            <br />
+            {matchedWordsMarkup}
             {isListening ? "🎤" : ""}
-            <div>
-              {/*
-          {result} {isFinal ? (isCorrect ? "✅" : "❌") : ""}
-          */}
-            </div>
+            {!isListening && matchedWords.length
+              ? allWordsMatched
+                ? "✅"
+                : "❌"
+              : ""}
             {status ? (
               <div>
                 {status.title}{" "}

@@ -1,5 +1,8 @@
 "use client";
 import React from "react";
+import Furigana from "@/lib/furigana";
+import { useGongoLive, useGongoOne, useGongoSub } from "gongo-client-react";
+
 import {
   // Checkbox,
   Container,
@@ -7,20 +10,24 @@ import {
   // FormGroup,
   IconButton,
   LinearProgress,
+  Stack,
   Typography,
 } from "@mui/material";
+import {
+  Hearing,
+  HearingDisabled,
+  PlayCircle,
+  StopCircle,
+} from "@mui/icons-material";
 
 import { jmdict } from "../../../dicts";
 jmdict;
 import TextBlock, { useMergeSpeakers } from "./TextBlock";
-import { useGongoLive, useGongoOne, useGongoSub } from "gongo-client-react";
-import { PlayCircle, StopCircle } from "@mui/icons-material";
-import { Stack } from "@mui/material";
-import Furigana from "@/lib/furigana";
 
 function useLessonController(length = 0, events = ["play", "delay"]) {
   const [currentBlockIdx, setCurrentBlockIdx] = React.useState(-1);
   const [currentEvent, setCurrentEvent] = React.useState("");
+  const [previousEvent, setPreviousEvent] = React.useState("");
   const [paused, setPaused] = React.useState(true);
   const delay = 1000;
 
@@ -38,6 +45,7 @@ function useLessonController(length = 0, events = ["play", "delay"]) {
       // console.log("eventDone", event);
       const evIdx = events.indexOf(event);
       if (evIdx < events.length - 1) {
+        setPreviousEvent(currentEvent);
         setCurrentEvent(events[evIdx + 1]);
         if (events[evIdx + 1] === "delay")
           setTimeout(() => eventDoneRef.current?.("delay"), delay);
@@ -46,6 +54,7 @@ function useLessonController(length = 0, events = ["play", "delay"]) {
         if (currentBlockIdx < length - 1) {
           setCurrentBlockIdx(currentBlockIdx + 1);
           setCurrentEvent(events[0]);
+          setPreviousEvent("");
         }
       }
     },
@@ -55,6 +64,7 @@ function useLessonController(length = 0, events = ["play", "delay"]) {
   return {
     currentBlockIdx,
     setCurrentBlockIdx,
+    previousEvent,
     currentEvent,
     setCurrentEvent,
     eventDone,
@@ -73,20 +83,26 @@ export default function LessonId({
   const lesson = useGongoOne((db) => db.collection("lessons").find({ _id }));
   const dbSpeakers = useGongoLive((db) => db.collection("speakers").find());
   const speakers = useMergeSpeakers(lesson?.speakers, dbSpeakers);
-  const {
-    currentBlockIdx,
-    currentEvent,
-    setCurrentBlockIdx,
-    setCurrentEvent,
-    eventDone,
-    paused,
-    setPaused,
-  } = useLessonController(lesson?.blocks.length);
 
   const [showFuri, setShowFuri] = React.useState(true);
   const [showRomaji, setShowRomaji] = React.useState(true);
   const [showTranslation, setShowTranslation] = React.useState(true);
   const [playbackRate, setPlaybackRate] = React.useState(1);
+  const [shouldListen, setShouldListen] = React.useState(true);
+
+  const {
+    currentBlockIdx,
+    currentEvent,
+    previousEvent,
+    setCurrentBlockIdx,
+    setCurrentEvent,
+    eventDone,
+    paused,
+    setPaused,
+  } = useLessonController(
+    lesson?.blocks.length,
+    shouldListen ? ["play", "listen", "delay"] : ["play", "delay"],
+  );
 
   // console.log("currentBlockIdx", currentBlockIdx, "currentEvent", currentEvent);
 
@@ -116,6 +132,7 @@ export default function LessonId({
             translations={block.translations}
             audio={block.audio}
             lessonAudio={lesson.audio}
+            prevEvent={previousEvent}
             event={!paused && currentBlockIdx === i ? currentEvent : undefined}
             eventDone={!paused && currentBlockIdx === i ? eventDone : undefined}
             style={{ marginBottom: "20px" }}
@@ -186,7 +203,11 @@ export default function LessonId({
           </span>
 
           <span
-            style={{ opacity: showRomaji ? 1 : 0.2, cursor: "pointer" }}
+            style={{
+              opacity: showRomaji ? 1 : 0.2,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
             onClick={() => setShowRomaji(!showRomaji)}
           >
             あa
@@ -197,6 +218,20 @@ export default function LessonId({
             onClick={() => setShowTranslation(!showTranslation)}
           >
             Trans
+          </span>
+
+          <span
+            style={{
+              opacity: shouldListen ? 1 : 0.2,
+              cursor: "pointer",
+            }}
+            onClick={() => setShouldListen(!shouldListen)}
+          >
+            {shouldListen ? (
+              <Hearing sx={{ verticalAlign: "middle" }} />
+            ) : (
+              <HearingDisabled sx={{ verticalAlign: "middle" }} />
+            )}
           </span>
 
           <span
