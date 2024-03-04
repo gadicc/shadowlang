@@ -55,7 +55,9 @@ export default function EditRow({
   // Need these as strings to allow insertion of decimal point :)
   const [start, _setStart] = React.useState(word.start?.toFixed(2) || "");
   const [end, _setEnd] = React.useState(word.end?.toFixed(2) || "");
-  const [alsoAccept, _setAlsoAccept] = React.useState("");
+  const [alsoAccept, _setAlsoAccept] = React.useState(
+    word.alsoAccept?.join(","),
+  );
 
   const setStart = React.useCallback(
     (start: string) => {
