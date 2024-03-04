@@ -1,3 +1,4 @@
+"use client";
 import * as Tone from "tone";
 
 let synth: Tone.Synth<Tone.SynthOptions> | null = null;
@@ -25,16 +26,18 @@ export function playTone(tune: "listen" | "correct" | "incorrect") {
       break;
     default:
       throw new Error("unknown tune: " + tune);
-      throw new Error("unknown tune: " + tune);
   }
 }
 
 async function setup() {
+  if (synth) return;
   window.removeEventListener("touchstart", setup);
   window.removeEventListener("click", setup);
   await Tone.start();
   synth = new Tone.Synth().toDestination();
 }
 
-window.addEventListener("touchstart", setup);
-window.addEventListener("click", setup);
+if (typeof window === "object") {
+  window.addEventListener("touchstart", setup);
+  window.addEventListener("click", setup);
+}

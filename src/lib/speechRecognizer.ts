@@ -1,3 +1,5 @@
+"use client";
+
 function getSpeechRecognition() {
   if ("SpeechRecognition" in window) return window.SpeechRecognition;
 
@@ -26,10 +28,18 @@ export class SpeechRecognizer {
     maxAlternatives: number;
     timeout?: number;
   }) {
+    this.timeout = timeout;
+
+    // Only used in nextjs prebuild to avoid ReferenceError
+    if (typeof window === "undefined") {
+      // @ts-expect-error: ok
+      this.speechRecognition = null;
+      return;
+    }
+
     const SpeechRecognition = getSpeechRecognition();
     const speechRecognition = new SpeechRecognition();
     this.speechRecognition = speechRecognition;
-    this.timeout = timeout;
 
     speechRecognition.continuous = continuous;
     speechRecognition.interimResults = interimResults;
