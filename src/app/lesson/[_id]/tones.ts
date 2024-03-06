@@ -10,10 +10,14 @@ let Tone: typeof ToneType | null = null;
 let synth: ToneType.Synth<ToneType.SynthOptions> | null = null;
 let toneNow: ReturnType<typeof ToneType.now> | null = null; // Tone.now();
 
-export function playTone(tune: "listen" | "correct" | "incorrect") {
+export async function playTone(tune: "listen" | "correct" | "incorrect") {
   if (!(Tone && toneNow && synth)) return;
   const now = Tone.now();
   if (toneNow < now) toneNow = now;
+
+  const context = Tone.getContext();
+  if (context.state !== "running" && context.state !== "closed")
+    await context.resume();
 
   // console.log("playTone", tune);
   switch (tune) {
