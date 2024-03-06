@@ -388,7 +388,7 @@ export default React.memo(function TextBlock({
     function onResult(event: SpeechRecognitionEvent) {
       const results = event.results;
       setSrResults(results);
-      // console.log(results);
+      console.log(results);
     }
     function onEnd() {
       setIsListening(false);
