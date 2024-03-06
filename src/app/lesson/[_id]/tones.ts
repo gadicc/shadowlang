@@ -1,11 +1,17 @@
 "use client";
-import * as Tone from "tone";
 
-let synth: Tone.Synth<Tone.SynthOptions> | null = null;
-let toneNow = Tone.now();
+// don't import before user interaction to avoid audiocontext warnings.
+// https://github.com/Tonejs/Tone.js/issues/443
+// https://github.com/Tonejs/Tone.js/issues/1102
+//import * as Tone from "tone";
+import type * as ToneType from "tone";
+
+let Tone: typeof ToneType | null = null;
+let synth: ToneType.Synth<ToneType.SynthOptions> | null = null;
+let toneNow: ReturnType<typeof ToneType.now> | null = null; // Tone.now();
 
 export function playTone(tune: "listen" | "correct" | "incorrect") {
-  if (!synth) return;
+  if (!(Tone && toneNow && synth)) return;
   const now = Tone.now();
   if (toneNow < now) toneNow = now;
 
@@ -29,15 +35,23 @@ export function playTone(tune: "listen" | "correct" | "incorrect") {
   }
 }
 
+let setupHasRun = false;
 async function setup() {
-  if (synth) return;
-  window.removeEventListener("touchstart", setup);
-  window.removeEventListener("click", setup);
+  if (synth || setupHasRun) return;
+  setupHasRun = true;
+  document.removeEventListener("touchstart", setup);
+  document.removeEventListener("touchend", setup);
+  document.removeEventListener("click", setup);
+  document.removeEventListener("keydown", setup);
+  Tone = await import("tone");
   await Tone.start();
   synth = new Tone.Synth().toDestination();
+  toneNow = Tone.now();
 }
 
-if (typeof window === "object") {
-  window.addEventListener("touchstart", setup);
-  window.addEventListener("click", setup);
+if (typeof document === "object") {
+  document.addEventListener("touchstart", setup);
+  document.addEventListener("touchend", setup);
+  document.addEventListener("click", setup);
+  document.addEventListener("keydown", setup);
 }
