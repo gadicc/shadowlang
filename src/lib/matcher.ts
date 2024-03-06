@@ -107,8 +107,9 @@ export default class Matcher {
 
       for (let ai = 0; ai < result.length; ai++) {
         const alternative = result[ai];
-        const { transcript /*, confidence */ } = alternative;
-        this.matchTranscript(transcript);
+        const { transcript, confidence } = alternative;
+        // On Chrome/Android we get dupe results with confidence 0, so skip.
+        if (confidence > 0) this.matchTranscript(transcript);
       }
     }
     return this.words;

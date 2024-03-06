@@ -331,9 +331,12 @@ export default React.memo(function TextBlock({
 
   const srResultsText = React.useMemo(() => {
     if (!srResults) return "";
-    return Array.from(srResults)
-      .map((result) => result[0].transcript)
-      .join(" ");
+    return (
+      Array.from(srResults)
+        // On Chrome/Android we get dupe results with confidence 0, so skip.
+        .map((result) => (result[0].confidence ? result[0].transcript : ""))
+        .join("")
+    );
   }, [srResults]);
 
   const matchedWords = React.useMemo(
