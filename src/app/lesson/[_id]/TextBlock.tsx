@@ -355,7 +355,7 @@ export default React.memo(function TextBlock({
     [matchedWords],
   );
   const allWordsMatched = React.useMemo(
-    () => matchedWords.every((w) => w.matched),
+    () => matchedWords.length && matchedWords.every((w) => w.matched),
     [matchedWords],
   );
 
