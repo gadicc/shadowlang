@@ -8,11 +8,12 @@ const files = {
   incorrect: "351563__bertrof__game-sound-incorrect-with-delay.wav",
 };
 
-const audios = {
-  listen: new Audio(path + files.listen),
-  correct: new Audio(path + files.correct),
-  incorrect: new Audio(path + files.incorrect),
-};
+const audios = Object.fromEntries(
+  Object.entries(files).map(([key, file]) => [
+    key,
+    typeof Audio === "function" && new Audio(path + file),
+  ]),
+);
 
 export async function playTone(tune: "listen" | "correct" | "incorrect") {
   const audio = audios[tune];
