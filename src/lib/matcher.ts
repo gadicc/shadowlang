@@ -16,6 +16,7 @@ interface GenericSpeechRecognitionAlternative {
 
 interface WordMatch {
   word: string;
+  reading?: string;
   matched: boolean;
   matchedWord?: string;
   partial?: string;
@@ -37,6 +38,7 @@ export default class Matcher {
       if (typeof word === "string") return { word, matched: false };
       else {
         const obj: WordMatch = { word: word.word, matched: false };
+        if (word.reading) obj.reading = word.reading;
         if (word.alsoAccept) obj.alsoAccept = word.alsoAccept;
         return obj;
       }
@@ -70,6 +72,14 @@ export default class Matcher {
         transcript = transcript.replace(new RegExp("^" + word.word), "");
         continue;
       }
+      if (word.reading && transcript.startsWith(word.reading)) {
+        // Full match: mark as matched and remove from transcript (and clear partials)
+        word.matched = true;
+        updated = true;
+        delete word.partial;
+        transcript = transcript.replace(new RegExp("^" + word.reading), "");
+        continue;
+      }
 
       if (word.alsoAccept)
         for (const alt of word.alsoAccept) {
@@ -91,6 +101,11 @@ export default class Matcher {
 
       // Partial match: update partial and remove from transcript
       if (transcript.length && this.words[i].word.startsWith(transcript)) {
+        this.words[i].partial = transcript;
+        updated = true;
+        continue;
+      }
+      if (transcript.length && this.words[i].reading?.startsWith(transcript)) {
         this.words[i].partial = transcript;
         updated = true;
         continue;
