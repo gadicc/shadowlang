@@ -68,10 +68,15 @@ export class SpeechRecognizer {
 
     speechRecognition.addEventListener("start", this.setTimeout.bind(this));
     speechRecognition.addEventListener("result", this.setTimeout.bind(this));
+
+    speechRecognition.addEventListener("end", this.clearTimeout.bind(this));
   }
 
-  setTimeout() {
+  clearTimeout() {
     if (this.timeoutHandle) clearTimeout(this.timeoutHandle);
+  }
+  setTimeout() {
+    this.clearTimeout();
     this.timeoutHandle = setTimeout(() => {
       this.speechRecognition.abort();
       this.speechRecognition.stop();
