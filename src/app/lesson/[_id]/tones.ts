@@ -15,6 +15,13 @@ const audios = Object.fromEntries(
   ]),
 );
 
+// Workaround for Chrome Mobile, where audio is paused when SpeechRecognition starts.
+// https://stackoverflow.com/questions/77014256/android-why-does-the-video-abruptly-pause-when-starting-web-speech-recognition
+if (audios.listen)
+  audios.listen.addEventListener("pause", function () {
+    if (this.currentTime < this.duration) this.play();
+  });
+
 export async function playTone(tune: "listen" | "correct" | "incorrect") {
   const audio = audios[tune];
   if (!audio) return;
