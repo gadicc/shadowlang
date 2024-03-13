@@ -455,6 +455,10 @@ export default React.memo(function TextBlock({
                 src={speaker.url}
                 width={breakpoint === "xs" ? 28 : 70}
                 height={breakpoint === "xs" ? 28 : 70}
+                style={{
+                  borderRadius: "50%",
+                  // objectFit: "cover",
+                }}
               />
             ) : (
               <div
