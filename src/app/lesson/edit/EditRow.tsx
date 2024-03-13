@@ -10,9 +10,10 @@ import {
   CheckBox,
   Delete,
   Search,
+  Splitscreen,
 } from "@mui/icons-material";
 
-import type { BlockWord } from "./types";
+import type { BlockWord, Lesson } from "./types";
 import Reading from "./Reading";
 import PartOfSpeech from "./PartOfSpeech";
 import useJmDictModal from "./useJmDictModal";
@@ -34,12 +35,18 @@ export default function EditRow({
   words,
   setWords,
   sound,
+  setLesson,
+  getLesson,
+  blockIdx,
 }: {
   word: BlockWord;
   i: number;
   words: BlockWord[];
   setWords: (words: BlockWord[]) => void;
   sound: Howl;
+  setLesson: (lesson: Partial<Lesson>) => void;
+  getLesson: () => Partial<Lesson>;
+  blockIdx: number;
 }) {
   const { openJmDict, JmDictModal, jmDictProps } = useJmDictModal();
 
@@ -97,7 +104,7 @@ export default function EditRow({
 
   return (
     <tr>
-      <td width={100} align="center">
+      <td width={120} align="center">
         <JmDictModal
           {...jmDictProps}
           setJmDictId={async (id: string) => {
@@ -178,6 +185,41 @@ export default function EditRow({
           }}
         >
           <Delete fontSize="inherit" />
+        </IconButton>
+        <IconButton
+          title="Split block at this word"
+          size="small"
+          sx={{ padding: iconPadding }}
+          onClick={() => {
+            const lesson = getLesson();
+            const ourWords = words.slice(0, i);
+            const nextWords = words.slice(i);
+
+            if (!lesson.blocks)
+              throw new Error(
+                "Lesson has no blocks to update - should never happen",
+              );
+
+            const blocks = [
+              ...lesson.blocks.slice(0, blockIdx - 1),
+              {
+                ...lesson.blocks[blockIdx],
+                words: ourWords,
+              },
+              {
+                ...lesson.blocks[blockIdx],
+                words: nextWords,
+              },
+              ...lesson.blocks.slice(blockIdx + 1),
+            ];
+
+            setLesson({
+              ...lesson,
+              blocks,
+            });
+          }}
+        >
+          <Splitscreen fontSize="inherit" />
         </IconButton>
       </td>
       <td align="center">

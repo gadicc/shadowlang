@@ -185,6 +185,8 @@ const LessonBlock = React.memo(function LessonBlock({
   speakers,
   lessonAudio,
   matchTimestampsAll,
+  setLesson,
+  getLesson,
 }: {
   block: Lesson["blocks"][0];
   i: number;
@@ -196,6 +198,8 @@ const LessonBlock = React.memo(function LessonBlock({
   speakers: Lesson["speakers"];
   lessonAudio?: Lesson["audio"];
   matchTimestampsAll: () => Promise<void>;
+  setLesson(lesson: Partial<Lesson>): void;
+  getLesson(): Partial<Lesson>;
 }) {
   // console.log("LessonBlock", { lessonAudio });
 
@@ -240,6 +244,8 @@ const LessonBlock = React.memo(function LessonBlock({
               mergeBlockIdx={mergeBlockIdx}
               matchTimestampsAll={matchTimestampsAll}
               lessonAudio={lessonAudio}
+              setLesson={setLesson}
+              getLesson={getLesson}
             />
           </CustomTabPanel>
           <CustomTabPanel value={editTabIdx} index={1}>
@@ -276,12 +282,21 @@ function Edit() {
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [fileEntry, setFileEntry] = React.useState<FileEntry | null>(null);
 
+  if (!latestLesson.current && lesson) latestLesson.current = lesson;
   const setLesson = React.useCallback(
     function setLesson(lesson: Partial<Lesson>) {
       latestLesson.current = lesson;
       _setLesson(lesson);
     },
     [_setLesson],
+  );
+  const getLesson = React.useCallback(
+    function getLesson() {
+      if (!latestLesson.current)
+        throw new Error("getLesson called but lesson undefined");
+      return latestLesson.current;
+    },
+    [latestLesson],
   );
 
   React.useEffect(() => {
@@ -506,6 +521,8 @@ function Edit() {
             speakers={speakers}
             lessonAudio={lesson.audio}
             matchTimestampsAll={matchTimestampsAll}
+            setLesson={setLesson}
+            getLesson={getLesson}
           />
         ))}
       </div>

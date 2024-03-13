@@ -56,12 +56,16 @@ export default function EditBlock({
   lessonAudio,
   mergeBlockIdx,
   matchTimestampsAll,
+  setLesson,
+  getLesson,
 }: {
   block: Lesson["blocks"][0];
   i: number;
   lessonAudio?: Lesson["audio"];
   mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>): void;
   matchTimestampsAll: (i?: number) => Promise<void>;
+  setLesson(lesson: Partial<Lesson>): void;
+  getLesson(): Partial<Lesson>;
 }) {
   /*
   const ref = React.useRef<HTMLTextAreaElement>(null);
@@ -74,6 +78,7 @@ export default function EditBlock({
   */
   // console.log("EditBlock", { lessonAudio });
 
+  const blockIdx = i;
   const words = block.words;
   const setWords = (words: BlockWord[]) => mergeBlockIdx(i, { words });
   const audioSrc =
@@ -141,6 +146,9 @@ export default function EditBlock({
               words={words}
               setWords={setWords}
               sound={sound}
+              setLesson={setLesson}
+              getLesson={getLesson}
+              blockIdx={blockIdx}
             />
           ))}
         </tbody>
