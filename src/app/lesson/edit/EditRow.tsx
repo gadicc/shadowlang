@@ -201,7 +201,7 @@ export default function EditRow({
               );
 
             const blocks = [
-              ...lesson.blocks.slice(0, blockIdx - 1),
+              ...lesson.blocks.slice(0, blockIdx),
               {
                 ...lesson.blocks[blockIdx],
                 words: ourWords,
