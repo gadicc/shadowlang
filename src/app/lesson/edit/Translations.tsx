@@ -85,14 +85,17 @@ export default function Translations({
         <table border={1} cellSpacing={0} style={{ background: "#fafafa" }}>
           <tbody>
             {translations.en.map((entry, i) => (
-              <tr key={entry.text}>
+              <tr key={i}>
                 <td>
                   <IconButton
                     size="small"
                     disabled={i === 0}
                     sx={{ padding: iconPadding }}
                     onClick={() => {
-                      const newTranslations = { ...translations };
+                      const newTranslations = {
+                        ...translations,
+                        en: [...translations.en],
+                      };
                       newTranslations.en[i] = translations.en[i - 1];
                       newTranslations.en[i - 1] = translations.en[i];
                       setTranslations(newTranslations);
@@ -105,7 +108,10 @@ export default function Translations({
                     disabled={i >= translations.en.length}
                     sx={{ padding: iconPadding }}
                     onClick={() => {
-                      const newTranslations = { ...translations };
+                      const newTranslations = {
+                        ...translations,
+                        en: [...translations.en],
+                      };
                       newTranslations.en[i] = translations.en[i + 1];
                       newTranslations.en[i + 1] = translations.en[i];
                       setTranslations(newTranslations);
@@ -117,8 +123,11 @@ export default function Translations({
                     size="small"
                     sx={{ padding: iconPadding }}
                     onClick={() => {
-                      const newTranslations = { ...translations };
-                      translations.en.splice(i, 0, { text: "" });
+                      const newTranslations = {
+                        ...translations,
+                        en: [...translations.en],
+                      };
+                      newTranslations.en.splice(i, 0, { text: "" });
                       setTranslations(newTranslations);
                     }}
                   >
@@ -128,7 +137,10 @@ export default function Translations({
                     size="small"
                     sx={{ padding: iconPadding }}
                     onClick={() => {
-                      const newTranslations = { ...translations };
+                      const newTranslations = {
+                        ...translations,
+                        en: [...translations.en],
+                      };
                       newTranslations.en.splice(i, 1);
                       setTranslations(newTranslations);
                     }}
@@ -141,11 +153,15 @@ export default function Translations({
                     type="text"
                     value={entry.text}
                     onChange={(e) => {
-                      translations.en[i] = {
+                      const newTranslations = {
+                        ...translations,
+                        en: [...translations.en],
+                      };
+                      newTranslations.en[i] = {
                         ...entry,
                         text: e.target.value,
                       };
-                      setTranslations({ ...translations });
+                      setTranslations(newTranslations);
                     }}
                   />
                 </td>
@@ -153,11 +169,15 @@ export default function Translations({
                   <select
                     value={entry.word}
                     onChange={(e) => {
-                      translations.en[i] = {
+                      const newTranslations = {
+                        ...translations,
+                        en: [...translations.en],
+                      };
+                      newTranslations.en[i] = {
                         ...entry,
                         word: e.target.value,
                       };
-                      setTranslations({ ...translations });
+                      setTranslations(newTranslations);
                     }}
                   >
                     <option></option>
@@ -170,13 +190,17 @@ export default function Translations({
                   <input
                     type="text"
                     size={4}
-                    value={entry.punctuation}
+                    value={entry.punctuation || ""}
                     onChange={(e) => {
-                      translations.en[i] = {
+                      const newTranslations = {
+                        ...translations,
+                        en: [...translations.en],
+                      };
+                      newTranslations.en[i] = {
                         ...entry,
                         punctuation: e.target.value,
                       };
-                      setTranslations({ ...translations });
+                      setTranslations(newTranslations);
                     }}
                   />
                 </td>
