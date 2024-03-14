@@ -43,7 +43,7 @@ export async function translateBlockSentence(
     result.parts as BlockTranslations["en"]);
   mergeBlockIdx(i, {
     status: undefined,
-    ...{ ...block.translations, en: trans },
+    translations: { ...block.translations, en: trans },
   });
 }
 
