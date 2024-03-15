@@ -3305,7 +3305,7 @@ gongo-client@^2.7.2:
     modifyjs "^0.3.1"
     sift "^16.0.0"
 
-gongo-server-db-mongo@3.2.3:
+gongo-server-db-mongo@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/gongo-server-db-mongo/-/gongo-server-db-mongo-3.2.3.tgz#b77a5e1c1ade37147a2809ef7a625d993850e82b"
   integrity sha512-F1dXwhlVdVHWwJJPS3hKrSCtE+EaYX3I7YT9QOyfpERIHUb/69KdFc/i20/Pdc8NsvQHbw5KUABGH3wFyjD87g==
@@ -4440,6 +4440,18 @@ makeerror@1.0.12:
   integrity sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==
   dependencies:
     tmpl "1.0.5"
+
+marked-react@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/marked-react/-/marked-react-2.0.0.tgz#709ec476d3cdf8690d81f6495edd675d72eef60f"
+  integrity sha512-Mp5HqfONf/RDqFtA+6xw2EjKkSbA8/xNPwyJ8ewLy/q3v21lRsPA7h+HUndVAW/yEIoebvcyzzSDpbjzL/xjZg==
+  dependencies:
+    marked "^6.0.0"
+
+marked@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-6.0.0.tgz#80cd7f51145437cffe9f541a318b9882f75601df"
+  integrity sha512-7E3m/xIlymrFL5gWswIT4CheIE3fDeh51NV09M4x8iOc7NDYlyERcQMLAIHcSlrvwliwbPQ4OGD+MpPSYiQcqw==
 
 md5@^2.3.0:
   version "2.3.0"

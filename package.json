@@ -32,6 +32,7 @@
     "hepburn": "^1.2.1",
     "howler": "^2.2.4",
     "json-stable-stringify": "^1.1.1",
+    "marked-react": "^2.0.0",
     "mongodb": "^6.3.0",
     "mongodb-rest-relay": "1.10.0",
     "music-metadata": "^7.14.0",

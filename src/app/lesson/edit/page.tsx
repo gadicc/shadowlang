@@ -21,6 +21,7 @@ import EditBlock, { analyzeBlockSentence } from "./EditBlock";
 import Translations, { translateBlockSentence } from "./Translations";
 import matchTimestamps from "./matchTimestamps";
 import Upload, { FileEntry } from "@/lib/upload";
+import EditIntro from "./EditIntro";
 
 jmdict;
 
@@ -344,27 +345,43 @@ function Edit() {
 
   const speakers = useMergeSpeakers(lesson?.speakers, dbSpeakers);
 
+  const mergeBlockIdx = React.useCallback(
+    function mergeBlockIdx(
+      i: number,
+      blockMerge: Partial<Lesson["blocks"][0]>,
+    ) {
+      const lesson = latestLesson.current;
+      if (!lesson)
+        throw new Error("mergeBlockIdx called before latestLesson.current set");
+
+      if (!lesson.blocks) lesson.blocks = [];
+
+      const newBlock = { ...lesson.blocks[i], ...blockMerge };
+      if (false)
+        console.log("mergeBlockIdx", {
+          i,
+          orig: lesson!.blocks![i],
+          newBlock,
+        });
+
+      const newBlocks = [...lesson.blocks];
+      newBlocks[i] = newBlock;
+      setLesson({ ...lesson, blocks: newBlocks });
+    },
+    [latestLesson, setLesson],
+  );
+
+  const setIntros = React.useCallback(
+    function setIntros(intros: Lesson["intros"]) {
+      if (!latestLesson.current)
+        throw new Error("setIntros called before latestLesson.current set");
+      if (!intros) return;
+      setLesson({ ...latestLesson.current, intros });
+    },
+    [latestLesson, setLesson],
+  );
+
   if (!lesson) return "Loading...";
-
-  function mergeBlockIdx(i: number, blockMerge: Partial<Lesson["blocks"][0]>) {
-    const lesson = latestLesson.current;
-    if (!lesson)
-      throw new Error("mergeBlockIdx called before latestLesson.current set");
-
-    if (!lesson.blocks) lesson.blocks = [];
-
-    const newBlock = { ...lesson.blocks[i], ...blockMerge };
-    if (false)
-      console.log("mergeBlockIdx", {
-        i,
-        orig: lesson!.blocks![i],
-        newBlock,
-      });
-
-    const newBlocks = [...lesson.blocks];
-    newBlocks[i] = newBlock;
-    setLesson({ ...lesson, blocks: newBlocks });
-  }
 
   async function processAudio() {
     const sha256 = fileEntry?.sha256 || lesson?.audio?.sha256;
@@ -490,6 +507,9 @@ function Edit() {
         )}
       </button>
       <br />
+      <br />
+
+      <EditIntro intros={lesson.intros || {}} setIntros={setIntros} />
       <br />
 
       <Typography variant="h6">Speakers</Typography>

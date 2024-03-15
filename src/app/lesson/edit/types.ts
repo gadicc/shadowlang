@@ -34,6 +34,9 @@ export interface Lesson {
   title: {
     [key: string]: string;
   };
+  intros: {
+    [key: string]: string;
+  };
   audio: {
     filename: string;
     sha256: string;

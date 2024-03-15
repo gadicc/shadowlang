@@ -23,6 +23,7 @@ import {
 import { jmdict } from "../../../dicts";
 jmdict;
 import TextBlock, { useMergeSpeakers } from "./TextBlock";
+import Markdown from "marked-react";
 
 function useLessonController(length = 0, events = ["play", "delay"]) {
   const [currentBlockIdx, setCurrentBlockIdx] = React.useState(-1);
@@ -122,6 +123,7 @@ export default function LessonId({
         <Typography variant="h5" sx={{ textDecoration: "underline", mb: 2 }}>
           {lesson.title.en}
         </Typography>
+        <Markdown>{lesson.intros.en}</Markdown>
         {lesson.blocks.map((block, i) => (
           <TextBlock
             key={i}
