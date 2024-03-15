@@ -252,6 +252,16 @@ const LessonBlock = React.memo(function LessonBlock({
           <CustomTabPanel value={editTabIdx} index={1}>
             <Translations block={block} i={i} mergeBlockIdx={mergeBlockIdx} />
           </CustomTabPanel>
+          <button
+            onClick={() => {
+              const lesson = getLesson();
+              const newBlocks = [...lesson.blocks!];
+              newBlocks.splice(i, 1);
+              setLesson({ ...lesson, blocks: newBlocks });
+            }}
+          >
+            Delete block {i + 1} of {getLesson().blocks?.length}
+          </button>
         </>
       ) : null}
     </div>
