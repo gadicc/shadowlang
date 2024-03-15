@@ -506,7 +506,11 @@ function Edit() {
           "Process"
         )}
       </button>
-      <br />
+      <div style={{ fontSize: "80%", marginTop: "15px" }}>
+        This can take a few minutes. If you receive an error, try again after
+        another minute. If you retry twice and still have a problem, contact
+        Gadi. NB: Processing again will overwrite any existing blocks.
+      </div>
       <br />
 
       <EditIntro intros={lesson.intros || {}} setIntros={setIntros} />
