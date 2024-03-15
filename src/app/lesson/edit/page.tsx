@@ -335,9 +335,13 @@ function Edit() {
     async function matchTimestampsAll(i?: number) {
       const trans = transDb?.transcription || transRef.current;
       if (trans && latestLesson.current) {
-        // @ts-expect-error: another day
-        matchTimestamps(trans, latestLesson.current, i);
-        setLesson({ ...latestLesson.current });
+        try {
+          // @ts-expect-error: another day
+          matchTimestamps(trans, latestLesson.current, i);
+          setLesson({ ...latestLesson.current });
+        } catch (error) {
+          alert("Error matching timestamps: " + error);
+        }
       }
     },
     [setLesson, transDb?.transcription],
