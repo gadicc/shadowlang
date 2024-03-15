@@ -25,6 +25,59 @@ jmdict;
 import TextBlock, { useMergeSpeakers } from "./TextBlock";
 import Markdown from "marked-react";
 
+function LessonTips() {
+  return (
+    <details style={{ marginBottom: "20px" }}>
+      <style jsx>{`
+        li {
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+      `}</style>
+      <summary style={{ fontSize: "80%" }}>
+        General Tips for all ShadowLang Lessons
+      </summary>
+      <ul>
+        <li>
+          Use the <b>lesson controls</b> on the bottom to start/stop a lesson,
+          see your progress, and toggle lesson features (furigana,
+          transliteration, translation, listening, audio speed).
+        </li>
+        <li>
+          When a lesson is paused:
+          <ul>
+            <li>Click on an avatar to hear the full sentence.</li>
+            <li>
+              Click on a word to hear just that word and see its dictionary
+              entry.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Regarding <b>listening</b>:
+          <ul>
+            <li>It works best on Chrome DESKTOP</li>
+            <li>
+              It works partially on Chrome Mobile (sometimes it stops listening
+              in the middle).
+            </li>
+            <li>It MAY work on Safari but that&apos;s not tested.</li>
+            <li>
+              It probably WON&apos;T WORK on other browsers, as it relies on
+              proprietary services from Google / Apple built into their
+              browsers.
+            </li>
+            <li>
+              If things are broken, simply click on the listening icon on the
+              lesson controls on the bottom, to toggle listening OFF.
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </details>
+  );
+}
+
 function useLessonController(length = 0, events = ["play", "delay"]) {
   const [currentBlockIdx, setCurrentBlockIdx] = React.useState(-1);
   const [currentEvent, setCurrentEvent] = React.useState("");
@@ -124,6 +177,7 @@ export default function LessonId({
           {lesson.title.en}
         </Typography>
         <Markdown>{lesson.intros.en}</Markdown>
+        <LessonTips />
         {lesson.blocks.map((block, i) => (
           <TextBlock
             key={i}
