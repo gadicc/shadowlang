@@ -176,7 +176,7 @@ export default function LessonId({
         <Typography variant="h5" sx={{ textDecoration: "underline", mb: 2 }}>
           {lesson.title.en}
         </Typography>
-        <Markdown>{lesson.intros.en}</Markdown>
+        <Markdown>{lesson.intros?.en}</Markdown>
         <LessonTips />
         {lesson.blocks.map((block, i) => (
           <TextBlock
