@@ -14,6 +14,7 @@ interface User {
   createdAt: Date;
   stripeCustomerId?: string;
   username?: string;
+  groupIds?: string[];
 }
 
 export type { User };

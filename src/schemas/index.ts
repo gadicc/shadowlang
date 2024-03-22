@@ -17,3 +17,4 @@ export interface Lesson extends _Lesson {
 
 export * from "./user";
 export * from "./speaker";
+export * from "./userGroup";

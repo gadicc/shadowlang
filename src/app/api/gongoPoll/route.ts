@@ -55,12 +55,76 @@ gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
     credits: true,
     admin: true,
     teacher: true,
+    groupsIds: true,
     createdAt: true,
     __updatedAt: true,
   });
 });
 
 gs.publish("speakers", (db) => db.collection("speakers").find());
+
+gs.publish("userGroups", async (db, opts, { auth }) => {
+  const userId = await auth.userId();
+  if (!userId) return [];
+
+  const user = await db.collection("users").findOne({ _id: userId });
+  if (!user) return [];
+
+  const query = { _id: { $in: user.groupIds || [] } };
+  return await db.collection("userGroups").find(query);
+});
+
+gs.publish("userGroupsForTeacher", async (db, opts, { auth }) => {
+  console.log({ opts });
+  if (opts.userId === undefined)
+    throw new Error("userGroups publish requires userId in opts");
+  if (!opts.userId) return [];
+
+  const userId = await auth.userId();
+  if (!userId || !userId.equals(opts.userId)) return [];
+
+  const query = { userId };
+  const groups = await db.collection("userGroups").find(query).toArray();
+
+  const RealUsersColl = await db.collection("users").getReal();
+  for (const group of groups) {
+    group.userCount = await RealUsersColl.countDocuments({
+      groupIds: group._id,
+    });
+  }
+
+  return [
+    {
+      coll: "userGroups",
+      entries: groups,
+    },
+  ];
+});
+
+gs.method(
+  "joinPrivateGroup",
+  async (db, { userId, groupId, password }, { auth }) => {
+    const realUserId = await auth.userId();
+    if (!realUserId || !realUserId.equals(userId)) return "USERID_MISMATCH";
+
+    if (typeof groupId !== "string" || groupId.length !== 24)
+      return "INVALID_GROUPID";
+
+    const realGroupId = new ObjectId(groupId);
+    const group = await db
+      .collection("userGroups")
+      .findOne({ _id: realGroupId });
+    if (!group) return "NO_SUCH_GROUP";
+
+    if (group.password !== password) return "INCORRECT_PASSWORD";
+
+    await db
+      .collection("users")
+      .updateOne({ _id: realUserId }, { $addToSet: { groupIds: realGroupId } });
+
+    return "SUCCESS";
+  },
+);
 
 gs.publish("lesson", async (db, { _id }: { _id: string }) => {
   return db.collection("lessons").find({ _id: new ObjectId(_id) });
@@ -144,6 +208,11 @@ if (gs.dba) {
   lessons.allow("insert", userIdMatches);
   lessons.allow("update", userIdMatches);
   lessons.allow("remove", userIdMatches);
+
+  const userGroups = db.collection("userGroups");
+  userGroups.allow("insert", userIdMatches);
+  userGroups.allow("update", userIdMatches);
+  userGroups.allow("remove", userIdMatches);
 }
 
 // module.exports = gs.expressPost();
