@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { useGongoOne, useGongoUserId } from "gongo-client-react";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 import { AccountCircle, Info, LocalLibrary } from "@mui/icons-material";
@@ -230,6 +230,14 @@ export default function MyAppBar() {
                   href="/account"
                 >
                   My account
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    signOut();
+                    handleUserClose();
+                  }}
+                >
+                  Logout
                 </MenuItem>
               </Menu>
             </div>
