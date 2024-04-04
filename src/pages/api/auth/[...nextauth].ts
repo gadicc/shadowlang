@@ -7,6 +7,7 @@ import NextAuth, { Session } from "next-auth";
 // import GithubProvider from "next-auth/providers/github";
 // import GithubProvider from "../../../src/api-lib/GithubProvider";
 import GoogleProvider from "next-auth/providers/google";
+import DiscordProvider from "next-auth/providers/discord";
 /*
 import TwitterProvider, {
   TwitterLegacyProfile,
@@ -106,6 +107,7 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // allowDangerousEmailAccountLinking: true,
       profile(profile) {
         const service: Service = {
           service: "google",
@@ -128,6 +130,42 @@ export const authOptions = {
 
         return newUserFromService(service, {
           name: profile.name, // <-- full name in one string
+        });
+      },
+    }),
+    DiscordProvider({
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+      // scope: "identify email", <-- default and no such option
+      profile(profile) {
+        const service: Service = {
+          service: "discord",
+          id: profile.id,
+          profile: {
+            id: profile.id,
+            displayName: profile.username,
+            // name: { familyName, givenName } <-- see below
+            emails: [{ value: profile.email, verified: profile.verified }],
+            photos: [{ value: profile.avatar }],
+            provider: "discord",
+            _json: profile,
+          },
+        };
+
+        const globalName = profile.global_name as string | undefined;
+        if (globalName) {
+          const globalNameParts = globalName ? globalName.split(" ") : [];
+          service.profile.name = {
+            familyName: globalNameParts.pop() || "",
+            givenName: globalNameParts.join(" "),
+          };
+        }
+
+        // console.log("profile", profile);
+        // console.log("service", JSON.stringify(service, null, 2));
+
+        return newUserFromService(service, {
+          name: profile.username, // <-- full name in one string
         });
       },
     }),
