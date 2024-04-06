@@ -4,7 +4,7 @@ import { Container } from "@mui/material";
 import { db, useGongoLive, useGongoSub } from "gongo-client-react";
 import React from "react";
 
-function displayName(userId) {
+function displayName(userId: string) {
   const user = db.collection("users").findOne({ _id: userId });
   return user?.displayName || "Unknown";
 }
