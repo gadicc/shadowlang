@@ -27,6 +27,7 @@ import {
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
 
 import { User } from "@/schemas";
+import Link from "@/lib/link";
 
 const VirtuosoTableComponents: TableComponents<User> = {
   // eslint-disable-next-line react/display-name
@@ -112,6 +113,9 @@ function Users() {
 
   return (
     <Box>
+      <Link href="/admin/lessons">Lessons (Admin)</Link>
+      <br />
+      <br />
       <Typography variant="h6">Users</Typography>
       <TextField
         size="small"

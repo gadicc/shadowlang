@@ -127,16 +127,24 @@ gs.method(
 );
 
 gs.publish("lesson", async (db, { _id }: { _id: string }) => {
+  // TODO, only public lessons, or lessons belonging to the user, or admin
   return db.collection("lessons").find({ _id: new ObjectId(_id) });
 });
 
 gs.publish("lessons", async (db, opts, { auth }) => {
   // Note, lesson stores userId as string.  Mmm.
-  const strUserId = (await auth.userId())?.toString();
+  const realUserId = await auth.userId();
+  const strUserId = realUserId?.toString();
   const reqUserId = opts?.userId;
   let query: Record<string, unknown> = { public: true };
-  if (reqUserId === strUserId) query = { $or: [query, { userId: reqUserId }] };
+  if (reqUserId === "all") {
+    if (!realUserId) return [];
+    const user = await db.collection("users").findOne({ _id: realUserId });
+    if (user?.admin) delete query.public;
+  } else if (reqUserId === strUserId)
+    query = { $or: [query, { userId: reqUserId }] };
   else if (reqUserId) query.userId = reqUserId;
+
   // console.log({ strUserId, reqUserId, query });
 
   // Mmm, we can't just query { public: true } because what if the user has
